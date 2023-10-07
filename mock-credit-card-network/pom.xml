@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>groupB.newbankV5</groupId>
-    <artifactId>newbank</artifactId>
+    <artifactId>mock-credit-card-network</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>mock-credit-card-network</name>
     <description>mock-credit-card-network</description>

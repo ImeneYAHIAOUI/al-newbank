@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>groupB.newbankV5</groupId>
-	<artifactId>newbank</artifactId>
+	<artifactId>payment-processor</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>payment-processor</name>
 	<description>payment-processor</description>

@@ -32,7 +32,7 @@
         <module>mock-credit-card-network</module>
     </modules>
 
-d
+
     <dependencyManagement>
 
     </dependencyManagement>
