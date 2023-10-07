@@ -8,20 +8,29 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 @Component
 public class CreditCardAuthorizer {
+    private static final Logger log = Logger.getLogger(CreditCardAuthorizer.class.getName());
 
     private static final String VISA_REGEX = "^4[0-9]{12}(?:[0-9]{3})?$";
     private static final String MASTERCARD_REGEX = "^5[1-5][0-9]{14}$";
     private static final String AMEX_REGEX = "^3[47][0-9]{13}$";
     private static final String NEWBANK_REGEX = "^6\\d{15}$";
     public ResponseDto AuthorizePayment(CreditCardInformationDto creditCardInformationDto) {
+        log.info("Authorizing payment");
         String ccnumber = creditCardInformationDto.getCardNumber();
         ResponseDto responseDto = new ResponseDto();
         boolean validNumber =  isValidVisa(ccnumber) || isValidMastercard(ccnumber) || isValidAmex(ccnumber) || isValidNewBank(ccnumber);
-        responseDto.setResponse(validNumber && isValidCVV(creditCardInformationDto.getCvv()) && isValidDate(creditCardInformationDto.getExpirationDate()));
+        log.info("Valid number: " + validNumber);
+        boolean validCVV = isValidCVV(creditCardInformationDto.getCvv());
+        log.info("Valid CVV: " + validCVV);
+        boolean validDate = isValidDate(creditCardInformationDto.getExpirationDate());
+        log.info("Valid date: " + validDate);
+        responseDto.setResponse(validNumber && validCVV && validDate);
         responseDto.setMessage();
+        log.info(responseDto.toString());
         return responseDto;
     }
 
@@ -55,7 +64,7 @@ public class CreditCardAuthorizer {
 
             Date currentDate = new Date();
 
-            if (parsedDate.before(currentDate) || parsedDate.equals(currentDate)) {
+            if (parsedDate.after(currentDate) || parsedDate.equals(currentDate)) {
                 return true;
             }
         } catch (Exception e) {
