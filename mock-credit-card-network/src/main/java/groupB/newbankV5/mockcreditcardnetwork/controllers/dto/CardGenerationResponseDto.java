@@ -1,20 +1,27 @@
 package groupB.newbankV5.mockcreditcardnetwork.controllers.dto;
 
-public class CreditCardInformationDto {
-
+public class CardGenerationResponseDto {
+    private String cardHolderName;
     private String cardNumber;
     private String expirationDate;
     private String cvv;
 
-    public CreditCardInformationDto() {
+    public CardGenerationResponseDto() {
     }
-
-    public CreditCardInformationDto(String cardNumber, String expirationDate, String cvv) {
+    public CardGenerationResponseDto(String cardHolderName, String cardNumber, String expirationDate, String cvv) {
+        this.cardHolderName = cardHolderName;
         this.cardNumber = cardNumber;
         this.expirationDate = expirationDate;
         this.cvv = cvv;
     }
 
+    public String getCardHolderName() {
+        return cardHolderName;
+    }
+
+    public void setCardHolderName(String cardHolderName) {
+        this.cardHolderName = cardHolderName;
+    }
 
     public String getCardNumber() {
         return cardNumber;
@@ -39,14 +46,4 @@ public class CreditCardInformationDto {
     public void setCvv(String cvv) {
         this.cvv = cvv;
     }
-
-    @Override
-    public String toString() {
-        return "CreditCardInformationDto{" +
-                ", cardNumber='" + cardNumber + '\'' +
-                ", expirationDate='" + expirationDate + '\'' +
-                ", cvv='" + cvv + '\'' +
-                '}';
-    }
-
 }

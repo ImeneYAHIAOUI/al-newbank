@@ -1,9 +1,8 @@
 package groupB.newbankV5.mockcreditcardnetwork.components;
 
 import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.CreditCardInformationDto;
-import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.ResponseDto;
+import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.PaymentResponseDto;
 import groupB.newbankV5.mockcreditcardnetwork.exceptions.ExpirationDateException;
-import org.apache.coyote.Response;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -18,10 +17,10 @@ public class CreditCardAuthorizer {
     private static final String MASTERCARD_REGEX = "^5[1-5][0-9]{14}$";
     private static final String AMEX_REGEX = "^3[47][0-9]{13}$";
     private static final String NEWBANK_REGEX = "^6\\d{15}$";
-    public ResponseDto AuthorizePayment(CreditCardInformationDto creditCardInformationDto) {
+    public PaymentResponseDto AuthorizePayment(CreditCardInformationDto creditCardInformationDto) {
         log.info("Authorizing payment");
         String ccnumber = creditCardInformationDto.getCardNumber();
-        ResponseDto responseDto = new ResponseDto();
+        PaymentResponseDto responseDto = new PaymentResponseDto();
         boolean validNumber =  isValidVisa(ccnumber) || isValidMastercard(ccnumber) || isValidAmex(ccnumber) || isValidNewBank(ccnumber);
         log.info("Valid number: " + validNumber);
         boolean validCVV = isValidCVV(creditCardInformationDto.getCvv());
@@ -55,7 +54,7 @@ public class CreditCardAuthorizer {
     }
 
     private boolean isValidDate(String date) throws ExpirationDateException{
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/yyyy");
 
         dateFormat.setLenient(false);
 

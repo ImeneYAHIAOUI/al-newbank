@@ -1,17 +1,17 @@
 package groupB.newbankV5.mockcreditcardnetwork.controllers.dto;
 
 
-public class ResponseDto {
+public class PaymentResponseDto {
     boolean response;
     String message;
 
-    public ResponseDto() {
+    public PaymentResponseDto() {
     }
-    public ResponseDto(boolean response) {
+    public PaymentResponseDto(boolean response) {
         this.response = response;
     }
 
-    public ResponseDto(boolean response, String message) {
+    public PaymentResponseDto(boolean response, String message) {
         this.response = response;
         this.message = message;
     }

@@ -12,12 +12,10 @@ import java.util.logging.Logger;
 public class PaymentAuthorizer {
     private static final Logger log = Logger.getLogger(PaymentAuthorizer.class.getName());
 
-    private final CreditCardNetworkProxy creditCardNetworkProxy;
     private final FraudDetector fraudDetector;
 
     @Autowired
-    public PaymentAuthorizer(CreditCardNetworkProxy creditCardNetworkProxy, FraudDetector fraudDetector) {
-        this.creditCardNetworkProxy = creditCardNetworkProxy;
+    public PaymentAuthorizer( FraudDetector fraudDetector) {
         this.fraudDetector = fraudDetector;
     }
     public PaymentResponseDto authorizePayment(PaymentDetailsDTO paymentDetails) {
@@ -25,10 +23,8 @@ public class PaymentAuthorizer {
         if(fraudDetector.isFraudulent(paymentDetails)) {
             return new PaymentResponseDto(false, "Fraudulent transaction");
         }
-        CcnResponseDto ccnResponseDto =  creditCardNetworkProxy.authorizePayment(paymentDetails);
-        if(ccnResponseDto.getResponse()) {
-            return new PaymentResponseDto(true, "Payment authorized");
-        }
-        return new PaymentResponseDto(false, "Payment declined : "+ccnResponseDto.getMessage());
+
+        return new PaymentResponseDto(true, "Payment authorized");
+
     }
 }
