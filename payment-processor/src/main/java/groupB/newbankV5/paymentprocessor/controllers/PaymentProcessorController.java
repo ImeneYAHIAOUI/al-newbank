@@ -3,6 +3,7 @@ package groupB.newbankV5.paymentprocessor.controllers;
 import groupB.newbankV5.paymentprocessor.components.PaymentAuthorizer;
 import groupB.newbankV5.paymentprocessor.controllers.dto.PaymentDetailsDTO;
 import groupB.newbankV5.paymentprocessor.controllers.dto.PaymentResponseDto;
+import groupB.newbankV5.paymentprocessor.interfaces.ITransactionProcessor;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,18 +22,18 @@ public class PaymentProcessorController {
     private static final Logger log = Logger.getLogger(PaymentProcessorController.class.getName());
     public static final String BASE_URI = "/api/payment";
 
-    private final PaymentAuthorizer paymentAuthorizer;
+    private final ITransactionProcessor transactionProcessor;
 
     @Autowired
-    public PaymentProcessorController(PaymentAuthorizer paymentAuthorizer) {
+    public PaymentProcessorController(ITransactionProcessor transactionProcessor) {
 
-        this.paymentAuthorizer = paymentAuthorizer;
+        this.transactionProcessor = transactionProcessor;
     }
 
     @PostMapping("/process")
     public ResponseEntity<PaymentResponseDto> processPayment(@RequestBody PaymentDetailsDTO paymentDetails) {
         log.info("Processing payment");
-        return ResponseEntity.status(HttpStatus.OK).body(paymentAuthorizer.authorizePayment(paymentDetails));
+        return ResponseEntity.status(HttpStatus.OK).body(transactionProcessor.authorizePayment(paymentDetails));
 
     }
 

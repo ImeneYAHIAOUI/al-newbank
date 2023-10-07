@@ -1,4 +1,4 @@
-package groupB.newbankV5.paymentprocessor.components.dto;
+package groupB.newbankV5.paymentprocessor.connectors.dto;
 
 public class CreditCardInformationDto {
 
