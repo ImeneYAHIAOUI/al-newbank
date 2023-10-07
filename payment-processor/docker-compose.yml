@@ -1,0 +1,19 @@
+version: "3.3"
+
+services:
+  payment-service:
+    image: "newbank/payment-processor"
+    restart: always
+    ports:
+      - 5000:8080
+    depends_on:
+      - ${CCN_SERVICE}
+    environment:
+      - CCN_WITH_PORT=${CCN_SERVICE}:8080
+    networks:
+      - spring-newbank-network
+
+
+networks:
+  spring-newbank-network:
+    driver: bridge

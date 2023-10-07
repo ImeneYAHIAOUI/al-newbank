@@ -1,0 +1,15 @@
+version: "3.3"
+
+services:
+  ccn-service:
+    image: "newbank/mock-credit-card-network"
+    restart: always
+    ports:
+      - 5001:8080
+    networks:
+      - spring-newbank-network
+
+
+networks:
+  spring-newbank-network:
+    driver: bridge
