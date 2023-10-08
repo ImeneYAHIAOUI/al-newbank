@@ -10,6 +10,7 @@ services:
       - transaction-db
     environment:
       - CCN_WITH_PORT=${CCN_SERVICE}:8080
+      - COSTUMER_WITH_PORT=${COSTUMER_SERVICE}:8080
       - POSTGRES_HOST=transaction-db:5432
     networks:
       - spring-newbank-network

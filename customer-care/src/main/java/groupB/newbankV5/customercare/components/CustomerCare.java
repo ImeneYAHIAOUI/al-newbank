@@ -73,10 +73,10 @@ public class CustomerCare implements AccountFinder, AccountRegistration {
             accountNumber.append(random.nextInt(10));
         }
 
-        String iban =  "FR00" + accountNumber;
+        String iban =  "FR" + String.format("%02d", random.nextInt(100)) + "20523" + accountNumber;
 
         int checksum = calculateIBANChecksum(iban);
-        iban = iban.substring(0, 2) + String.format("%02d", checksum) + iban.substring(4);
+        iban = iban.substring(0, 9) + String.format("%02d", checksum) + iban.substring(8);
 
         return iban;
     }
