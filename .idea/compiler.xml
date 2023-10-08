@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="payment-processor" />
         <module name="mock-credit-card-network" />
+        <module name="customer-care" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -18,12 +19,13 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="customer-care" options="-parameters" />
       <module name="mock-credit-card-network" options="-parameters" />
       <module name="newbank" options="-parameters" />
       <module name="newbank (1)" options="-parameters" />
       <module name="newbank (2)" options="-parameters" />
       <module name="newbank (3)" options="-parameters" />
-      <module name="payment-processor" options="-parameters" />
+      <module name="payment-processor" options="" />
     </option>
   </component>
 </project>

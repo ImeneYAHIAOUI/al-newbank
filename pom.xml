@@ -30,6 +30,7 @@
     <modules>
         <module>payment-processor</module>
         <module>mock-credit-card-network</module>
+        <module>customer-care</module>
     </modules>
 
 

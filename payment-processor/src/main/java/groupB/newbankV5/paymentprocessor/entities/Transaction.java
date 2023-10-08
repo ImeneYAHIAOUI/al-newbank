@@ -14,8 +14,7 @@ public class Transaction {
     private String toAccount;
 
 
-    @OneToOne
-    @JoinColumn(name = "credit_card_id")
+    @Embedded
     private CreditCard creditCard;
     private BigDecimal amount;
     private TransactionType transactionType;

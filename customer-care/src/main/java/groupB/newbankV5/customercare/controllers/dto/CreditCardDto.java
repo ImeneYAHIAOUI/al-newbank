@@ -1,23 +1,31 @@
-package groupB.newbankV5.paymentprocessor.entities;
+package groupB.newbankV5.customercare.controllers.dto;
 
-import javax.persistence.*;
-@Embeddable
-public class CreditCard {
+import groupB.newbankV5.customercare.entities.Account;
+import groupB.newbankV5.customercare.entities.CreditCard;
 
+
+public class CreditCardDto {
+
+    private Long id;
     private String cardNumber;
     private String cardHolderName;
     private String expiryDate;
     private String cvv;
 
-    public CreditCard(String cardNumber, String cardHolderName, String expiryDate, String cvv) {
+    public CreditCardDto(Long id, String cardNumber, String cardHolderName, String expiryDate, String cvv) {
+        this.id = id;
         this.cardNumber = cardNumber;
         this.cardHolderName = cardHolderName;
         this.expiryDate = expiryDate;
         this.cvv = cvv;
     }
 
-    public CreditCard() {
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getCardNumber() {
@@ -50,5 +58,15 @@ public class CreditCard {
 
     public void setCvv(String cvv) {
         this.cvv = cvv;
+    }
+
+    public static CreditCardDto creditCardFactory(CreditCard creditCard) {
+        return new CreditCardDto(
+                creditCard.getId(),
+                creditCard.getCardNumber(),
+                creditCard.getCardHolderName(),
+                creditCard.getExpiryDate(),
+                creditCard.getCvv()
+        );
     }
 }

@@ -1,13 +1,34 @@
-package groupB.newbankV5.paymentprocessor.entities;
+package groupB.newbankV5.customercare.entities;
+
+import com.sun.istack.NotNull;
 
 import javax.persistence.*;
-@Embeddable
+
+@Entity
 public class CreditCard {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "CreditCard_id", nullable = false)
+    private Long id;
+
+    @ManyToOne
+    @NotNull
+    @JoinColumn(name = "Account_id")
+    private Account account;
+
 
     private String cardNumber;
     private String cardHolderName;
     private String expiryDate;
     private String cvv;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public CreditCard(String cardNumber, String cardHolderName, String expiryDate, String cvv) {
         this.cardNumber = cardNumber;

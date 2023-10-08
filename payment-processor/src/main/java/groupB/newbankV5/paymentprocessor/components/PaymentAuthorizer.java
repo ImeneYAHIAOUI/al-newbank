@@ -10,7 +10,6 @@ import groupB.newbankV5.paymentprocessor.entities.TransactionType;
 import groupB.newbankV5.paymentprocessor.interfaces.IFraudDetector;
 import groupB.newbankV5.paymentprocessor.interfaces.IFundsHandler;
 import groupB.newbankV5.paymentprocessor.interfaces.ITransactionProcessor;
-import groupB.newbankV5.paymentprocessor.repositories.CreditCardRepository;
 import groupB.newbankV5.paymentprocessor.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,12 +26,10 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
     private static final BigDecimal LOW_TRANSACTION_THRESHOLD = new BigDecimal(0);
 
     private final TransactionRepository transactionRepository;
-    private final CreditCardRepository creditCardRepository;
     private final ETFService etfService;
     @Autowired
-    public PaymentAuthorizer(TransactionRepository transactionRepository, CreditCardRepository creditCardRepository, ETFService etfService) {
+    public PaymentAuthorizer(TransactionRepository transactionRepository, ETFService etfService) {
         this.transactionRepository = transactionRepository;
-        this.creditCardRepository = creditCardRepository;
         this.etfService = etfService;
     }
 
@@ -47,7 +44,6 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
             return new PaymentResponseDto(false, "Insufficient funds");
         }
         CreditCard creditCard = new CreditCard(paymentDetails.getCardHolderName(), paymentDetails.getCardNumber(), paymentDetails.getExpirationDate(), paymentDetails.getCvv());
-        creditCardRepository.save(creditCard);
         Transaction transaction = new Transaction(creditCard, paymentDetails.getToAccount(), paymentDetails.getAmount(), TransactionType.CREDIT);
         transactionRepository.save(transaction);
         return new PaymentResponseDto(true, "Payment authorized");
