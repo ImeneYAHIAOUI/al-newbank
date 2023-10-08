@@ -38,7 +38,7 @@ public class Transaction {
         this.transactionType = transactionType;
     }
 
-    public Transaction(CreditCard creditCard,String toAccount, BigDecimal amount, TransactionType transactionType) {
+    public Transaction(CreditCard creditCard, String toAccount, BigDecimal amount, TransactionType transactionType) {
         this.creditCard = creditCard;
         this.toAccount = toAccount;
         this.amount = amount;
@@ -46,7 +46,43 @@ public class Transaction {
     }
 
 
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
+    public String getFromAccount() {
+        return fromAccount;
+    }
 
+    public void setFromAccount(String fromAccount) {
+        this.fromAccount = fromAccount;
+    }
+
+    public String getToAccount() {
+        return toAccount;
+    }
+
+    public void setToAccount(String toAccount) {
+        this.toAccount = toAccount;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public TransactionType getTransactionType() {
+        return transactionType;
+    }
+
+    public void setTransactionType(TransactionType transactionType) {
+        this.transactionType = transactionType;
+    }
 }

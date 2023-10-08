@@ -3,7 +3,6 @@ version: "3.3"
 services:
   payment-service:
     image: "newbank/payment-processor"
-    restart: always
     ports:
       - 5000:8080
     depends_on:
@@ -17,11 +16,12 @@ services:
     # the postgres DB to be connected to the backend (watch out: no volume specified, everything can be lost)
   transaction-db:
      image: postgres:15.2
-     container_name: db
      environment:
        - POSTGRES_PASSWORD=postgrespass
        - POSTGRES_USER=postgresuser
        - POSTGRES_DB=transaction-db
+     networks:
+       - spring-newbank-network
 
 
 
