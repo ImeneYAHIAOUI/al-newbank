@@ -12,6 +12,5 @@ public class CostumerCareProxy {
     @Value("costumer.host.baseurl")
     private String costumerHostandPort;
     private RestTemplate restTemplate = new RestTemplate();
-    public
 
 }
