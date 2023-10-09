@@ -1,4 +1,4 @@
-package groupB.newbankV5.mockcreditcardnetwork.components;
+package groupB.newbankV5.mockcreditcardnetwork.connectors;
 
 import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.CreditCardInformationDto;
 import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.PaymentResponseDto;

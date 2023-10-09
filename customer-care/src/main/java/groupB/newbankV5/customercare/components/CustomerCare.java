@@ -39,6 +39,16 @@ public class CustomerCare implements AccountFinder, AccountRegistration {
     }
 
     @Override
+    public Optional<Account> findByIban(String iban) {
+        return accountRepository.findByIBAN(iban);
+    }
+
+    @Override
+    public Optional<Account> findByCreditCard(String number, String expiryDate, String cvv) {
+        return accountRepository.findByCreditCardsCardNumberAndCreditCardsExpiryDateAndCreditCardsCvv(number,expiryDate,cvv);
+    }
+
+    @Override
     public List<Account> findAll() {
         return accountRepository.findAll();
     }
@@ -57,6 +67,20 @@ public class CustomerCare implements AccountFinder, AccountRegistration {
         customerProfileRepository.save(customerProfile);
         Account account = new Account(customerProfile, generateRandomIBAN(), generateRandomBIC());
         return accountRepository.save(account);
+    }
+
+    @Override
+    public Account updateFunds(Account account, BigDecimal amount, String operation) {
+
+        if (operation.equals("withdraw")) {
+            account.setBalance(account.getBalance().subtract(amount));
+        } else if (operation.equals("deposit")) {
+            account.setBalance(account.getBalance().add(amount));
+        } else {
+            throw new IllegalArgumentException("Operation not supported");
+        }
+        return accountRepository.save(account);
+
     }
 
     @Override

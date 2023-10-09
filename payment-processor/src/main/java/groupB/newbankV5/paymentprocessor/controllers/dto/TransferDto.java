@@ -3,25 +3,25 @@ package groupB.newbankV5.paymentprocessor.controllers.dto;
 import java.math.BigDecimal;
 
 public class TransferDto {
-    private String fromAccount;
-    private String toAccount;
+    private String fromAccountIBAN;
+    private String toAccountIBAN;
     private BigDecimal amount;
 
     public TransferDto() {
     }
 
-    public TransferDto(String fromAccount, String toAccount, BigDecimal amount) {
-        this.fromAccount = fromAccount;
-        this.toAccount = toAccount;
+    public TransferDto(String fromAccountIBAN, String toAccountIBAN, BigDecimal amount) {
+        this.fromAccountIBAN = fromAccountIBAN;
+        this.toAccountIBAN = toAccountIBAN;
         this.amount = amount;
     }
 
-    public String getFromAccount() {
-        return fromAccount;
+    public String getFromAccountIBAN() {
+        return fromAccountIBAN;
     }
 
-    public String getToAccount() {
-        return toAccount;
+    public String getToAccountIBAN() {
+        return toAccountIBAN;
     }
 
     public BigDecimal getAmount() {
@@ -32,8 +32,8 @@ public class TransferDto {
     @Override
     public String toString() {
         return "InternalTransferDto{" +
-                "fromAccount='" + fromAccount + '\'' +
-                ", toAccount='" + toAccount + '\'' +
+                "fromAccount='" + fromAccountIBAN + '\'' +
+                ", toAccount='" + toAccountIBAN + '\'' +
                 ", amount=" + amount +
                 '}';
     }
