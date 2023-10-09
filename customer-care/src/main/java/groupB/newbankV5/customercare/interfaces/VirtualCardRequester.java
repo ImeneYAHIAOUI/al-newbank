@@ -4,5 +4,6 @@ import groupB.newbankV5.customercare.entities.Account;
 
 public interface VirtualCardRequester {
 
-    Account requestVirtualCard(Long accountId);
+
+    Account requestVirtualCard(Account account);
 }

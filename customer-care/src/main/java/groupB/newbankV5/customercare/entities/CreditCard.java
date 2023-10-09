@@ -4,17 +4,11 @@ import com.sun.istack.NotNull;
 
 import javax.persistence.*;
 
-@Entity
+@Embeddable
 public class CreditCard {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "CreditCard_id", nullable = false)
-    private Long id;
 
-    @ManyToOne
-    @NotNull
-    @JoinColumn(name = "Account_id")
-    private Account account;
+
+
 
 
     private String cardNumber;
@@ -22,13 +16,8 @@ public class CreditCard {
     private String expiryDate;
     private String cvv;
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+
 
     public CreditCard(String cardNumber, String cardHolderName, String expiryDate, String cvv) {
         this.cardNumber = cardNumber;
@@ -71,5 +60,15 @@ public class CreditCard {
 
     public void setCvv(String cvv) {
         this.cvv = cvv;
+    }
+
+    @Override
+    public String toString() {
+        return "CreditCard{" +
+                ", cardNumber='" + cardNumber + '\'' +
+                ", cardHolderName='" + cardHolderName + '\'' +
+                ", expiryDate='" + expiryDate + '\'' +
+                ", cvv='" + cvv + '\'' +
+                '}';
     }
 }

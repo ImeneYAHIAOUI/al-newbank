@@ -1,5 +1,7 @@
 package groupB.newbankV5.customercare.entities;
 
+import io.micrometer.core.lang.Nullable;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -8,7 +10,7 @@ import java.util.List;
 @Entity
 public class Account {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue
     @Column(name = "Account_id", nullable = false)
     private Long id;
     @OneToOne
@@ -18,19 +20,19 @@ public class Account {
     private String BIC;
     private BigDecimal balance;
 
-    @OneToMany(targetEntity = CreditCard.class, mappedBy = "account", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<CreditCard> creditCards;
+    @Embedded
+    private CreditCard creditCard;
 
     public CustomerProfile getCustomerProfile() {
         return customerProfile;
     }
 
-    public List<CreditCard> getCreditCards() {
-        return creditCards;
+    public CreditCard getCreditCard() {
+        return creditCard;
     }
 
-    public void setCreditCards(List<CreditCard> creditCards) {
-        this.creditCards = creditCards;
+    public void setCreditCard(CreditCard creditCard) {
+        this.creditCard = creditCard;
     }
 
     public void setCustomerProfile(CustomerProfile customerProfile) {
@@ -45,7 +47,6 @@ public class Account {
         this.IBAN = IBAN;
         this.BIC = BIC;
         this.balance = BigDecimal.valueOf(0);
-        this.creditCards = new ArrayList<>();
     }
     public Long getId() {
         return id;
@@ -77,6 +78,22 @@ public class Account {
 
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
+    }
+
+    @Override
+    public String toString() {
+        String creditCard = "";
+        if (this.creditCard != null) {
+            creditCard = this.creditCard.toString();
+        }
+        return "Account{" +
+                "id=" + id +
+                ", customerProfile=" + customerProfile +
+                ", IBAN='" + IBAN + '\'' +
+                ", BIC='" + BIC + '\'' +
+                ", balance=" + balance +
+                ", creditCards=" + creditCard +
+                '}';
     }
 
 }

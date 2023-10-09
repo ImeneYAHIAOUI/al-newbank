@@ -17,18 +17,18 @@ public class AccountDto {
     private String BIC;
     private BigDecimal balance;
 
-    private List<CreditCardDto> creditCards;
+    private CreditCardDto creditCard;
 
     public CustomerProfileDto getCustomerProfile() {
         return customerProfile;
     }
 
-    public List<CreditCardDto> getCreditCards() {
-        return creditCards;
+    public CreditCardDto getCreditCard() {
+        return creditCard;
     }
 
-    public void setCreditCards(List<CreditCardDto> creditCards) {
-        this.creditCards = creditCards;
+    public void setCreditCards(CreditCardDto creditCard) {
+        this.creditCard = creditCard;
     }
 
     public void setCustomerProfile(CustomerProfileDto customerProfile) {
@@ -38,13 +38,13 @@ public class AccountDto {
     public AccountDto() {
     }
 
-    public AccountDto(Long id, CustomerProfileDto customerProfile, String IBAN, String BIC, BigDecimal balance, List<CreditCardDto> creditCards) {
+    public AccountDto(Long id, CustomerProfileDto customerProfile, String IBAN, String BIC, BigDecimal balance, CreditCardDto creditCards) {
         this.id = id;
         this.customerProfile = customerProfile;
         this.IBAN = IBAN;
         this.BIC = BIC;
         this.balance = balance;
-        this.creditCards = creditCards;
+        this.creditCard = creditCards;
     }
 
     public Long getId() {
@@ -80,13 +80,17 @@ public class AccountDto {
     }
 
     public static AccountDto accountDtoFactory(Account account) {
+        CreditCardDto creditCardDto = null;
+        if (account.getCreditCard() != null) {
+            creditCardDto = CreditCardDto.creditCardFactory(account.getCreditCard());
+        }
         return new AccountDto(
                 account.getId(),
                 CustomerProfileDto.customerProfileFactory(account.getCustomerProfile()),
                 account.getIBAN(),
                 account.getBIC(),
                 account.getBalance(),
-                account.getCreditCards().stream().map(CreditCardDto::creditCardFactory).toList()
+                creditCardDto
         );
     }
 }

@@ -6,27 +6,19 @@ import groupB.newbankV5.customercare.entities.CreditCard;
 
 public class CreditCardDto {
 
-    private Long id;
     private String cardNumber;
     private String cardHolderName;
     private String expiryDate;
     private String cvv;
 
-    public CreditCardDto(Long id, String cardNumber, String cardHolderName, String expiryDate, String cvv) {
-        this.id = id;
+    public CreditCardDto( String cardNumber, String cardHolderName, String expiryDate, String cvv) {
         this.cardNumber = cardNumber;
         this.cardHolderName = cardHolderName;
         this.expiryDate = expiryDate;
         this.cvv = cvv;
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getCardNumber() {
         return cardNumber;
@@ -62,7 +54,6 @@ public class CreditCardDto {
 
     public static CreditCardDto creditCardFactory(CreditCard creditCard) {
         return new CreditCardDto(
-                creditCard.getId(),
                 creditCard.getCardNumber(),
                 creditCard.getCardHolderName(),
                 creditCard.getExpiryDate(),

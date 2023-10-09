@@ -3,14 +3,15 @@ package groupB.newbankV5.customercare.components;
 import groupB.newbankV5.customercare.components.dto.AccountCreationDto;
 import groupB.newbankV5.customercare.controllers.CostumerController;
 import groupB.newbankV5.customercare.entities.Account;
+import groupB.newbankV5.customercare.entities.CreditCard;
 import groupB.newbankV5.customercare.entities.CustomerProfile;
 import groupB.newbankV5.customercare.interfaces.AccountFinder;
 import groupB.newbankV5.customercare.interfaces.AccountRegistration;
 import groupB.newbankV5.customercare.repositories.AccountRepository;
-import groupB.newbankV5.customercare.repositories.CreditCardRepository;
 import groupB.newbankV5.customercare.repositories.CustomerProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
+@Transactional
 public class CustomerCare implements AccountFinder, AccountRegistration {
 
     private final AccountRepository accountRepository;
@@ -31,7 +33,7 @@ public class CustomerCare implements AccountFinder, AccountRegistration {
     public CustomerCare(AccountRepository accountRepository, CustomerProfileRepository customerProfileRepository) {
         this.accountRepository = accountRepository;
         this.customerProfileRepository = customerProfileRepository;
-    }
+   }
 
     @Override
     public Optional<Account> findAccountById(Long id) {
@@ -45,7 +47,7 @@ public class CustomerCare implements AccountFinder, AccountRegistration {
 
     @Override
     public Optional<Account> findByCreditCard(String number, String expiryDate, String cvv) {
-        return accountRepository.findByCreditCardsCardNumberAndCreditCardsExpiryDateAndCreditCardsCvv(number,expiryDate,cvv);
+        return accountRepository.findByCreditCardCardNumberAndCreditCardExpiryDateAndCreditCardCvv(number,expiryDate,cvv);
     }
 
     @Override
@@ -79,7 +81,8 @@ public class CustomerCare implements AccountFinder, AccountRegistration {
         } else {
             throw new IllegalArgumentException("Operation not supported");
         }
-        return accountRepository.save(account);
+
+        return account;
 
     }
 
@@ -127,6 +130,7 @@ public class CustomerCare implements AccountFinder, AccountRegistration {
         BigDecimal numericValue = new BigDecimal(numericIBAN.toString());
         BigDecimal remainder = numericValue.remainder(BigDecimal.valueOf(97));
         return BigDecimal.valueOf(98).subtract(remainder).intValue();
+
     }
 
 

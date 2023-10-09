@@ -2,9 +2,11 @@ package groupB.newbankV5.customercare.controllers;
 
 import groupB.newbankV5.customercare.components.dto.AccountCreationDto;
 import groupB.newbankV5.customercare.controllers.dto.AccountDto;
+import groupB.newbankV5.customercare.controllers.dto.CreditCardDto;
 import groupB.newbankV5.customercare.controllers.dto.UpdateFundsDto;
 import groupB.newbankV5.customercare.entities.Account;
 
+import groupB.newbankV5.customercare.entities.CreditCard;
 import groupB.newbankV5.customercare.interfaces.AccountFinder;
 import groupB.newbankV5.customercare.interfaces.AccountRegistration;
 import groupB.newbankV5.customercare.interfaces.VirtualCardRequester;
@@ -28,6 +30,7 @@ public class CostumerController {
     private final AccountFinder accountFinder;
     private final AccountRegistration accountRegistration;
     private final VirtualCardRequester virtualCardRequester;
+
     @Autowired
     public CostumerController(AccountFinder accountFinder, AccountRegistration accountRegistration, VirtualCardRequester virtualCardRequester) {
         this.accountFinder = accountFinder;
@@ -85,14 +88,15 @@ public class CostumerController {
         return ResponseEntity.status(201).body(accountDto);
     }
 
-    @PostMapping("virtualCard/{id}")
+    @PostMapping("{id}/virtualCard")
     public ResponseEntity<AccountDto> createVirtualCard(@PathVariable long id) {
         log.info("Creating virtual card");
-        AccountDto accountDto = AccountDto.accountDtoFactory(virtualCardRequester.requestVirtualCard(id));
+        Account account = accountFinder.findAccountById(id).orElseThrow();
+        AccountDto accountDto = AccountDto.accountDtoFactory(virtualCardRequester.requestVirtualCard(account));
         return ResponseEntity.status(201).body(accountDto);
     }
 
-    @PutMapping("funds/{id}")
+    @PutMapping("{id}/funds")
     public ResponseEntity<AccountDto> updateFunds(@PathVariable long id, @RequestBody UpdateFundsDto updateFundsDto) {
         log.info("Updating funds");
         log.info("Updating funds");
