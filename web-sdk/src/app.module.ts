@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import {AppController } from './sdk/controllers/app.controller';
+import {PaymentController } from './sdk/controllers/payment.controller';
 import { AppService } from './sdk/services/app.service';
 import appConfig from './shared/config/app.config';
 import swaggeruiConfig from './shared/config/swaggerui.config';
@@ -15,7 +16,7 @@ import { ConfigModule } from '@nestjs/config';
                                 ttl: 3600,
                                 max : 100
                               }),],
-  controllers: [AppController],
+  controllers: [AppController,PaymentController],
   providers: [AppService],
 })
 export class AppModule {}

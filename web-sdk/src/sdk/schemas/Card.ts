@@ -21,13 +21,11 @@ export class Card {
 
   public getCardType(): string {
     const number = this.number.replace(" ", "").replace("-", "");
-
     for (const type of Card.cardTypes) {
       if (type.regex.test(number)) {
         return type.name;
       }
     }
-
     return "Unknown";
   }
 
