@@ -48,3 +48,6 @@ HELP.md
 
  ### Mono build ###
  **/*.exe
+
+### general .idea
+.idea/
