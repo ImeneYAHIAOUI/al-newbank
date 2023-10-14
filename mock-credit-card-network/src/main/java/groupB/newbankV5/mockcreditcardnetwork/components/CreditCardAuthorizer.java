@@ -1,8 +1,10 @@
 package groupB.newbankV5.mockcreditcardnetwork.components;
 
+import groupB.newbankV5.mockcreditcardnetwork.connectors.NewBankProxy;
 import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.CreditCardInformationDto;
 import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.PaymentResponseDto;
 import groupB.newbankV5.mockcreditcardnetwork.exceptions.ExpirationDateException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -17,11 +19,22 @@ public class CreditCardAuthorizer {
     private static final String MASTERCARD_REGEX = "^5[1-5][0-9]{14}$";
     private static final String AMEX_REGEX = "^3[47][0-9]{13}$";
     private static final String NEWBANK_REGEX = "^6\\d{15}$";
+
+    private final NewBankProxy newBankProxy;
+
+    @Autowired
+    public CreditCardAuthorizer(NewBankProxy newBankProxy) {
+        this.newBankProxy = newBankProxy;
+    }
+
     public PaymentResponseDto AuthorizePayment(CreditCardInformationDto creditCardInformationDto) {
         log.info("Authorizing payment");
         String ccnumber = creditCardInformationDto.getCardNumber();
+        if(isValidNewBank(ccnumber)) {
+            return newBankProxy.authorizePayment(creditCardInformationDto);
+        }
         PaymentResponseDto responseDto = new PaymentResponseDto();
-        boolean validNumber =  isValidVisa(ccnumber) || isValidMastercard(ccnumber) || isValidAmex(ccnumber) || isValidNewBank(ccnumber);
+        boolean validNumber =  isValidVisa(ccnumber) || isValidMastercard(ccnumber) || isValidAmex(ccnumber);
         log.info("Valid number: " + validNumber);
         boolean validCVV = isValidCVV(creditCardInformationDto.getCvv());
         log.info("Valid CVV: " + validCVV);
