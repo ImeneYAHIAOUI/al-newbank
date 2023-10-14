@@ -5,10 +5,11 @@ import * as jwt from 'jsonwebtoken';
   export class PaymentController {
     @Post()
     processPayment(@Body() cardInfo: any) {
-      if (!cardInfo || !cardInfo.cardNumber || !cardInfo.expirationDate || !cardInfo.cvv) {
-        throw new Error('Invalid card information');
-      }
+
       try {
+        if (!cardInfo || !cardInfo.cardNumber || !cardInfo.expirationDate || !cardInfo.cvv) {
+           throw new Error('Invalid card information');
+        }
         const payload = {
           cardNumber: cardInfo.cardNumber,
           expirationDate: cardInfo.expirationDate,
