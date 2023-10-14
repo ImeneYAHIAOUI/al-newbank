@@ -33,15 +33,17 @@ public class CreditCardAuthorizer {
         if(isValidNewBank(ccnumber)) {
             return newBankProxy.authorizePayment(creditCardInformationDto);
         }
-        PaymentResponseDto responseDto = new PaymentResponseDto();
         boolean validNumber =  isValidVisa(ccnumber) || isValidMastercard(ccnumber) || isValidAmex(ccnumber);
         log.info("Valid number: " + validNumber);
         boolean validCVV = isValidCVV(creditCardInformationDto.getCvv());
         log.info("Valid CVV: " + validCVV);
         boolean validDate = isValidDate(creditCardInformationDto.getExpirationDate());
         log.info("Valid date: " + validDate);
+        boolean response = validNumber && validCVV && validDate;
+        PaymentResponseDto responseDto = new PaymentResponseDto();
         responseDto.setResponse(validNumber && validCVV && validDate);
         responseDto.setMessage();
+        responseDto.setAuthToken();
         log.info(responseDto.toString());
         return responseDto;
     }

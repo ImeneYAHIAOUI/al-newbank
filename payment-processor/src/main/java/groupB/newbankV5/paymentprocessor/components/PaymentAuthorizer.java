@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.util.logging.Logger;
 
 @Component
@@ -44,17 +45,17 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
         log.info("Authorizing payment");
 
         if(isFraudulent(paymentDetails) ) {
-            return new PaymentResponseDto(false, "Fraudulent transaction");
+            return new PaymentResponseDto(false, "Fraudulent transaction", generateAuthToken(10));
         }
         AccountDto accountDto = costumerCare.getAccountByCreditCard(paymentDetails.getCardNumber(), paymentDetails.getExpirationDate(), paymentDetails.getCvv());
         if (!hasSufficientFunds(accountDto, paymentDetails.getAmount())) {
-            return new PaymentResponseDto(false, "Insufficient funds");
+            return new PaymentResponseDto(false, "Insufficient funds", generateAuthToken(10));
         }
         CreditCard creditCard = new CreditCard(paymentDetails.getCardHolderName(), paymentDetails.getCardNumber(), paymentDetails.getExpirationDate(), paymentDetails.getCvv());
         deductFunds(accountDto.getAccountId(), paymentDetails.getAmount());
         Transaction transaction = new Transaction(creditCard, paymentDetails.getToAccountIBAN(), paymentDetails.getAmount(), TransactionType.CREDIT);
         transactionRepository.save(transaction);
-        return new PaymentResponseDto(true, "Payment authorized");
+        return new PaymentResponseDto(true, "Payment authorized", generateAuthToken(10));
 
     }
 
@@ -62,11 +63,11 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
     public TransferResponseDto authorizeTransfer(TransferDto transferDetails) {
         log.info("Authorizing transfer");
         if(isFraudulent(transferDetails)) {
-            return new TransferResponseDto(false, "Fraudulent transaction");
+            return new TransferResponseDto(false, "Fraudulent transaction", generateAuthToken(10));
         }
         AccountDto accountDto = costumerCare.getAccountByIBAN(transferDetails.getFromAccountIBAN());
         if (!hasSufficientFunds(accountDto, transferDetails.getAmount())) {
-            return new TransferResponseDto(false, "Insufficient funds");
+            return new TransferResponseDto(false, "Insufficient funds", generateAuthToken(10));
         }
         Transaction transaction;
         if (isNewBankAccount(transferDetails.getToAccountIBAN())) {
@@ -79,10 +80,10 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
         transactionRepository.save(transaction);
         if(! isNewBankAccount(transferDetails.getToAccountIBAN()) && ! etfService.validateTransaction(transferDetails.getToAccountIBAN(), transferDetails.getAmount().doubleValue())) {
             transactionRepository.delete(transaction);
-            return new TransferResponseDto(false, "Transfer failed");
+            return new TransferResponseDto(false, "Transfer failed", generateAuthToken(10));
         }
 
-        return new TransferResponseDto(true, "Transfer authorized");
+        return new TransferResponseDto(true, "Transfer authorized", generateAuthToken(10));
     }
 
     @Override
@@ -133,6 +134,20 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
 
     private boolean isNewBankAccount(String accountIban) {
         return accountIban.matches(NEWBANK_IBAN_REGEX);
+    }
+
+    private String generateAuthToken(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder(length);
+        SecureRandom random = new SecureRandom();
+
+        for (int i = 0; i < length; i++) {
+            int randomIndex = random.nextInt(characters.length());
+            char randomChar = characters.charAt(randomIndex);
+            sb.append(randomChar);
+        }
+
+        return sb.toString();
     }
 
 }
