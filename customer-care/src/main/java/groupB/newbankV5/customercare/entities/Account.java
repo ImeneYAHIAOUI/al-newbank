@@ -20,6 +20,10 @@ public class Account {
     private String BIC;
     private BigDecimal balance;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="SavingsAccount_id")
+    private SavingsAccount savingsAccount;
+
     @Embedded
     private CreditCard creditCard;
 
@@ -40,6 +44,7 @@ public class Account {
     }
 
     public Account() {
+        this.savingsAccount = new SavingsAccount();
     }
 
     public Account(CustomerProfile customerProfile, String IBAN, String BIC ) {
@@ -47,6 +52,7 @@ public class Account {
         this.IBAN = IBAN;
         this.BIC = BIC;
         this.balance = BigDecimal.valueOf(0);
+        this.savingsAccount = new SavingsAccount();
     }
     public Long getId() {
         return id;
@@ -93,7 +99,16 @@ public class Account {
                 ", BIC='" + BIC + '\'' +
                 ", balance=" + balance +
                 ", creditCards=" + creditCard +
+                ", savingsAccount=" + savingsAccount +
                 '}';
+    }
+
+    public void setSavingsAccount(SavingsAccount savingsAccount) {
+        this.savingsAccount = savingsAccount;
+    }
+
+    public SavingsAccount getSavingsAccount() {
+        return savingsAccount;
     }
 
 }
