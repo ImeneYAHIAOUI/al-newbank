@@ -25,6 +25,7 @@ export class AppService {
       }
 
       const applicationIntegrationResult: ApplicationDto = await this.gatewayProxyService.integrateApplication(integratedApplication);
+      this.gatewayProxyService.applicationId = applicationIntegrationResult.id.toString();
       return 'Welcome to the sdk service!';
     } catch (error) {
       throw new Error(`Error in integration service: ${error.message}`);

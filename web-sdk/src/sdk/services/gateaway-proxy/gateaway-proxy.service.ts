@@ -5,12 +5,14 @@ import { firstValueFrom } from 'rxjs';
 import { MerchantDTO } from '../../dto/merchant.dto';
 import { ApplicationDto } from '../../dto/application.dto';
 import { DependenciesConfig } from '../../../shared/config/interfaces/dependencies-config.interface';
+
 const logger = new Logger('GatewayProxyService');
 
 @Injectable()
 export class GatewayProxyService {
   private readonly _gatewayBaseUrl: string;
   private readonly _gatewayPath = '/api/gateway/';
+  private _applicationId: string;
 
   constructor(
     private readonly configService: ConfigService,
@@ -30,23 +32,29 @@ export class GatewayProxyService {
       );
       return response.data;
     } catch (error) {
-      logger.error(`Error integrating merchant: ${error.message}`);
-      throw new HttpException(`Error integrating merchant: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+      const errorMessage = `Error integrating merchant: ${error.message}`;
+      logger.error(errorMessage);
+      throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-async getPublicKey(id: string): Promise<string> {
-  try {
-    const response = await firstValueFrom(
-      this.httpService.get(
-        `${this._gatewayBaseUrl}${this._gatewayPath}integration/applications/${id}/publickey`
-      ),
-    );
-    return response.data;
-  } catch (error) {
-    logger.error(`Error getting public key merchant: ${error.message}`);
-    throw new HttpException(`Error integrating merchant: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+
+  async getPublicKey(): Promise<string> {
+    try {
+      if (!this._applicationId) { // Correction ici
+        throw new HttpException(`Error getting public key: token is required`, HttpStatus.BAD_REQUEST);
+      }
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `${this._gatewayBaseUrl}${this._gatewayPath}integration/applications/${this._applicationId}/publickey`
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = `Error getting public key merchant: ${error.message}`;
+      logger.error(errorMessage);
+      throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
-}
 
   async integrateApplication(applicationIntegrationDto: any): Promise<ApplicationDto> {
     try {
@@ -58,9 +66,14 @@ async getPublicKey(id: string): Promise<string> {
       );
       return response.data;
     } catch (error) {
-      logger.error(`Error integrating application: ${error.message}`);
-      throw new HttpException(`Error integrating application: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+      const errorMessage = `Error integrating application: ${error.message}`;
+      logger.error(errorMessage);
+      throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  set applicationId(value: string) {
+    this._applicationId = value;
   }
 }
 

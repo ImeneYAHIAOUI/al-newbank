@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { TokenMockService } from '../services/token-mock.service';
 import { GatewayProxyService } from '../services/gateaway-proxy/gateaway-proxy.service';
 import axios from 'axios';
@@ -6,21 +6,24 @@ import * as crypto from 'crypto';
 
 @Injectable()
 export class PaymentService {
-  constructor(private readonly tokenMockService: TokenMockService,private readonly gatewayProxyService: GatewayProxyService){}
+  constructor(
+    private readonly tokenMockService: TokenMockService,
+    private readonly gatewayProxyService: GatewayProxyService
+  ) {}
 
-  validateToken(token: string) {
+  validateToken(token: string): void {
     if (!this.tokenMockService.verifyAccessToken(token)) {
       throw new Error('Invalid access token');
     }
   }
 
-  validateCardInfo(cardInfo: any) {
+  validateCardInfo(cardInfo: any): void {
     if (!cardInfo || !cardInfo.cardNumber || !cardInfo.expirationDate || !cardInfo.cvv) {
       throw new Error('Invalid card information');
     }
   }
 
-  async retrieveLocation() {
+  async retrieveLocation(): Promise<string> {
     try {
       const ipInfoResponse = await axios.get('https://ipinfo.io');
       const location = ipInfoResponse.data.loc;
@@ -34,9 +37,8 @@ export class PaymentService {
     }
   }
 
-  async processCardInfo(merchantId: string, cardInfo: any, token: string) {
+  async processCardInfo(cardInfo: any, token: string): Promise<Buffer> {
     this.validateToken(token);
-
     this.validateCardInfo(cardInfo);
 
     const location = await this.retrieveLocation();
@@ -50,13 +52,12 @@ export class PaymentService {
       longitude,
     };
 
-    const publicKey = await this.gatewayProxyService.getPublicKey(merchantId);
-
+    const publicKey = await this.gatewayProxyService.getPublicKey();
     const encryptedCardInfo = crypto.publicEncrypt(publicKey, Buffer.from(JSON.stringify(payload)));
 
     console.debug('Encrypted Card Information:', encryptedCardInfo.toString('base64'));
 
     return encryptedCardInfo;
   }
-
 }
+
