@@ -34,6 +34,19 @@ export class GatewayProxyService {
       throw new HttpException(`Error integrating merchant: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+async getPublicKey(id: string): Promise<string> {
+  try {
+    const response = await firstValueFrom(
+      this.httpService.get(
+        `${this._gatewayBaseUrl}${this._gatewayPath}integration/applications/${id}/publickey`
+      ),
+    );
+    return response.data;
+  } catch (error) {
+    logger.error(`Error getting public key merchant: ${error.message}`);
+    throw new HttpException(`Error integrating merchant: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+}
 
   async integrateApplication(applicationIntegrationDto: any): Promise<ApplicationDto> {
     try {
