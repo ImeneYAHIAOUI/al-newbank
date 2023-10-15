@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Form</title>
+</head>
+<body>
+<div id="payment-form">
+    <div id="payment-status-container"></div>
+    <input id="card-number" type="text" placeholder="Card Number" required pattern="[0-9]{13,16}" title="Please enter a valid card number (between 13 and 16 digits)">
+    <input id="expiration-date" type="text" placeholder="Expiration Date" required pattern="(0[1-9]|1[0-2])\/\d{2}" title="Please enter an expiration date in MM/YY format">
+    <input id="cvv" type="text" placeholder="CVV" required pattern="[0-9]{3,4}" title="Please enter a 3 or 4 digit CVV">
+    <button id="card-button" type="button" disabled>Pay</button>
+</div>
+
+<script>
+    function validateForm() {
+        var cardNumber = document.getElementById('card-number').value;
+        var expirationDate = document.getElementById('expiration-date').value;
+        var cvv = document.getElementById('cvv').value;
+        var cardNumberIsValid = /^[0-9]{13,16}$/.test(cardNumber);
+        var expirationDateIsValid = /^(0[1-9]|1[0-2])\/\d{2}$/.test(expirationDate);
+        var cvvIsValid = /^[0-9]{3,4}$/.test(cvv);
+        var payButton = document.getElementById('card-button');
+        payButton.disabled = !(cardNumberIsValid && expirationDateIsValid && cvvIsValid);
+    }
+
+    document.getElementById('card-number').addEventListener('input', validateForm);
+    document.getElementById('expiration-date').addEventListener('input', validateForm);
+    document.getElementById('cvv').addEventListener('input', validateForm);
+
+    document.getElementById('card-button').addEventListener('click', function() {
+    var cardNumber = document.getElementById('card-number').value;
+    var expirationDate = document.getElementById('expiration-date').value;
+    var cvv = document.getElementById('cvv').value;
+
+    var cardInfo = {
+        cardNumber: cardNumber,
+        expirationDate: expirationDate,
+        cvv: cvv
+    };
+    const secretKey = '4242XX424208';
+
+    fetch('http://localhost:4002/generate-token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        secretKey: secretKey
+      })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.text();
+    })
+    .then(authToken => {
+      console.log('Access Token:', authToken);
+
+      fetch('http://localhost:4002/payment', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'authorization': `${authToken}`
+          },
+          body: JSON.stringify(cardInfo)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+          console.log('Server Response:', data);
+      })
+      .catch(error => console.error('Error:', error));
+    })
+    .catch(error => console.error('Error:', error));
+
+    });
+</script>
+</body>
+</html>
+
+

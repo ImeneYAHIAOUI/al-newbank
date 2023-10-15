@@ -1,0 +1,13 @@
+version: "3.3"
+
+services:
+  marsy-weather-service:
+    image: "sdk/sdk-payment"
+    restart: always
+    ports:
+      - 3002:3000
+    networks:
+      - nestjs-sdk-network
+networks:
+  nestjs-sdk-network:
+    driver: bridge
