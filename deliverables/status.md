@@ -1,5 +1,5 @@
-* What was done : This week, we adjusted our architecture according to the feedback that we received, we defined the communication endpoints of our services and started implementing the code skeleton.
-* What is planned : Implementing our internal interfaces previously mentioned in the component diagram.
-* Issues : Still indecisive about our architecture.
-* Risk : Overcomplicating the payment gateway logic process .
-* RYG flag : Green
+This week, we focused on securing operations. We've looked at how to safely transfer data from our SDK to the gateway and chose encryption methods. We've also worked on strengthening the gateway's protection against potential attacks (rate limiter).
+What is planned :  we plan to implement the security strategies identified in the gateway and across the rest of our system, followed by thorough testing.
+Issues :  Overcomplication due to Misplaced Focus.
+Risk :  Delay in the development due to an excessive focus on less critical aspects 
+flag : red
