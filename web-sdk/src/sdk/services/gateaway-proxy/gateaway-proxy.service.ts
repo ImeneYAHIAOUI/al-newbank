@@ -40,7 +40,7 @@ export class GatewayProxyService {
 
   async getPublicKey(): Promise<string> {
     try {
-      if (!this._applicationId) { // Correction ici
+      if (!this._applicationId) {
         throw new HttpException(`Error getting public key: token is required`, HttpStatus.BAD_REQUEST);
       }
       const response = await firstValueFrom(
