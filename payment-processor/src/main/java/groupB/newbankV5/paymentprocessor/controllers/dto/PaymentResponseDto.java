@@ -4,12 +4,15 @@ public class PaymentResponseDto {
     private boolean success;
     private String message;
 
+    private String authToken;
+
     public PaymentResponseDto() {
     }
 
-    public PaymentResponseDto(boolean success, String message) {
+    public PaymentResponseDto(boolean success, String message, String authToken) {
         this.success = success;
         this.message = message;
+        this.authToken = authToken;
     }
 
 
@@ -35,5 +38,13 @@ public class PaymentResponseDto {
                 ", success=" + success +
                 ", message='" + message + '\'' +
                 '}';
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 }
