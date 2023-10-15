@@ -31,9 +31,9 @@
         <module>payment-processor</module>
         <module>mock-credit-card-network</module>
         <module>customer-care</module>
+        <module>payment-gateway</module>
     </modules>
-
-
+    
     <dependencyManagement>
 
     </dependencyManagement>

@@ -14,6 +14,11 @@ public class PaymentResponseDto {
         this.response = response;
     }
 
+    public PaymentResponseDto(boolean response, String message) {
+        this.response = response;
+        this.message = message;
+    }
+
     public PaymentResponseDto(boolean response, String message, String authToken) {
         this.response = response;
         this.message = message;
