@@ -8,7 +8,7 @@ export class PaymentController {
   constructor(private readonly tokenMockService: TokenMockService) {}
 
   @Post()
-  async processPayment(@Body() cardInfo: any, @Headers('authorization') token: string) {
+  async processPayment(@Body() cardInfo: any, @Headers('Authorization') token: string) {
     try {
       if (!this.tokenMockService.verifyAccessToken(token)) {
         throw new Error('Invalid access token');
