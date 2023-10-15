@@ -1,6 +1,8 @@
 import { Controller, Get, Headers, Body, Post, BadRequestException, Logger } from '@nestjs/common';
 import { AppService } from '../services/app.service';
 import { TokenMockService } from '../services/token-mock.service';
+import { ApplicationInfo } from '../dto/application-info.dto';
+import { InvalidTokenException } from '../exceptions/invalid-token.exception';
 
 @Controller()
 export class AppController {
@@ -11,12 +13,19 @@ export class AppController {
     private readonly mockService: TokenMockService,
   ) {}
 
-  @Get()
-  getService(@Headers('authorization') token: string): string {
-    if (!this.mockService.verifyAccessToken(token)) {
-      throw new InvalidTokenException('Invalid access token');
+  @Post()
+  async getService(@Body() application: ApplicationInfo, @Headers('authorization') token: string): Promise<string> {
+    try {
+      if (!this.mockService.verifyAccessToken(token)) {
+        throw new InvalidTokenException('Invalid access token');
+      }
+
+      const result = await this.appService.getService(application);
+
+      return result;
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
-    return this.appService.getService();
   }
 
   @Post('generate-token')
@@ -37,3 +46,4 @@ export class AppController {
     return accessToken;
   }
 }
+
