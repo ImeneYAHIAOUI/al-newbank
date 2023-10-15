@@ -5,7 +5,7 @@ services:
     image: "newbank/payment-processor"
     container_name: "payment-service"
     ports:
-      - 5000:8080
+      - 5004:8080
     depends_on:
       - transaction-db
     environment:
