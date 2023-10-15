@@ -7,12 +7,16 @@ import groupB.newbankV5.paymentgateway.exceptions.ApplicationAlreadyExists;
 import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.exceptions.MerchantAlreadyExistsException;
 import groupB.newbankV5.paymentgateway.exceptions.MerchantNotFoundException;
+import groupB.newbankV5.paymentgateway.interfaces.IApplicationFinder;
 import groupB.newbankV5.paymentgateway.interfaces.IApplicationIntegrator;
 import groupB.newbankV5.paymentgateway.interfaces.IBusinessIntegrator;
+import groupB.newbankV5.paymentgateway.interfaces.IRSA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.util.logging.Logger;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -24,11 +28,16 @@ public class IntegratorController {
     public static final String BASE_URI = "/api/gateway/integration";
     private final IBusinessIntegrator businessIntegrator;
     private final IApplicationIntegrator applicationIntegrator;
+    private final IApplicationFinder applicationFinder;
+    private final IRSA rsa;
 
     @Autowired
-    public IntegratorController(IBusinessIntegrator businessIntegrator, IApplicationIntegrator applicationIntegrator) {
+    public IntegratorController(IBusinessIntegrator businessIntegrator, IApplicationIntegrator applicationIntegrator,
+                                IApplicationFinder applicationFinder, IRSA rsa) {
         this.businessIntegrator = businessIntegrator;
         this.applicationIntegrator = applicationIntegrator;
+        this.applicationFinder = applicationFinder;
+        this.rsa = rsa;
     }
 
     @PostMapping("/merchants")
@@ -64,6 +73,14 @@ public class IntegratorController {
         Application application = new Application();
         application.setId(id);
         return ResponseEntity.ok().body(applicationIntegrator.getToken(application));
+    }
+
+    @GetMapping("/applications/:id/publickey")
+    public ResponseEntity<PublicKey> getPublicKey(@RequestParam("id") Long id) throws ApplicationNotFoundException,
+            NoSuchAlgorithmException {
+        log.info("Getting public key for application " + id);
+        Application application = applicationFinder.findApplicationById(id);
+        return ResponseEntity.ok().body(rsa.getOrGenerateRSAPublicKey(application));
     }
 
 }

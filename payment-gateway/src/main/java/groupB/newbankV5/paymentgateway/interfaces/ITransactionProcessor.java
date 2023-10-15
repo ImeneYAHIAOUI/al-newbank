@@ -7,11 +7,20 @@ import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.exceptions.CCNException;
 import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.math.BigDecimal;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 public interface ITransactionProcessor {
     Application validateToken(String token) throws InvalidTokenException, ApplicationNotFoundException;
     BigDecimal feesCalculator(Transaction transaction);
-    void processPayment(String token, BigDecimal amount, CreditCard creditCard) throws InvalidTokenException, ApplicationNotFoundException, CCNException;
+
+    void processPayment(String token, BigDecimal amount, byte[] cryptedCreditCard) throws InvalidTokenException,
+            ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
+            BadPaddingException, InvalidKeyException;
+
     void settlePayment(Transaction transaction) throws CCNException;
 }

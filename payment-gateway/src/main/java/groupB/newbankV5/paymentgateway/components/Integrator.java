@@ -6,6 +6,7 @@ import groupB.newbankV5.paymentgateway.exceptions.ApplicationAlreadyExists;
 import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.exceptions.MerchantAlreadyExistsException;
 import groupB.newbankV5.paymentgateway.exceptions.MerchantNotFoundException;
+import groupB.newbankV5.paymentgateway.interfaces.IApplicationFinder;
 import groupB.newbankV5.paymentgateway.interfaces.IApplicationIntegrator;
 import groupB.newbankV5.paymentgateway.interfaces.IBusinessIntegrator;
 import groupB.newbankV5.paymentgateway.repositories.ApplicationRepository;
@@ -17,7 +18,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
-public class Integrator implements IBusinessIntegrator, IApplicationIntegrator {
+public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, IApplicationFinder {
 
     private static final Logger log = Logger.getLogger(Integrator.class.getName());
     public static String SECRET_KEY = "4242XX424208";
@@ -28,6 +29,14 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator {
     public Integrator(MerchantRepository merchantRepository, ApplicationRepository applicationRepository) {
         this.merchantRepository = merchantRepository;
         this.applicationRepository = applicationRepository;
+    }
+
+    @Override
+    public Application findApplicationById(Long id) throws ApplicationNotFoundException {
+        Optional<Application> optApplication = applicationRepository.findById(id);
+        if(optApplication.isEmpty())
+            throw new ApplicationNotFoundException("Application with Id " + id + " not found");
+        return optApplication.get();
     }
 
     @Override
