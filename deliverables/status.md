@@ -4,5 +4,9 @@
 *What is planned :  we plan to implement the security strategies identified in the gateway and across the rest of our system, followed by thorough testing.
 
 *Issues :  Overcomplication due to Misplaced Focus.
+
+
 *Risk :  Delay in the development due to an excessive focus on less critical aspects 
+
+
 *flag : red
