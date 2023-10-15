@@ -33,7 +33,10 @@ public class PaymentAuthorizationController {
             return ResponseEntity.status(HttpStatus.OK).body(creditCardAuthorizer.AuthorizePayment(creditCardInformationDto));
         }
         catch (ExpirationDateException e) {
-            PaymentResponseDto errorResponse = new PaymentResponseDto(false, e.getMessage());
+            PaymentResponseDto errorResponse = new PaymentResponseDto();
+            errorResponse.setResponse(false);
+            errorResponse.setMessage(e.getMessage());
+            errorResponse.setAuthToken();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
