@@ -10,6 +10,7 @@ import groupB.newbankV5.paymentgateway.entities.Transaction;
 import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.exceptions.CCNException;
 import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;
+import groupB.newbankV5.paymentgateway.interfaces.IRSA;
 import groupB.newbankV5.paymentgateway.interfaces.ITransactionProcessor;
 import groupB.newbankV5.paymentgateway.repositories.ApplicationRepository;
 import io.jsonwebtoken.Claims;
@@ -18,20 +19,27 @@ import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.math.BigDecimal;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 @Service
 public class Transactioner implements ITransactionProcessor {
     private final Integer FEE_RATE = 10;
     private final double FLAT_FEE = 0.03;
     private ApplicationRepository applicationRepository;
-
     private CreditCardNetworkProxy creditCardNetworkProxy;
+    private IRSA rsa;
 
     @Autowired
-    public Transactioner(ApplicationRepository applicationRepository, CreditCardNetworkProxy creditCardNetworkProxy) {
+    public Transactioner(ApplicationRepository applicationRepository,
+                         CreditCardNetworkProxy creditCardNetworkProxy, IRSA rsa) {
         this.applicationRepository = applicationRepository;
         this.creditCardNetworkProxy = creditCardNetworkProxy;
+        this.rsa = rsa;
     }
 
     @Override
@@ -56,9 +64,12 @@ public class Transactioner implements ITransactionProcessor {
     }
 
     @Override
-    public void processPayment(String token, BigDecimal amount, CreditCard creditCard) throws InvalidTokenException, ApplicationNotFoundException, CCNException {
+    public void processPayment(String token, BigDecimal amount, byte[] cryptedCreditCard) throws InvalidTokenException,
+            ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
+            BadPaddingException, InvalidKeyException {
         Application application = validateToken(token);
         Merchant merchant = application.getMerchant();
+        CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
         CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
                 new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv())
         );

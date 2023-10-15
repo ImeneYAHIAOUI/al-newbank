@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.logging.Logger;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -38,11 +43,12 @@ public class TransactionerController {
 
     @PostMapping("/authorize")
     public ResponseEntity<String> processPayment(@RequestBody PaymentDto paymentDetails) throws InvalidTokenException,
-            ApplicationNotFoundException, CCNException {
+            ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException,
+            NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         log.info("Processing payment request in the Gateway");
         transactionProcessor.processPayment(paymentDetails.getToken(),
                 paymentDetails.getAmount(),
-                paymentDetails.getCreditCard());
+                paymentDetails.getCryptedCreditCard());
         return ResponseEntity.status(204).body("");
     }
 
