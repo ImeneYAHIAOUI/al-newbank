@@ -53,7 +53,7 @@
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      return response.text(); // Assuming the response is a string
+      return response.text();
     })
     .then(authToken => {
       console.log('Access Token:', authToken);

@@ -30,7 +30,6 @@ export class AppController {
     if (secretKey !== process.env.ACCESS_TOKEN_SECRET) {
       throw new BadRequestException('The secret key is not valid.');
     }
-
     const accessToken: string = this.mockService.generateAccessToken(process.env.ACCESS_TOKEN_SECRET);
 
     this.logger.log(`Generated Access Token for secret key: ${secretKey} ${accessToken}`);
