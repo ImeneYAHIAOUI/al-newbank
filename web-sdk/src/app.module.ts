@@ -5,6 +5,7 @@ import {PaymentController } from './sdk/controllers/payment.controller';
 import { AppService } from './sdk/services/app.service';
 import appConfig from './shared/config/app.config';
 import swaggeruiConfig from './shared/config/swaggerui.config';
+import { TokenMockService } from './sdk/services/token-mock.service';
 
 import { ConfigModule } from '@nestjs/config';
 @Module({
@@ -17,6 +18,6 @@ import { ConfigModule } from '@nestjs/config';
                                 max : 100
                               }),],
   controllers: [AppController,PaymentController],
-  providers: [AppService],
+  providers: [AppService,TokenMockService],
 })
 export class AppModule {}

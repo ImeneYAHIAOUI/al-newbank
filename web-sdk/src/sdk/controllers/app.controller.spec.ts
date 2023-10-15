@@ -16,7 +16,7 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('should return "Welcome to the sdk service!"', () => {
-      expect(appController.getService()).toBe('Welcome to the weather service!');
+      expect(appController.getService()).toBe('Welcome to the sdk service!');
     });
   });
 });
