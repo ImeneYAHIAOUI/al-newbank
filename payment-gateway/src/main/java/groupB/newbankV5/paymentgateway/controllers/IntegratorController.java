@@ -59,28 +59,28 @@ public class IntegratorController {
         return ResponseEntity.ok().body(applicationIntegrator.integrateApplication(application, merchant));
     }
 
-    @PostMapping("/applications/:id/token")
-    public ResponseEntity<String> generateToken(@RequestParam("id") Long id) throws ApplicationNotFoundException {
+    @PostMapping("/applications/{id}/token")
+    public ResponseEntity<String> generateToken(@PathVariable("id") Long id) throws ApplicationNotFoundException {
         log.info("Generating token for application " + id);
         Application application = new Application();
         application.setId(id);
         return ResponseEntity.ok().body(applicationIntegrator.createOrRegenerateToken(application));
     }
 
-    @GetMapping("/applications/:id/token")
-    public ResponseEntity<String> getToken(@RequestParam("id") Long id) throws ApplicationNotFoundException {
+    @GetMapping("/applications/{id}/token")
+    public ResponseEntity<String> getToken(@PathVariable("id") Long id) throws ApplicationNotFoundException {
         log.info("Getting token for application " + id);
         Application application = new Application();
         application.setId(id);
         return ResponseEntity.ok().body(applicationIntegrator.getToken(application));
     }
 
-    @GetMapping("/applications/:id/publickey")
-    public ResponseEntity<PublicKey> getPublicKey(@RequestParam("id") Long id) throws ApplicationNotFoundException,
+    @GetMapping("/applications/{id}/publickey")
+    public ResponseEntity<byte[]> getPublicKey(@PathVariable("id") Long id) throws ApplicationNotFoundException,
             NoSuchAlgorithmException {
         log.info("Getting public key for application " + id);
         Application application = applicationFinder.findApplicationById(id);
-        return ResponseEntity.ok().body(rsa.getOrGenerateRSAPublicKey(application));
+        return ResponseEntity.ok().body(rsa.getOrGenerateRSAPublicKey(application).getEncoded());
     }
 
 }

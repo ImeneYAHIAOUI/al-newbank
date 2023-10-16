@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.Objects;
 
 @Entity
 public class Application {
@@ -18,7 +19,7 @@ public class Application {
     private String url;
     private String description;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 2048)
     private String apiKey;
 
     @OneToOne(mappedBy = "application")
@@ -105,5 +106,18 @@ public class Application {
                 .compact();
         this.setApiKey(token);
         return token;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Application that = (Application) o;
+        return Objects.equals(name, that.name) && Objects.equals(email, that.email) && Objects.equals(url, that.url) && Objects.equals(description, that.description) && Objects.equals(apiKey, that.apiKey) && Objects.equals(merchant, that.merchant);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, email, url, description, apiKey, merchant);
     }
 }
