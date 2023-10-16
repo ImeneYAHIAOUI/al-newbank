@@ -8,9 +8,9 @@ export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
 @Post()
-async processPayment(@Body() cardInfo: any, @Headers('Authorization') token: string) {
+async processPayment(@Body() PaymentInfo: any, @Headers('Authorization') token: string) {
   try {
-    const parsedCardInfo = await this.paymentService.processCardInfo( cardInfo, token);
+    const parsedCardInfo = await this.paymentService.processCardInfo( PaymentInfo, token);
     return { message: 'Payment received successfully!' };
   } catch (error) {
     console.error('Error processing payment:', error);

@@ -37,17 +37,17 @@ export class PaymentService {
     }
   }
 
-  async processCardInfo(cardInfo: any, token: string): Promise<Buffer> {
+  async processCardInfo(PaymentInfo: any, token: string): Promise<Buffer> {
     this.validateToken(token);
-    this.validateCardInfo(cardInfo);
+    this.validateCardInfo(PaymentInfo);
 
     const location = await this.retrieveLocation();
     const [altitude, longitude] = location.split(',');
 
     const payload = {
-      cardNumber: cardInfo.cardNumber,
-      expirationDate: cardInfo.expirationDate,
-      cvv: cardInfo.cvv,
+      cardNumber: PaymentInfo.cardNumber,
+      expirationDate: PaymentInfo.expirationDate,
+      cvv: PaymentInfo.cvv,
       altitude,
       longitude,
     };
@@ -56,6 +56,8 @@ export class PaymentService {
     const encryptedCardInfo = crypto.publicEncrypt(publicKey, Buffer.from(JSON.stringify(payload)));
 
     console.debug('Encrypted Card Information:', encryptedCardInfo.toString('base64'));
+        this.gatewayProxyService.processPayment(PaymentInfo.amount, encryptedCardInfo.toString('base64'));
+
 
     return encryptedCardInfo;
   }

@@ -15,7 +15,6 @@ export class AppService {
         email: application.email,
       };
       const merchantIntegrationResult: MerchantDTO = await this.gatewayProxyService.integrateMerchant(merchant);
-
       const integratedApplication = {
         name: merchantIntegrationResult.name,
         email: merchantIntegrationResult.email,
@@ -23,9 +22,9 @@ export class AppService {
         description: application.description,
         merchantId: merchantIntegrationResult.id,
       }
-
       const applicationIntegrationResult: ApplicationDto = await this.gatewayProxyService.integrateApplication(integratedApplication);
       this.gatewayProxyService.applicationId = applicationIntegrationResult.id.toString();
+      this.gatewayProxyService.createApiKey(this.gatewayProxyService.applicationId ) ;
       return 'Welcome to the sdk service!';
     } catch (error) {
       throw new Error(`Error in integration service: ${error.message}`);

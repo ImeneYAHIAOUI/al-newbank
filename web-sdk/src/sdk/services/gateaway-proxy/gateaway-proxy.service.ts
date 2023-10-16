@@ -13,6 +13,7 @@ export class GatewayProxyService {
   private readonly _gatewayBaseUrl: string;
   private readonly _gatewayPath = '/api/gateway/';
   private _applicationId: string;
+  private _apiKey: string;
 
   constructor(
     private readonly configService: ConfigService,
@@ -71,6 +72,43 @@ export class GatewayProxyService {
       throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+async createApiKey(id: string): Promise<string> {
+  try {
+    const response = await firstValueFrom(
+      this.httpService.post<string>(
+        `${this._gatewayBaseUrl}${this._gatewayPath}integration/applications/${id}/token`
+      )
+    );
+    this._apiKey = response.data;
+    return response.data;
+  } catch (error) {
+    const errorMessage = `Error while generating API key: ${error.message}`;
+    logger.error(errorMessage);
+    throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+}
+async processPayment(amount: string, encryptedCardInfo: string): Promise<string> {
+  const payment = {
+    cryptedCreditCard: encryptedCardInfo,
+    amount: amount,
+    token: this._apiKey,
+  };
+
+  try {
+    const response = await firstValueFrom(
+      this.httpService.post<string>(
+        `${this._gatewayBaseUrl}${this._gatewayPath}/authorize`,
+        payment
+      )
+    );
+    return response.data;
+  } catch (error) {
+    const errorMessage = `Error while processing payment: ${error.message}`;
+    logger.error(errorMessage);
+    throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+}
+
 
   set applicationId(value: string) {
     this._applicationId = value;
