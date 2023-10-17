@@ -13,11 +13,11 @@ export class PaymentService {
     private readonly gatewayProxyService: GatewayProxyService
   ) {}
 
-  validateToken(token: string): void {
-    if (!this.tokenMockService.verifyAccessToken(token)) {
-      throw new InvalidTokenException('Invalid access token');
-    }
-  }
+  //validateToken(token: string): void {
+    //if (!this.tokenMockService.verifyAccessToken(token)) {
+      //throw new InvalidTokenException('Invalid access token');
+   //}
+  //}
 
   validateCardInfo(paymentInfo: PaymentInfoDTO): void {
     if (!paymentInfo || !paymentInfo.cardNumber || !paymentInfo.expirationDate || !paymentInfo.cvv) {
@@ -38,9 +38,7 @@ export class PaymentService {
       throw new Error('Error retrieving location information');
     }
   }
-
-  async processCardInfo(paymentInfo: PaymentInfoDTO, token: string): Promise<Buffer> {
-    this.validateToken(token);
+  async processCardInfo(paymentInfo: PaymentInfoDTO): Promise<Buffer> {
     this.validateCardInfo(paymentInfo);
     const location = await this.retrieveLocation();
     const [altitude, longitude] = location.split(',');
