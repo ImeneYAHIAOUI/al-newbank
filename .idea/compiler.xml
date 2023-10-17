@@ -12,13 +12,9 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="al-newbank-23-24-al-23-24-b-v5" target="17" />
-      <module name="customer-care" target="17" />
-      <module name="mock-credit-card-network" target="17" />
       <module name="newbank (1)" target="18" />
       <module name="newbank (2)" target="17" />
       <module name="newbank (3)" target="17" />
-      <module name="payment-processor" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

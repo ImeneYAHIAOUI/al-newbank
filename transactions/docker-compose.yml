@@ -1,0 +1,16 @@
+version: '3.1'
+services:
+  cassandra:
+    image: cassandra
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+  transactions-service:
+    image: "newbank/transactions"
+    container_name: "transaction-service"
+    ports:
+      - "5000:8080"
+    depends_on:
+      - cassandra
+    environment:
+      - CASSANDRA_HOST=cassandra
