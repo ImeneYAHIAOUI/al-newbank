@@ -42,12 +42,8 @@ export class PaymentService {
   async processCardInfo(paymentInfo: PaymentInfoDTO, token: string): Promise<Buffer> {
     this.validateToken(token);
     this.validateCardInfo(paymentInfo);
-
     const location = await this.retrieveLocation();
     const [altitude, longitude] = location.split(',');
-
-
-
     const publicKey = await this.gatewayProxyService.getPublicKey();
       const payload = {
           cardNumber: paymentInfo.cardNumber,
@@ -55,8 +51,8 @@ export class PaymentService {
           cvv: paymentInfo.cvv,
           altitude : altitude,
           longitude :longitude,
-            amount : paymentInfo.amount,
-            token : publicKey,
+          amount : paymentInfo.amount,
+          token : paymentInfo.token,
         };
     const encryptedCardInfo = crypto.publicEncrypt(publicKey, Buffer.from(JSON.stringify(payload)));
     console.debug('Encrypted Card Information:', encryptedCardInfo.toString('base64'));
