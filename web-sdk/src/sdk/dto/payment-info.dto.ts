@@ -3,5 +3,4 @@ export class PaymentInfoDTO {
   cvv: string;
   expirationDate: string;
   amount : string;
-  token: string;
 }

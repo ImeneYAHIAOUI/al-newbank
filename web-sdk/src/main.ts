@@ -18,9 +18,9 @@ async function bootstrap() {
 
   app.enableShutdownHooks();
 
-  const appPort = configService.get('app.port');
-  console.log(appPort);
-  await app.listen(appPort);
+  //const appPort = configService.get('app.port');
+  //console.log(appPort);
+  //await app.listen(appPort);
 }
 
 bootstrap();

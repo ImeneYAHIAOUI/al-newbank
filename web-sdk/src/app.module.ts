@@ -4,8 +4,7 @@ import { HttpModule } from '@nestjs/axios';
 import { AppService } from './sdk/services/app.service';
 import appConfig from './shared/config/app.config';
 import swaggeruiConfig from './shared/config/swaggerui.config';
-import { TokenMockService } from './sdk/services/token-mock.service';
-import { GatewayProxyService } from './sdk/services/gateaway-proxy/gateaway-proxy.service';
+import { GatewayProxyService } from './sdk/services/gateway-proxy/gateway-proxy.service';
 import dependenciesConfig from './shared/config/dependencies.config';
 import { PaymentService } from './sdk/services/payment.service';
 import { ConfigModule } from '@nestjs/config';
@@ -19,6 +18,6 @@ import { ConfigModule } from '@nestjs/config';
                                 max : 100
                               }),HttpModule],
   controllers: [],
-  providers: [AppService,PaymentService,TokenMockService,GatewayProxyService],
+  providers: [GatewayProxyService],
 })
 export class AppModule {}
