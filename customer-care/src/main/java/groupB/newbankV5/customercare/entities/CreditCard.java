@@ -17,8 +17,6 @@ public class CreditCard {
     private String cvv;
 
 
-
-
     public CreditCard(String cardNumber, String cardHolderName, String expiryDate, String cvv) {
         this.cardNumber = cardNumber;
         this.cardHolderName = cardHolderName;
