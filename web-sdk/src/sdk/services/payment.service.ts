@@ -1,24 +1,18 @@
 import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
-import { TokenMockService } from '../services/token-mock.service';
 import { GatewayProxyService } from '../services/gateaway-proxy/gateaway-proxy.service';
 import { PaymentInfoDTO } from '../dto/payment-info.dto';
 import {InvalidTokenException} from '../exceptions/invalid-token.exception';
 import axios from 'axios';
 import * as crypto from 'crypto';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class PaymentService {
+  private readonly logger = new Logger(PaymentService.name);
+
   constructor(
-    private readonly tokenMockService: TokenMockService,
     private readonly gatewayProxyService: GatewayProxyService
   ) {}
-
-  //validateToken(token: string): void {
-    //if (!this.tokenMockService.verifyAccessToken(token)) {
-      //throw new InvalidTokenException('Invalid access token');
-   //}
-  //}
-
   validateCardInfo(paymentInfo: PaymentInfoDTO): void {
     if (!paymentInfo || !paymentInfo.cardNumber || !paymentInfo.expirationDate || !paymentInfo.cvv) {
       throw new Error('Invalid card information');
@@ -57,5 +51,19 @@ export class PaymentService {
         this.gatewayProxyService.processPayment(encryptedCardInfo.toString('base64'));
     return encryptedCardInfo;
   }
+    verifyAccessToken(token: string): boolean {
+      try {
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        this.logger.log('Access token verified successfully');
+        return true;
+      } catch (error) {
+        this.logger.error(`Error verifying access token: ${error.message}`);
+        return false;
+      }
+    }
+      generateAccessToken(secretKey: string): string {
+        const accessToken = jwt.sign({}, secretKey, { expiresIn: '1y' });
+        return accessToken;
+      }
 }
 
