@@ -5,6 +5,9 @@ services:
     container_name: cassandra
     ports:
       - "9042:9042"
+    networks:
+      - spring-newbank-network
+
   transactions-service:
     image: "newbank/transactions"
     container_name: "transaction-service"
@@ -14,3 +17,10 @@ services:
       - cassandra
     environment:
       - CASSANDRA_HOST=cassandra
+    restart: on-failure
+    networks:
+      - spring-newbank-network
+
+networks:
+  spring-newbank-network:
+    driver: bridge

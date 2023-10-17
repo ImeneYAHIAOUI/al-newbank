@@ -3,24 +3,27 @@ package groupB.newbankV5.transactions.entities;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
+import java.util.UUID;
+
 @Table
 public class Trans {
     @PrimaryKey
-    private Long id;
+    private UUID id;
     private String amount;
     public Trans() {
+        this.id = UUID.randomUUID();
     }
 
-    public Trans(Long id, String amount) {
-        this.id = id;
+    public Trans( String amount) {
+        this.id = UUID.randomUUID();
         this.amount = amount;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

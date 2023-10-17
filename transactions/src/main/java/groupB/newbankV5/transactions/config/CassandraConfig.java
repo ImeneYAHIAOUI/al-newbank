@@ -16,12 +16,12 @@ import java.util.List;
 @EnableCassandraRepositories(basePackages = "groupB.newbankV5.transactions.entities")
 public class CassandraConfig extends AbstractCassandraConfiguration {
 
-    private static final String KEYSPACE = "my_keyspace";
+    private static final String KEYSPACE = "newbankV5";
 
 
     @Override
     protected String getKeyspaceName() {
-        return KEYSPACE; // Change this to your desired keyspace name
+        return KEYSPACE;
     }
 
     @Override
