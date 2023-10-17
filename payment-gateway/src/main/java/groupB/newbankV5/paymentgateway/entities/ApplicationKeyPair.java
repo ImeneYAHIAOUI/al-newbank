@@ -3,6 +3,7 @@ package groupB.newbankV5.paymentgateway.entities;
 import javax.persistence.*;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Objects;
 
 @Entity
 public class ApplicationKeyPair {
@@ -54,5 +55,18 @@ public class ApplicationKeyPair {
 
     public void setApplication(Application application) {
         this.application = application;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ApplicationKeyPair that = (ApplicationKeyPair) o;
+        return Objects.equals(publicKey, that.publicKey) && Objects.equals(privateKey, that.privateKey) && Objects.equals(application, that.application);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(publicKey, privateKey, application);
     }
 }

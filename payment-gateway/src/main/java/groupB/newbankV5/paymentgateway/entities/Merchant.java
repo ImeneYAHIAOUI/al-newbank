@@ -1,6 +1,7 @@
 package groupB.newbankV5.paymentgateway.entities;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Merchant {
@@ -62,5 +63,18 @@ public class Merchant {
 
     public void setBankAccount(BankAccount bankAccount) {
         this.bankAccount = bankAccount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Merchant merchant = (Merchant) o;
+        return Objects.equals(name, merchant.name) && Objects.equals(email, merchant.email) && Objects.equals(bankAccount, merchant.bankAccount) && Objects.equals(application, merchant.application);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, email, bankAccount, application);
     }
 }

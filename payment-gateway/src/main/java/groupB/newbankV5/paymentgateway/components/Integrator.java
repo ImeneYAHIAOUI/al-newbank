@@ -54,7 +54,7 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
 
         // Cascading the save in merchant to application
         merchantRepository.saveAndFlush(merchant);
-        return application;
+        return applicationRepository.saveAndFlush(application);
     }
 
     @Override
