@@ -87,18 +87,12 @@ async createApiKey(id: string): Promise<string> {
     throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
-async processPayment(amount: string, encryptedCardInfo: string): Promise<string> {
-  const payment = {
-    cryptedCreditCard: encryptedCardInfo,
-    amount: amount,
-    token: this._apiKey,
-  };
-
+async processPayment( encryptedCardInfo: string): Promise<string> {
   try {
     const response = await firstValueFrom(
       this.httpService.post<string>(
         `${this._gatewayBaseUrl}${this._gatewayPath}/authorize`,
-        payment
+        encryptedCardInfo
       )
     );
     return response.data;
