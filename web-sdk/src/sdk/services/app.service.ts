@@ -28,11 +28,11 @@ export class AppService {
 
       const applicationIntegrationResult: ApplicationDto = await this.gatewayProxyService.integrateApplication(integratedApplication);
 
-      this.gatewayProxyService.applicationId = applicationIntegrationResult.id.toString();
-      this.gatewayProxyService.createApiKey(applicationIntegrationResult.id.toString());
+      const applicationId = applicationIntegrationResult.id.toString();
+      this.gatewayProxyService.createApiKey(applicationId);
 
       this.paymentService = new PaymentService(this.gatewayProxyService);
-      this.paymentService.applicationId = applicationIntegrationResult.id.toString();
+      this.paymentService.applicationId = applicationId;
 
       return 'Bienvenue dans le service SDK !';
     } catch (error) {

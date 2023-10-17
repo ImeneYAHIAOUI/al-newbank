@@ -12,7 +12,6 @@ const logger = new Logger('GatewayProxyService');
 export class GatewayProxyService {
   private readonly _gatewayBaseUrl: string;
   private readonly _gatewayPath = '/api/gateway/';
-  private _applicationId: string;
   private _apiKey: string;
 
   constructor(
@@ -39,14 +38,14 @@ export class GatewayProxyService {
     }
   }
 
-  async getPublicKey(): Promise<string> {
+  async getPublicKey(applicationId : string): Promise<string> {
     try {
-      if (!this._applicationId) {
+      if (!applicationId) {
         throw new HttpException(`Error getting public key: token is required`, HttpStatus.BAD_REQUEST);
       }
       const response = await firstValueFrom(
         this.httpService.get(
-          `${this._gatewayBaseUrl}${this._gatewayPath}integration/applications/${this._applicationId}/publickey`
+          `${this._gatewayBaseUrl}${this._gatewayPath}integration/applications/${applicationId}/publickey`
         ),
       );
       return response.data;
@@ -103,9 +102,5 @@ async processPayment( encryptedCardInfo: string): Promise<string> {
   }
 }
 
-
-  set applicationId(value: string) {
-    this._applicationId = value;
-  }
 }
 

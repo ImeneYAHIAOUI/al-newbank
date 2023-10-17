@@ -40,7 +40,7 @@ export class PaymentService {
       const location = await this.retrieveLocation();
       const [altitude, longitude] = location.split(',');
       const token = this.generateAccessToken(this._applicationId, process.env.ACCESS_TOKEN_SECRET);
-      const publicKey = await this.gatewayProxyService.getPublicKey();
+      const publicKey = await this.gatewayProxyService.getPublicKey(this._applicationId);
       const payload = {
         cardNumber: paymentInfo.cardNumber,
         expirationDate: paymentInfo.expirationDate,
