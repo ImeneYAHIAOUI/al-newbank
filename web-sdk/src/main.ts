@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as express from 'express'; // Importer express
+import * as express from 'express';
 import { join } from 'path';
 
 import { AppModule } from './app.module';
