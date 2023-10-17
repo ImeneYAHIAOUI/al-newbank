@@ -1,5 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
+import { ApplicationInfo } from '../dto/application-info.dto';
+import { InvalidTokenException } from '../exceptions/invalid-token.exception';
 
 @Injectable()
 export class TokenMockService {
