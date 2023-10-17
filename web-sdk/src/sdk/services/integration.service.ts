@@ -47,8 +47,6 @@ async IntegrateService(application: ApplicationInfo): Promise<{ id: string, apiK
     throw new Error(`Error in integration service: ${error.message}`);
   }
 }
-
-
   async getApiKey(applicationId: string): Promise<string> {
     try {
       const apiKey = await this.gatewayProxyService.getApiKey(applicationId);

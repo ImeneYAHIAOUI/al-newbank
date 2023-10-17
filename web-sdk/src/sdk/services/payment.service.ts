@@ -10,6 +10,7 @@ export class PaymentService {
   private readonly logger = new Logger(PaymentService.name);
   private _applicationId: string;
 
+
   constructor(
     private readonly gatewayProxyService: GatewayProxyService,
   ) {}
