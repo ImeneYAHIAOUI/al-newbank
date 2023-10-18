@@ -1,8 +1,8 @@
-package groupB.newbankV5.paymentgateway.components;
+package groupB.newbankV5.feescalculator.components;
 
-import groupB.newbankV5.paymentgateway.entities.Transaction;
-import groupB.newbankV5.paymentgateway.interfaces.IFeesCalculator;
-import groupB.newbankV5.paymentgateway.repositories.TransactionRepository;
+import groupB.newbankV5.feescalculator.entities.Transaction;
+import groupB.newbankV5.feescalculator.interfaces.IFeesCalculator;
+import groupB.newbankV5.feescalculator.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

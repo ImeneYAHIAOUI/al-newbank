@@ -1,10 +1,6 @@
-package groupB.newbankV5.paymentgateway.entities;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+package groupB.newbankV5.feescalculator.entities;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.util.Objects;
 
 @Entity

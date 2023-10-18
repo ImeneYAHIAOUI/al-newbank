@@ -1,4 +1,4 @@
-package groupB.newbankV5.paymentgateway.config;
+package groupB.newbankV5.feescalculator.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;

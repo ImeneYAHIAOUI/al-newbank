@@ -1,12 +1,11 @@
-package groupB.newbankV5.paymentgateway.repositories;
+package groupB.newbankV5.feescalculator.repositories;
 
-import groupB.newbankV5.paymentgateway.entities.Merchant;
-import groupB.newbankV5.paymentgateway.entities.Transaction;
+import groupB.newbankV5.feescalculator.entities.Merchant;
+import groupB.newbankV5.feescalculator.entities.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {

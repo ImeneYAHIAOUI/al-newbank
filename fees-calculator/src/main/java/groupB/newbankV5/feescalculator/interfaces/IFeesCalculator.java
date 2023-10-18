@@ -1,6 +1,6 @@
-package groupB.newbankV5.paymentgateway.interfaces;
+package groupB.newbankV5.feescalculator.interfaces;
 
-import groupB.newbankV5.paymentgateway.entities.Transaction;
+import groupB.newbankV5.feescalculator.entities.Transaction;
 
 import java.math.BigDecimal;
 
