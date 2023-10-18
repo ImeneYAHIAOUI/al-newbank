@@ -1,4 +1,4 @@
-package groupB.newbankV5.paymentgateway.controllers.dto;
+package groupB.newbankV5.feescalculator.controllers.dto;
 
 public class ErrorDTO {
     private String error;

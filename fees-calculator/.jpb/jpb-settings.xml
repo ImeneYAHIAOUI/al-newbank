@@ -4,7 +4,7 @@
     <persistence-units>
       <persistence-unit name="Default">
         <packages>
-          <package value="groupB.newbankV5.paymentgateway" />
+          <package value="groupB.newbankV5.feescalculator" />
         </packages>
       </persistence-unit>
     </persistence-units>

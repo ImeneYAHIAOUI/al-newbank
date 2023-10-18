@@ -1,4 +1,6 @@
-package groupB.newbankV5.paymentgateway.entities;
+package groupB.newbankV5.feescalculator.entities;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -51,7 +53,9 @@ public class Transaction {
     public Transaction() {
     }
 
-    public Transaction(Merchant merchant, String authorizationToken, BigDecimal amount) {
+    public Transaction(@JsonProperty Merchant merchant,
+                       @JsonProperty String authorizationToken,
+                       @JsonProperty BigDecimal amount) {
         this.merchant = merchant;
         this.authorizationToken = authorizationToken;
         this.amount = amount;
