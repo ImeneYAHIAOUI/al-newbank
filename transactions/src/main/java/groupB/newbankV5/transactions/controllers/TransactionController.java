@@ -1,6 +1,6 @@
 package groupB.newbankV5.transactions.controllers;
 
-import groupB.newbankV5.transactions.entities.Trans;
+import groupB.newbankV5.transactions.entities.Transaction;
 import groupB.newbankV5.transactions.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -8,19 +8,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/demo")
+@RequestMapping("/api/transactions")
 public class TransactionController {
 
     @Autowired
     private TransactionRepository transactionRepository;
 
     @PostMapping
-    public Trans create(@RequestBody Trans transaction) {
+    public Transaction create(@RequestBody Transaction transaction) {
         return transactionRepository.save(transaction);
     }
 
     @GetMapping
-    public List<Trans> get() {
+    public List<Transaction> get() {
         return transactionRepository.findAll();
     }
 }

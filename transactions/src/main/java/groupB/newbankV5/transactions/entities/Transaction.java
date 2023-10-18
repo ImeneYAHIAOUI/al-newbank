@@ -6,15 +6,15 @@ import org.springframework.data.cassandra.core.mapping.Table;
 import java.util.UUID;
 
 @Table
-public class Trans {
+public class Transaction {
     @PrimaryKey
     private UUID id;
     private String amount;
-    public Trans() {
+    public Transaction() {
         this.id = UUID.randomUUID();
     }
 
-    public Trans( String amount) {
+    public Transaction(String amount) {
         this.id = UUID.randomUUID();
         this.amount = amount;
     }
