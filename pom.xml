@@ -27,7 +27,7 @@
         <springdoc.version>1.6.9</springdoc.version>
     </properties>
 
-    <modules>t
+    <modules>
         <module>payment-processor</module>
         <module>mock-credit-card-network</module>
         <module>customer-care</module>
