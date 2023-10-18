@@ -37,7 +37,7 @@ public class PaymentAuthorizationController {
             errorResponse.setResponse(false);
             errorResponse.setMessage(e.getMessage());
             errorResponse.setAuthToken();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
     }
 

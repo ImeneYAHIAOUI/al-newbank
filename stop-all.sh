@@ -10,25 +10,27 @@ services=(
 
 container_ids=()
 
-network="spring-newbank-network"
-echo "Creating network $network"
-docker compose -f docker
+echo "stopping all"
 
-echo "starting all"
-
-start_service() {
+stop_service() {
     local service_name=$1
     local compose_file=$2
-    echo "Starting service $service_name..."
-    docker compose --env-file ./$service_name/.env -f $compose_file up  -d
+    echo "Stopping service $service_name..."
+    docker compose --env-file ./$service_name/.env -f $compose_file down
 }
 
-# Loop to start all services
+# Loop to stop all services
+
 for service in "${services[@]}"; do
     IFS=':' read -ra service_info <<< "$service"
     service_name=${service_info[0]}
     compose_file=${service_info[1]}
 
-    start_service "$service_name" "$compose_file"
+    stop_service "$service_name" "$compose_file"
 done
 
+echo "Done"
+
+echo "Removing network"
+
+docker network rm spring-newbank-network

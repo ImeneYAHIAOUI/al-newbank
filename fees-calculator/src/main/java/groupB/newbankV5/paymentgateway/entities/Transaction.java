@@ -19,14 +19,6 @@ public class Transaction {
     private BigDecimal fees;
     private TransactionStatus status;
 
-    public TransactionStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(TransactionStatus status) {
-        this.status = status;
-    }
-
     public Merchant getMerchant() {
         return merchant;
     }
