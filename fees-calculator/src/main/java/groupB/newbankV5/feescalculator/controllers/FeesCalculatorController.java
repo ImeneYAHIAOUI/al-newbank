@@ -2,19 +2,14 @@ package groupB.newbankV5.feescalculator.controllers;
 
 import groupB.newbankV5.feescalculator.components.Calculator;
 import groupB.newbankV5.feescalculator.config.KafkaProducerService;
-import groupB.newbankV5.feescalculator.entities.Account;
-import groupB.newbankV5.feescalculator.entities.BankAccount;
-import groupB.newbankV5.feescalculator.entities.Merchant;
 import groupB.newbankV5.feescalculator.entities.Transaction;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.logging.Logger;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;

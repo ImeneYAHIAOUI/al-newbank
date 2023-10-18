@@ -74,7 +74,9 @@ public class Transactioner implements ITransactionProcessor {
         if (!ccnResponseDto.isApproved()) {
             throw new CCNException("Payment not authorized");
         }
-        Transaction transaction = new Transaction(merchant, ccnResponseDto.getAuthToken(), amount);
+        Transaction transaction = new Transaction(merchant.getBankAccount(), ccnResponseDto.getAuthToken(), amount);
+        transaction.setExternal(true);
+
         kafkaProducerService.sendMessage(transaction);
     }
 }

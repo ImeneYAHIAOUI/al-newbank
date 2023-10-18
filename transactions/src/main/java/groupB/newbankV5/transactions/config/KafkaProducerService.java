@@ -1,4 +1,4 @@
-package groupB.newbankV5.feescalculator.config;
+package groupB.newbankV5.transactions.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
