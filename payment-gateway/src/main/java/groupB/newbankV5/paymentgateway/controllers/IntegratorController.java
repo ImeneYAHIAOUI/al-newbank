@@ -15,8 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.util.Base64;
 import java.util.logging.Logger;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -76,11 +79,12 @@ public class IntegratorController {
     }
 
     @GetMapping("/applications/{id}/publickey")
-    public ResponseEntity<byte[]> getPublicKey(@PathVariable("id") Long id) throws ApplicationNotFoundException,
-            NoSuchAlgorithmException {
+    public ResponseEntity<String> getPublicKey(@PathVariable("id") Long id) throws ApplicationNotFoundException,
+            NoSuchAlgorithmException, NoSuchPaddingException {
         log.info("Getting public key for application " + id);
         Application application = applicationFinder.findApplicationById(id);
-        return ResponseEntity.ok().body(rsa.getOrGenerateRSAPublicKey(application).getEncoded());
+        return ResponseEntity.ok().body(Base64.getEncoder()
+                .encodeToString(rsa.getOrGenerateRSAPublicKey(application).getEncoded()));
     }
 
 }

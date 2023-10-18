@@ -15,4 +15,4 @@ services:
 
 networks:
   spring-newbank-network:
-    driver: bridge
+    external: true
