@@ -32,6 +32,7 @@
         <module>mock-credit-card-network</module>
         <module>customer-care</module>
         <module>payment-gateway</module>
+        <module>fees-calculator</module>
     </modules>
     
     <dependencyManagement>

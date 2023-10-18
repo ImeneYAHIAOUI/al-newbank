@@ -16,8 +16,17 @@ public class AccountDto {
     private String IBAN;
     private String BIC;
     private BigDecimal balance;
+    private SavingsAccountDto savingsAccount;
 
     private CreditCardDto creditCard;
+
+    public SavingsAccountDto getSavingsAccount() {
+        return savingsAccount;
+    }
+
+    public void setSavingsAccount(SavingsAccountDto savingsAccount) {
+        this.savingsAccount = savingsAccount;
+    }
 
     public CustomerProfileDto getCustomerProfile() {
         return customerProfile;
@@ -38,13 +47,15 @@ public class AccountDto {
     public AccountDto() {
     }
 
-    public AccountDto(Long id, CustomerProfileDto customerProfile, String IBAN, String BIC, BigDecimal balance, CreditCardDto creditCards) {
+    public AccountDto(Long id, CustomerProfileDto customerProfile, String IBAN, String BIC, BigDecimal balance, CreditCardDto creditCards,
+                      SavingsAccountDto savingsAccount) {
         this.id = id;
         this.customerProfile = customerProfile;
         this.IBAN = IBAN;
         this.BIC = BIC;
         this.balance = balance;
         this.creditCard = creditCards;
+        this.savingsAccount = savingsAccount;
     }
 
     public Long getId() {
@@ -90,7 +101,8 @@ public class AccountDto {
                 account.getIBAN(),
                 account.getBIC(),
                 account.getBalance(),
-                creditCardDto
+                creditCardDto,
+                SavingsAccountDto.savingsAccountFactory(account.getSavingsAccount())
         );
     }
 }

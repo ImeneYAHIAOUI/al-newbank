@@ -24,9 +24,6 @@ services:
        - POSTGRES_DB=transaction-db
      networks:
        - spring-newbank-network
-
-
-
 networks:
   spring-newbank-network:
-    driver: bridge
+    external: true

@@ -2,13 +2,12 @@ package groupB.newbankV5.customercare.controllers;
 
 import groupB.newbankV5.customercare.components.dto.AccountCreationDto;
 import groupB.newbankV5.customercare.controllers.dto.AccountDto;
-import groupB.newbankV5.customercare.controllers.dto.CreditCardDto;
 import groupB.newbankV5.customercare.controllers.dto.UpdateFundsDto;
 import groupB.newbankV5.customercare.entities.Account;
 
-import groupB.newbankV5.customercare.entities.CreditCard;
 import groupB.newbankV5.customercare.interfaces.AccountFinder;
 import groupB.newbankV5.customercare.interfaces.AccountRegistration;
+import groupB.newbankV5.customercare.interfaces.SavingsAccountHandler;
 import groupB.newbankV5.customercare.interfaces.VirtualCardRequester;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +29,14 @@ public class CostumerController {
     private final AccountFinder accountFinder;
     private final AccountRegistration accountRegistration;
     private final VirtualCardRequester virtualCardRequester;
+    private final SavingsAccountHandler savingsAccountHandler;
 
     @Autowired
-    public CostumerController(AccountFinder accountFinder, AccountRegistration accountRegistration, VirtualCardRequester virtualCardRequester) {
+    public CostumerController(AccountFinder accountFinder, AccountRegistration accountRegistration, VirtualCardRequester virtualCardRequester, SavingsAccountHandler savingsAccountHandler) {
         this.accountFinder = accountFinder;
         this.accountRegistration = accountRegistration;
         this.virtualCardRequester = virtualCardRequester;
+        this.savingsAccountHandler = savingsAccountHandler;
     }
 
 
@@ -105,6 +106,21 @@ public class CostumerController {
         try {
             account = accountRegistration.updateFunds(account, updateFundsDto.getAmount(), updateFundsDto.getOperation());
         } catch (Exception e) {
+            return ResponseEntity.status(400).build();
+        }
+        AccountDto accountDto = AccountDto.accountDtoFactory(account);
+        return ResponseEntity.status(200).body(accountDto);
+
+    }
+
+    @PutMapping("{id}/movetosavings")
+    public ResponseEntity<AccountDto> moveToSavingsAccount(@PathVariable long id, @RequestBody UpdateFundsDto updateFundsDto) {
+        log.info("Moving funds to savings account");
+        Account account = accountFinder.findAccountById(id).orElseThrow();
+        try {
+            account = savingsAccountHandler.moveToSavingsAccount(account, updateFundsDto.getAmount());
+        } catch (Exception e) {
+            System.out.printf("Error: %s", e.getMessage());
             return ResponseEntity.status(400).build();
         }
         AccountDto accountDto = AccountDto.accountDtoFactory(account);

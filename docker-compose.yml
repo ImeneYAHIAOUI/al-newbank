@@ -1,0 +1,41 @@
+version: "3.3"
+
+services:
+  zookeeper:
+    container_name: al-team-b-zookeeper
+    restart: unless-stopped
+    image: wurstmeister/zookeeper
+    environment:
+      zk_id: "1"
+    ports:
+      - "2181:2181"
+    networks:
+      - spring-newbank-network
+  kafka-service:
+    container_name: al-team-b-kafka
+    restart: unless-stopped
+    image: wurstmeister/kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka-service
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_ZOOKEEPER_CONNECT: al-team-b-zookeeper:2181
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_BROKER_ID: 1
+      KAFKA_CREATE_TOPICS: "topic-transactions:1:1"
+    ports:
+      - "9092:9092"
+    networks:
+      - spring-newbank-network
+#  rabbitmq:
+#    image: rabbitmq:management
+#    ports:
+#      - "5672:5672"
+#      - "15672:15672"
+#    networks:
+#        - spring-newbank-network
+
+networks:
+  spring-newbank-network:
+    external: true
