@@ -1,13 +1,15 @@
 package groupB.newbankV5.customercare.components;
 
 import groupB.newbankV5.customercare.components.dto.AccountCreationDto;
-import groupB.newbankV5.customercare.controllers.CostumerController;
 import groupB.newbankV5.customercare.entities.Account;
-import groupB.newbankV5.customercare.entities.CreditCard;
 import groupB.newbankV5.customercare.entities.CustomerProfile;
+import groupB.newbankV5.customercare.entities.SavingsAccount;
+import groupB.newbankV5.customercare.exceptions.InsufficientFundsException;
 import groupB.newbankV5.customercare.interfaces.AccountFinder;
 import groupB.newbankV5.customercare.interfaces.AccountRegistration;
+import groupB.newbankV5.customercare.interfaces.SavingsAccountHandler;
 import groupB.newbankV5.customercare.repositories.AccountRepository;
+import groupB.newbankV5.customercare.repositories.AccountSavingsRepository;
 import groupB.newbankV5.customercare.repositories.CustomerProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,23 +19,25 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
 @Transactional
-public class CustomerCare implements AccountFinder, AccountRegistration {
+public class CustomerCare implements AccountFinder, AccountRegistration, SavingsAccountHandler {
 
     private final AccountRepository accountRepository;
     private final CustomerProfileRepository customerProfileRepository;
 
+    private final AccountSavingsRepository savingsAccountRepository;
+
     private static final Logger log = Logger.getLogger(CustomerCare.class.getName());
 
     @Autowired
-    public CustomerCare(AccountRepository accountRepository, CustomerProfileRepository customerProfileRepository) {
+    public CustomerCare(AccountRepository accountRepository, CustomerProfileRepository customerProfileRepository, AccountSavingsRepository savingsAccountRepository) {
         this.accountRepository = accountRepository;
         this.customerProfileRepository = customerProfileRepository;
-   }
+        this.savingsAccountRepository = savingsAccountRepository;
+    }
 
     @Override
     public Optional<Account> findAccountById(Long id) {
@@ -131,6 +135,21 @@ public class CustomerCare implements AccountFinder, AccountRegistration {
         BigDecimal remainder = numericValue.remainder(BigDecimal.valueOf(97));
         return BigDecimal.valueOf(98).subtract(remainder).intValue();
 
+    }
+
+    @Override
+    public Account moveToSavingsAccount(Account account, BigDecimal amount) {
+        System.out.printf("account: %s%n", account);
+        if(amount.compareTo(account.getBalance()) > 0){
+            throw new InsufficientFundsException("Insufficient funds "+account.getBalance()+" to move to savings account");
+        }
+
+        SavingsAccount savingsAccount =  account.getSavingsAccount();
+        BigDecimal balance = savingsAccount.getBalance();
+        savingsAccount.setBalance(balance.add(amount));
+        account.setBalance(account.getBalance().subtract(amount));
+        account.setSavingsAccount(savingsAccount);
+        return accountRepository.save(account);
     }
 
 
