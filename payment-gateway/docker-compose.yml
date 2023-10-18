@@ -1,4 +1,4 @@
-version: "3.3"
+version: '3.8'
 
 services:
   payment-gateway-service:
@@ -7,31 +7,44 @@ services:
     env_file:
       - .env
     ports:
-      - 5002:8080
+      - "5002:8080"
     depends_on:
       - gateway-db
     environment:
-      - CCN_WITH_PORT=${CCN_SERVICE}:8080
-      - COSTUMER_WITH_PORT=${COSTUMER_SERVICE}:8080
-      - POSTGRES_HOST=${POSTGRES_DB}:5432
+      - CCN_SERVICE=payment-gateway-service:8080
+      - COSTUMER_SERVICE=customer-service:8080
+      - POSTGRES_HOST=gateway-db:5432
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_DB=${POSTGRES_DB}
     networks:
       - spring-newbank-network
-    # the postgres DB to be connected to the backend (watch out: no volume specified, everything can be lost)
+
   gateway-db:
-     image: postgres:15.2
-     container_name: "gateway-db"
-     env_file:
-       - .env
-     environment:
-       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-       - POSTGRES_USER=${POSTGRES_USER}
-       - POSTGRES_DB=${POSTGRES_DB}
-     networks:
-       - spring-newbank-network
+    image: postgres:15.2
+    container_name: "gateway-db"
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+    networks:
+      - spring-newbank-network
+
+  nginx:
+    image: nginx:latest
+    container_name: "my-nginx"
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - payment-gateway-service
+    networks:
+      - spring-newbank-network
 
 networks:
   spring-newbank-network:
     driver: bridge
+

@@ -7,8 +7,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="payment-processor" />
-        <module name="mock-credit-card-network" />
         <module name="customer-care" />
+        <module name="mock-credit-card-network" />
+        <module name="payment-gateway" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -18,18 +19,20 @@
       <module name="newbank (1)" target="18" />
       <module name="newbank (2)" target="17" />
       <module name="newbank (3)" target="17" />
+      <module name="payment-gateway" target="17" />
       <module name="payment-processor" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="al-newbank-23-24-al-23-24-b-v5" options="-parameters" />
+      <module name="al-newbank-23-24-al-23-24-b-v5" options="" />
       <module name="customer-care" options="-parameters" />
       <module name="mock-credit-card-network" options="-parameters" />
       <module name="newbank" options="-parameters" />
       <module name="newbank (1)" options="-parameters" />
       <module name="newbank (2)" options="-parameters" />
       <module name="newbank (3)" options="-parameters" />
+      <module name="payment-gateway" options="-parameters" />
       <module name="payment-processor" options="-parameters" />
     </option>
   </component>
