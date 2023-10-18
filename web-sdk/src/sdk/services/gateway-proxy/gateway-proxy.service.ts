@@ -112,10 +112,14 @@ async processPayment( encryptedCardInfo: string): Promise<string> {
     );
     return response.data;
   } catch (error) {
+  if (error.response && error.response.status === HttpStatus.NOT_FOUND) {
+        this.logger.error(`Application not found`);
+        throw new ApplicationNotFound();
+      } else {
     const errorMessage = `Error while processing payment: ${error.message}`;
     this.logger.error(errorMessage);
     throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-  }
+  }}
 }
 
 }
