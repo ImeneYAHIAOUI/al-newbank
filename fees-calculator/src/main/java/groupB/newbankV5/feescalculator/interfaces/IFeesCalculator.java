@@ -5,6 +5,6 @@ import groupB.newbankV5.feescalculator.entities.Transaction;
 import java.math.BigDecimal;
 
 public interface IFeesCalculator {
-    BigDecimal feesCalculator(Transaction transaction);
+    void applyFees(Transaction transaction);
 
 }

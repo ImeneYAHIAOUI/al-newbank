@@ -7,8 +7,8 @@ services:
     image: wurstmeister/zookeeper
     environment:
       zk_id: "1"
-    expose:
-      - 2181
+    ports:
+      - "2181:2181"
     networks:
       - spring-newbank-network
   kafka-service:
@@ -24,8 +24,8 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_BROKER_ID: 1
       KAFKA_CREATE_TOPICS: "topic-transactions:1:1"
-    expose:
-      - 9092
+    ports:
+      - "9092:9092"
     networks:
       - spring-newbank-network
 #  rabbitmq:

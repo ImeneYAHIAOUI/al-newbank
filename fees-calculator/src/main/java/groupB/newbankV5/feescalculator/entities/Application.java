@@ -98,4 +98,16 @@ public class Application {
     public int hashCode() {
         return Objects.hash(name, email, url, description, apiKey, merchant);
     }
+
+    @Override
+    public String toString() {
+        return "Application{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", url='" + url + '\'' +
+                ", description='" + description + '\'' +
+                ", apiKey='" + apiKey + '\'' +
+                '}';
+    }
 }

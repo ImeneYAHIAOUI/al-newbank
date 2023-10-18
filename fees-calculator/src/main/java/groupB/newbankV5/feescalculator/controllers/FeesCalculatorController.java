@@ -1,12 +1,20 @@
 package groupB.newbankV5.feescalculator.controllers;
 
+import groupB.newbankV5.feescalculator.components.Calculator;
+import groupB.newbankV5.feescalculator.config.KafkaProducerService;
 import groupB.newbankV5.feescalculator.entities.Account;
+import groupB.newbankV5.feescalculator.entities.BankAccount;
+import groupB.newbankV5.feescalculator.entities.Merchant;
+import groupB.newbankV5.feescalculator.entities.Transaction;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
 import java.util.logging.Logger;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -15,10 +23,14 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class FeesCalculatorController {
     private static final Logger log = Logger.getLogger(FeesCalculatorController.class.getName());
     public static final String BASE_URI = "/api/feescalculator";
-    private final KafkaTemplate kafkaTemplate;
+    private final KafkaProducerService kafkaProducerService;
 
-    public FeesCalculatorController(KafkaTemplate kafkaTemplate) {
-        this.kafkaTemplate = kafkaTemplate;
+    private final Calculator calculator;
+
+    @Autowired
+    public FeesCalculatorController(Calculator calculator, KafkaProducerService kafkaProducerService) {
+        this.calculator = calculator;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     @GetMapping("/health")
@@ -27,15 +39,12 @@ public class FeesCalculatorController {
         return ResponseEntity.ok().body("OK");
     }
 
-    @PostMapping
-    public String sentMessage(@RequestBody Account account) {
-        this.kafkaTemplate.send("transaction-1", new Account(account.getHolder(), account.getFunds()));
-        return "Hello World!";
-    }
-    @KafkaListener(topics = "transaction-1")
-    public void listener(@Payload Account account, ConsumerRecord<String, Account> cr) {
-        log.info("Topic [transaction-1] Received message from {} with {} PLN "+ account.getHolder() + " "+ account.getFunds());
-        log.info(cr.toString());
+    @KafkaListener(topics = "topic-transactions", groupId = "group_id")
+    public void receiveTransaction(@Payload Transaction transaction, ConsumerRecord<String, Transaction> cr) {
+        // Process the received message
+        log.info("Received transaction: " + transaction.toString());
+        // Calculate the fees
+        calculator.applyFees(transaction);
     }
 
 }

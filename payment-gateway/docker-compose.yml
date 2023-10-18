@@ -23,6 +23,8 @@ services:
   gateway-db:
     image: postgres:15.2
     container_name: "gateway-db"
+    ports:
+      - "5432:5432"
     env_file:
       - .env
     environment:
@@ -46,5 +48,5 @@ services:
 
 networks:
   spring-newbank-network:
-    driver: bridge
+    external: true
 

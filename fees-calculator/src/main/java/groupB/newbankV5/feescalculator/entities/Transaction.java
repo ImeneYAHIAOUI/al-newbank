@@ -21,6 +21,14 @@ public class Transaction {
     private BigDecimal fees;
     private TransactionStatus status;
 
+    public TransactionStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TransactionStatus status) {
+        this.status = status;
+    }
+
     public Merchant getMerchant() {
         return merchant;
     }
@@ -83,5 +91,17 @@ public class Transaction {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id=" + id +
+                ", merchant=" + merchant.getName() +
+                ", authorizationToken='" + authorizationToken + '\'' +
+                ", amount=" + amount +
+                ", fees=" + fees +
+                ", status=" + status +
+                '}';
     }
 }

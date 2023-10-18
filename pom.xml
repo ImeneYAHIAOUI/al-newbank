@@ -27,11 +27,12 @@
         <springdoc.version>1.6.9</springdoc.version>
     </properties>
 
-    <modules>
+    <modules>t
         <module>payment-processor</module>
         <module>mock-credit-card-network</module>
         <module>customer-care</module>
         <module>payment-gateway</module>
+        <module>fees-calculator</module>
     </modules>
     
     <dependencyManagement>

@@ -4,15 +4,15 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-@Entity
+//@Entity
 public class Transaction {
 
-    @Id
-    @GeneratedValue
-    @Column(name = "Transaction_id", nullable = false)
+//    @Id
+//    @GeneratedValue
+//    @Column(name = "Transaction_id", nullable = false)
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "merchant_merchant_id")
+//    @ManyToOne
+//    @JoinColumn(name = "merchant_merchant_id")
     private Merchant merchant;
     private String authorizationToken;
     private BigDecimal amount;

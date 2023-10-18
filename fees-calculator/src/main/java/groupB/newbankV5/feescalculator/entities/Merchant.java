@@ -77,4 +77,15 @@ public class Merchant {
     public int hashCode() {
         return Objects.hash(name, email, bankAccount, application);
     }
+
+    @Override
+    public String toString() {
+        return "Merchant{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", bankAccount=" + bankAccount +
+                ", application=" + application.getName() +
+                '}';
+    }
 }

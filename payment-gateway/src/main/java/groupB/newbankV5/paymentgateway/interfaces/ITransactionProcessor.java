@@ -14,11 +14,8 @@ import java.security.NoSuchAlgorithmException;
 
 public interface ITransactionProcessor {
     Application validateToken(String token) throws InvalidTokenException, ApplicationNotFoundException;
-    BigDecimal feesCalculator(Transaction transaction);
 
     void processPayment(String token, BigDecimal amount, String cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
             BadPaddingException, InvalidKeyException;
-
-    void settlePayment(Transaction transaction) throws CCNException;
 }
