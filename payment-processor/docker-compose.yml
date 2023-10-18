@@ -1,0 +1,32 @@
+version: "3.3"
+
+services:
+  payment-service:
+    image: "newbank/payment-processor"
+    container_name: "payment-service"
+    ports:
+      - 5004:8080
+    depends_on:
+      - transaction-db
+    environment:
+      - CCN_WITH_PORT=${CCN_SERVICE}:8080
+      - COSTUMER_WITH_PORT=${COSTUMER_SERVICE}:8080
+      - POSTGRES_HOST=transaction-db:5432
+    networks:
+      - spring-newbank-network
+    # the postgres DB to be connected to the backend (watch out: no volume specified, everything can be lost)
+  transaction-db:
+     image: postgres:15.2
+     container_name: "transaction-db"
+     environment:
+       - POSTGRES_PASSWORD=postgrespass
+       - POSTGRES_USER=postgresuser
+       - POSTGRES_DB=transaction-db
+     networks:
+       - spring-newbank-network
+
+
+
+networks:
+  spring-newbank-network:
+    driver: bridge
