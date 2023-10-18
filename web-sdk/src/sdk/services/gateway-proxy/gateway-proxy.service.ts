@@ -7,6 +7,7 @@ import { ApplicationDto } from '../../dto/application.dto';
 import { DependenciesConfig } from '../../../shared/config/interfaces/dependencies-config.interface';
 import Axios, { AxiosResponse } from 'axios';
 import { MerchantAlreadyExists } from '../../exceptions/merchant-already-exists.exception';
+import { ApplicationNotFound } from '../../exceptions/application-not-found.exception';
 @Injectable()
 export class GatewayProxyService {
   private readonly logger = new Logger(GatewayProxyService.name);
@@ -43,6 +44,7 @@ async integrateMerchant(merchant: any): Promise<MerchantDTO> {
   async integrateApplication(applicationIntegrationDto: any): Promise<ApplicationDto> {
     try {
       const url = `${this._gatewayBaseUrl}${this._gatewayPath}integration/applications`;
+      this.logger.log(`Integration process started for business`);
       const response = await firstValueFrom(this.httpService.post<ApplicationDto>(url,applicationIntegrationDto,),);
       return response.data;
     } catch (error) {
@@ -78,19 +80,28 @@ async integrateMerchant(merchant: any): Promise<MerchantDTO> {
 
 async createApiKey(id: string): Promise<string> {
   try {
+    this.logger.log(`Generating API key process started for application ${id}`);
+
     const response = await firstValueFrom(
       this.httpService.post<string>(
         `${this._gatewayBaseUrl}${this._gatewayPath}integration/applications/${id}/token`
       )
     );
+
     this._apiKey = response.data;
     return response.data;
   } catch (error) {
-    const errorMessage = `Error while generating API key: ${error.message}`;
-    this.logger.error(errorMessage);
-    throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+    if (error.response && error.response.status === HttpStatus.NOT_FOUND) {
+      this.logger.error(`Application not found`);
+      throw new ApplicationNotFound();
+    } else {
+      const errorMessage = `Error while generating API key: ${error.message}`;
+      this.logger.error(errorMessage);
+      throw new Error(errorMessage);
+    }
   }
 }
+
 async processPayment( encryptedCardInfo: string): Promise<string> {
   try {
     const response = await firstValueFrom(

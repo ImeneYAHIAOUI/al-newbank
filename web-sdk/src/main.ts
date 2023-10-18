@@ -22,12 +22,12 @@ async function bootstrap() {
 
   const integrationService = new IntegrationService(gatewayProxyService);
   const applicationInfo: ApplicationInfo = {
-    IBAN: 'vossssdsdstrqessssssss4i_iban',
-    BIC: 'votsre5sqsssssssdi_bic',
-     name: 'Mossjn Apsqssssplicsssssaltion',
-        email: 'conssstssacqtm@mo*nasspplsssisscation.com',
-        url: 'https://monsssasssssslpplicaddtion.com',
-        description: 'Desssscriptioùn de mon application'
+    IBAN: '12345668',
+    BIC: '12345',
+     name: 'sourire',
+        email: 'sourire@gmail.com',
+        url: 'https://sourire.com',
+        description: 'Description de mon application'
   };
 
 

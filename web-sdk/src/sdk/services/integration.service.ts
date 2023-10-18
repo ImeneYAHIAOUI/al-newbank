@@ -15,11 +15,8 @@ export class IntegrationService {
 
 async integrateMerchant(name: string, email: string): Promise<MerchantDTO> {
     const merchant = { name, email };
-
     return  await this.gatewayProxyService.integrateMerchant(merchant);
 }
-
-
 async integrateApplication(
     name: string,
     email: string,
@@ -45,6 +42,7 @@ async integrateService(application: ApplicationInfo): Promise<{ id: string, apiK
      if (!merchantIntegrationResult.id) {
       throw new Error('Merchant integration failed');
     }
+    this.logger.log(`Merchant integration successful for ${merchantIntegrationResult.name}. Merchant ID: ${merchantIntegrationResult.id}`);
 
     const applicationIntegrationResult: ApplicationDto = await this.integrateApplication(
       merchantIntegrationResult.name,
@@ -54,11 +52,9 @@ async integrateService(application: ApplicationInfo): Promise<{ id: string, apiK
       merchantIntegrationResult.id.toString()
     );
     const applicationId: string = applicationIntegrationResult.id.toString();
-    this.logger.log('Application integration result: ', applicationIntegrationResult.id.toString());
+    this.logger.log(`Application integration successful for ${application.name}. Application ID: ${applicationId}`);
     const apiKeyResult: string = await this.gatewayProxyService.createApiKey(applicationId);
-    if (!apiKeyResult) {
-      throw new Error('Failed to create API key');
-    }
+    this.logger.log(`API key created successfully for application ID: ${applicationId}`);
 
     return { id: applicationId, apiKey: apiKeyResult };
   } catch (error) {
