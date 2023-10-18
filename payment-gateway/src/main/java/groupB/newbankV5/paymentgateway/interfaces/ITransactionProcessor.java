@@ -1,6 +1,7 @@
 package groupB.newbankV5.paymentgateway.interfaces;
 
 import groupB.newbankV5.paymentgateway.entities.Application;
+import groupB.newbankV5.paymentgateway.entities.Transaction;
 import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.exceptions.CCNException;
 import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;
@@ -20,5 +21,6 @@ public interface ITransactionProcessor {
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
             BadPaddingException, InvalidKeyException;
 
-    void settlePayment(Transaction transaction) throws CCNException;
+
+    void settlePayment(Transaction transaction);
 }

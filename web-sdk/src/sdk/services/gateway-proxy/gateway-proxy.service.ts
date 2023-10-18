@@ -5,11 +5,11 @@ import { firstValueFrom } from 'rxjs';
 import { MerchantDTO } from '../../dto/merchant.dto';
 import { ApplicationDto } from '../../dto/application.dto';
 import { DependenciesConfig } from '../../../shared/config/interfaces/dependencies-config.interface';
-
-const logger = new Logger('GatewayProxyService');
-
+import Axios, { AxiosResponse } from 'axios';
+import { MerchantAlreadyExists } from '../../exceptions/merchant-already-exists.exception';
 @Injectable()
 export class GatewayProxyService {
+  private readonly logger = new Logger(GatewayProxyService.name);
   private readonly _gatewayBaseUrl: string;
   private readonly _gatewayPath = '/api/gateway/';
   private _apiKey: string;
@@ -19,30 +19,49 @@ export class GatewayProxyService {
     private readonly httpService: HttpService,
   ) {
     const dependenciesConfig = this.configService.get<DependenciesConfig>('dependencies');
-    this._gatewayBaseUrl = `http://${dependenciesConfig.gateaway_url_with_port}`;
+    this._gatewayBaseUrl = `http://${dependenciesConfig.load_balancer_url}`;
   }
 
-  async integrateMerchant(merchant: any): Promise<MerchantDTO> {
+async integrateMerchant(merchant: any): Promise<MerchantDTO> {
     try {
-      const response = await firstValueFrom(
-        this.httpService.post<MerchantDTO>(
-          `${this._gatewayBaseUrl}${this._gatewayPath}integration/merchants`,
-          merchant,
-        ),
-      );
+        const url = `${this._gatewayBaseUrl}${this._gatewayPath}integration/merchants`;
+        this.logger.log(`Integration process started for merchant`);
+        const response = await firstValueFrom(this.httpService.post<MerchantDTO>(url, merchant));
+        return response.data;
+    } catch (error) {
+        if (error.response && error.response.status === HttpStatus.CONFLICT) {
+            this.logger.error(`Error integrating merchant : Merchant already exists`);
+            throw new MerchantAlreadyExists();
+        } else {
+            const errorMessage = `Error integrating merchant. Unexpected error: ${error.message}`;
+            this.logger.error(errorMessage);
+            throw new Error(errorMessage);
+        }
+    }
+}
+
+  async integrateApplication(applicationIntegrationDto: any): Promise<ApplicationDto> {
+    try {
+      const url = `${this._gatewayBaseUrl}${this._gatewayPath}integration/applications`;
+      const response = await firstValueFrom(this.httpService.post<ApplicationDto>(url,applicationIntegrationDto,),);
       return response.data;
     } catch (error) {
-      const errorMessage = `Error integrating merchant: ${error.message}`;
-      logger.error(errorMessage);
-      throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+         if (error.response && error.response.status === HttpStatus.CONFLICT) {
+                 this.logger.error(`Application already exists`);
+                 throw new MerchantAlreadyExists();
+             } else {
+                 const errorMessage = `Error integrating business. Unexpected error: ${error.message}`;
+                 this.logger.error(errorMessage);
+                 throw new Error(errorMessage);
+             }
     }
   }
 
+
+
+
   async getPublicKey(applicationId : string): Promise<string> {
     try {
-      if (!applicationId) {
-        throw new HttpException(`Error getting public key: token is required`, HttpStatus.BAD_REQUEST);
-      }
       const response = await firstValueFrom(
         this.httpService.get(
           `${this._gatewayBaseUrl}${this._gatewayPath}integration/applications/${applicationId}/publickey`
@@ -51,26 +70,12 @@ export class GatewayProxyService {
       return response.data;
     } catch (error) {
       const errorMessage = `Error getting public key merchant: ${error.message}`;
-      logger.error(errorMessage);
+      this.logger.error(errorMessage);
       throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  async integrateApplication(applicationIntegrationDto: any): Promise<ApplicationDto> {
-    try {
-      const response = await firstValueFrom(
-        this.httpService.post<ApplicationDto>(
-          `${this._gatewayBaseUrl}${this._gatewayPath}integration/applications`,
-          applicationIntegrationDto,
-        ),
-      );
-      return response.data;
-    } catch (error) {
-      const errorMessage = `Error integrating application: ${error.message}`;
-      logger.error(errorMessage);
-      throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
+
 async createApiKey(id: string): Promise<string> {
   try {
     const response = await firstValueFrom(
@@ -82,7 +87,7 @@ async createApiKey(id: string): Promise<string> {
     return response.data;
   } catch (error) {
     const errorMessage = `Error while generating API key: ${error.message}`;
-    logger.error(errorMessage);
+    this.logger.error(errorMessage);
     throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
@@ -97,7 +102,7 @@ async processPayment( encryptedCardInfo: string): Promise<string> {
     return response.data;
   } catch (error) {
     const errorMessage = `Error while processing payment: ${error.message}`;
-    logger.error(errorMessage);
+    this.logger.error(errorMessage);
     throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

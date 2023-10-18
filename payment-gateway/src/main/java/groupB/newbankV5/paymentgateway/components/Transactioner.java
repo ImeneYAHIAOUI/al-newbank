@@ -6,6 +6,7 @@ import groupB.newbankV5.paymentgateway.connectors.dto.PaymentDetailsDTO;
 import groupB.newbankV5.paymentgateway.entities.Application;
 import groupB.newbankV5.paymentgateway.entities.CreditCard;
 import groupB.newbankV5.paymentgateway.entities.Merchant;
+import groupB.newbankV5.paymentgateway.entities.Transaction;
 import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.exceptions.CCNException;
 import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;

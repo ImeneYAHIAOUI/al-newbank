@@ -104,6 +104,7 @@ public class Application {
                 .claim("dateOfIssue", System.currentTimeMillis())
                 .signWith(SignatureAlgorithm.HS256, Integrator.SECRET_KEY)
                 .compact();
+
         this.setApiKey(token);
         return token;
     }
