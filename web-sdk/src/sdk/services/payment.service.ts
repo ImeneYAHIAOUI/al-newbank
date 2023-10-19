@@ -14,13 +14,13 @@ export class PaymentService {
   constructor(
     private readonly gatewayProxyService: GatewayProxyService,
   ) {}
-
+    // a modifier
   validateCardInfo(paymentInfo: PaymentInfoDTO): void {
     if (!paymentInfo || !paymentInfo.cardNumber || !paymentInfo.expirationDate || !paymentInfo.cvv) {
       throw new Error('Invalid card information');
     }
   }
-
+  // a modifier
   async retrieveLocation(): Promise<string> {
     try {
       const ipInfoResponse = await axios.get('https://ipinfo.io');
@@ -34,7 +34,7 @@ export class PaymentService {
       throw new Error('Error retrieving location information: ' + error.message);
     }
   }
-
+  // a modifier
   async processCardInfo(paymentInfo: PaymentInfoDTO): Promise<Buffer> {
     try {
       this.validateCardInfo(paymentInfo);
@@ -59,7 +59,7 @@ export class PaymentService {
       throw new Error('Error processing card information: ' + error.message);
     }
   }
-
+// a modifier
   verifyAccessToken(token: string): boolean {
     try {
       const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
@@ -70,7 +70,7 @@ export class PaymentService {
       return false;
     }
   }
-
+// a modifier
   generateAccessToken(id: string, secretKey: string): string {
     const accessToken = jwt.sign({ id }, secretKey, { expiresIn: '1y' });
     return accessToken;

@@ -59,9 +59,6 @@ async integrateMerchant(merchant: any): Promise<MerchantDTO> {
     }
   }
 
-
-
-
   async getPublicKey(applicationId : string): Promise<string> {
     try {
       const response = await firstValueFrom(
@@ -71,10 +68,14 @@ async integrateMerchant(merchant: any): Promise<MerchantDTO> {
       );
       return response.data;
     } catch (error) {
+    if (error.response && error.response.status === HttpStatus.NOT_FOUND) {
+          this.logger.error(`Application not found`);
+          throw new ApplicationNotFound();
+        } else {
       const errorMessage = `Error getting public key merchant: ${error.message}`;
       this.logger.error(errorMessage);
-      throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+      throw new Error(errorMessage);
+    }}
   }
 
 
