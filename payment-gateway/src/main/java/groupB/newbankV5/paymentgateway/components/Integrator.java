@@ -64,7 +64,6 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
             throw new ApplicationNotFoundException("Application with Id " + application.getId() + " not found");
         Application applicationFound = optApplication.get();
         String token = applicationFound.generateToken();
-        log.info(token);
         applicationRepository.saveAndFlush(applicationFound);
         return token;
     }

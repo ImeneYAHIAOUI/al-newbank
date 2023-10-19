@@ -64,13 +64,12 @@ public class Transactioner implements ITransactionProcessor {
     }
 
     @Override
-    public void processPayment(String token, BigDecimal amount, String cryptedCreditCard) throws InvalidTokenException,
+    public void processPayment(String token, BigDecimal amount, byte[] cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
             BadPaddingException, InvalidKeyException {
         Application application = validateToken(token);
         Merchant merchant = application.getMerchant();
         CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
-        //System.out.printf("Credit card number %s, expiry date %s, cvv %s%n", creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv());
         CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
                 new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv())
         );

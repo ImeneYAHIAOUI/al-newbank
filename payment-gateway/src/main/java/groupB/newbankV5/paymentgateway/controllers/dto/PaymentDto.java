@@ -7,13 +7,13 @@ import java.math.BigDecimal;
 public class PaymentDto {
     private String token;
     private BigDecimal amount;
-    private String cryptedCreditCard;
+    private byte[] cryptedCreditCard;
 
     public PaymentDto() {
         // Default constructor
     }
 
-    public PaymentDto(String token, BigDecimal amount, String cryptedCreditCard) {
+    public PaymentDto(String token, BigDecimal amount, byte[] cryptedCreditCard) {
         this.token = token;
         this.amount = amount;
         this.cryptedCreditCard = cryptedCreditCard;
@@ -35,11 +35,11 @@ public class PaymentDto {
         this.amount = amount;
     }
 
-    public String getCryptedCreditCard() {
+    public byte[] getCryptedCreditCard() {
         return cryptedCreditCard;
     }
 
-    public void setCryptedCreditCard(String cryptedCreditCard) {
+    public void setCryptedCreditCard(byte[] cryptedCreditCard) {
         this.cryptedCreditCard = cryptedCreditCard;
     }
 }

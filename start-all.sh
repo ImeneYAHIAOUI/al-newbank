@@ -6,16 +6,9 @@ services=(
     "customer-care:customer-care/docker-compose.yml"
     "mock-credit-card-network:mock-credit-card-network/docker-compose.yml"
     "payment-gateway:payment-gateway/docker-compose.yml"
-    "fees-calculator:fees-calculator/docker-compose.yml"
 )
 
 container_ids=()
-#
-network="spring-newbank-network"
-echo "Creating network $network"
-docker network create $network
-
-docker compose -f docker-compose.yml up -d
 
 echo "starting all"
 

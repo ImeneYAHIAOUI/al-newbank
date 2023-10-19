@@ -16,16 +16,6 @@ public class Transaction {
     private Merchant merchant;
     private String authorizationToken;
     private BigDecimal amount;
-    private BigDecimal fees;
-    private TransactionStatus status;
-
-    public TransactionStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(TransactionStatus status) {
-        this.status = status;
-    }
 
     public Merchant getMerchant() {
         return merchant;
@@ -33,14 +23,6 @@ public class Transaction {
 
     public void setMerchant(Merchant merchant) {
         this.merchant = merchant;
-    }
-
-    public BigDecimal getFees() {
-        return fees;
-    }
-
-    public void setFees(BigDecimal fees) {
-        this.fees = fees;
     }
 
     @Override
