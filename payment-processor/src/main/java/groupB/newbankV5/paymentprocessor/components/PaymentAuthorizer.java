@@ -1,6 +1,5 @@
 package groupB.newbankV5.paymentprocessor.components;
 
-import groupB.newbankV5.paymentprocessor.connectors.ExternalBankProxy;
 import groupB.newbankV5.paymentprocessor.connectors.dto.AccountDto;
 import groupB.newbankV5.paymentprocessor.controllers.dto.PaymentDetailsDTO;
 import groupB.newbankV5.paymentprocessor.controllers.dto.PaymentResponseDto;
@@ -9,7 +8,10 @@ import groupB.newbankV5.paymentprocessor.controllers.dto.TransferResponseDto;
 import groupB.newbankV5.paymentprocessor.entities.CreditCard;
 import groupB.newbankV5.paymentprocessor.entities.Transaction;
 import groupB.newbankV5.paymentprocessor.entities.TransactionType;
-import groupB.newbankV5.paymentprocessor.interfaces.*;
+import groupB.newbankV5.paymentprocessor.interfaces.ICostumerCare;
+import groupB.newbankV5.paymentprocessor.interfaces.IFraudDetector;
+import groupB.newbankV5.paymentprocessor.interfaces.IFundsHandler;
+import groupB.newbankV5.paymentprocessor.interfaces.ITransactionProcessor;
 import groupB.newbankV5.paymentprocessor.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,15 +30,13 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
     private static final String NEWBANK_IBAN_REGEX = "^FR\\d{2}20523\\d+$";
 
     private final TransactionRepository transactionRepository;
+    private final ETFService etfService;
     private final ICostumerCare costumerCare;
-
-
-    private final ExternalBankProxy externalBankProxy;
     @Autowired
-    public PaymentAuthorizer(TransactionRepository transactionRepository, ICostumerCare costumerCare, ICreditCardNetwork creditCardNetwork, ExternalBankProxy externalBankProxy) {
+    public PaymentAuthorizer(TransactionRepository transactionRepository, ETFService etfService, ICostumerCare costumerCare) {
         this.transactionRepository = transactionRepository;
+        this.etfService = etfService;
         this.costumerCare = costumerCare;
-        this.externalBankProxy = externalBankProxy;
     }
 
 
@@ -74,21 +74,16 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
             transaction = new Transaction(transferDetails.getFromAccountIBAN(), transferDetails.getToAccountIBAN(), transferDetails.getAmount(), TransactionType.TRANSFER);
             AccountDto accountDto2 = costumerCare.getAccountByIBAN(transferDetails.getToAccountIBAN());
             depositFund(accountDto2.getAccountId(), transferDetails.getAmount());
-            transactionRepository.save(transaction);
-            return new TransferResponseDto(true, "Transfer authorized", generateAuthToken(10));
-
-        } else {
-            //call external bank authorizer
-            if(externalBankProxy.authorizeTransfer(transferDetails).isAuthorized()){
-                transaction = new Transaction(transferDetails.getFromAccountIBAN(), transferDetails.getToAccountIBAN(), transferDetails.getAmount(), TransactionType.DEBIT);
-                transactionRepository.save(transaction);
-                return new TransferResponseDto(true, "Transfer authorized", generateAuthToken(10));
-            }  else{
-                return new TransferResponseDto(false, "Transfer failed", generateAuthToken(10));
-
-            }
+        } else  {
+            transaction = new Transaction(transferDetails.getFromAccountIBAN(), transferDetails.getToAccountIBAN(), transferDetails.getAmount(), TransactionType.DEBIT);
+        }
+        transactionRepository.save(transaction);
+        if(! isNewBankAccount(transferDetails.getToAccountIBAN()) && ! etfService.validateTransaction(transferDetails.getToAccountIBAN(), transferDetails.getAmount().doubleValue())) {
+            transactionRepository.delete(transaction);
+            return new TransferResponseDto(false, "Transfer failed", generateAuthToken(10));
         }
 
+        return new TransferResponseDto(true, "Transfer authorized", generateAuthToken(10));
     }
 
     @Override
@@ -96,6 +91,7 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
         BigDecimal balance =  accountDto.getBalance();
         return balance.compareTo(amount) >= 0;
     }
+
 
 
     @Override
@@ -112,7 +108,6 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
 
     @Override
     public boolean isFraudulent(PaymentDetailsDTO transaction) {
-        System.out.println(transaction);
         return checkAmount(transaction.getAmount());
     }
 

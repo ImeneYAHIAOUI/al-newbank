@@ -17,6 +17,4 @@ compile_dir "mock-credit-card-network"
 
 compile_dir "payment-gateway"
 
-compile_dir "external-bank"
-
 echo "** Done all"

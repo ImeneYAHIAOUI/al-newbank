@@ -1,12 +1,30 @@
 #!/bin/bash
 
-echo "Starting services using a single docker compose command..."
 
-docker compose \
-  --env-file ./mock-credit-card-network/.env -f mock-credit-card-network/docker-compose.yml \
-  --env-file ./customer-care/.env -f customer-care/docker-compose.yml \
-  --env-file ./external-bank/.env -f external-bank/docker-compose.yml \
-  --env-file ./payment-processor/.env -f payment-processor/docker-compose.yml \
-  --env-file ./payment-gateway/.env -f payment-gateway/docker-compose.yml up -d
+services=(
+    "payment-processor:payment-processor/docker-compose.yml"
+    "customer-care:customer-care/docker-compose.yml"
+    "mock-credit-card-network:mock-credit-card-network/docker-compose.yml"
+    "payment-gateway:payment-gateway/docker-compose.yml"
+)
 
-echo "All services started."
+container_ids=()
+
+echo "starting all"
+
+start_service() {
+    local service_name=$1
+    local compose_file=$2
+    echo "Starting service $service_name..."
+    docker compose --env-file ./$service_name/.env -f $compose_file up  -d
+}
+
+# Loop to start all services
+for service in "${services[@]}"; do
+    IFS=':' read -ra service_info <<< "$service"
+    service_name=${service_info[0]}
+    compose_file=${service_info[1]}
+
+    start_service "$service_name" "$compose_file"
+done
+
