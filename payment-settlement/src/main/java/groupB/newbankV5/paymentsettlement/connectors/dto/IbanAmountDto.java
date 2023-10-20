@@ -1,0 +1,37 @@
+package groupB.newbankV5.paymentsettlement.connectors.dto;
+
+import java.math.BigDecimal;
+
+public class IbanAmountDto {
+    private String iban;
+    private BigDecimal amount;
+
+    public IbanAmountDto() {
+    }
+
+    public IbanAmountDto(String iban,BigDecimal amount) {
+        this.iban = iban;
+        this.amount = amount;
+    }
+
+    public String getIban() {
+        return iban;
+    }
+
+    public void setIban(String iban) {
+        this.iban = iban;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    @Override
+    public String toString() {
+        return "IbanAmountDto{" + "iban='" + iban + '\'' + ", amount=" + amount + '}';
+    }
+}

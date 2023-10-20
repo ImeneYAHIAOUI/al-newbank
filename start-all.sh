@@ -10,6 +10,8 @@ services=(
     "transactions:transactions/docker-compose.yml"
       "external-bank:external-bank/docker-compose.yml"
     "fees-calculator:fees-calculator/docker-compose.yml"
+    "payment-settlement:payment-settlement/docker-compose.yml"
+
 )
 
 container_ids=()
