@@ -1,11 +1,14 @@
 #!/bin/bash
 
+echo "Starting services using a single docker compose command..."
 
 services=(
     "payment-processor:payment-processor/docker-compose.yml"
     "customer-care:customer-care/docker-compose.yml"
     "mock-credit-card-network:mock-credit-card-network/docker-compose.yml"
     "payment-gateway:payment-gateway/docker-compose.yml"
+    "transactions:transactions/docker-compose.yml"
+      "external-bank:external-bank/docker-compose.yml"
     "fees-calculator:fees-calculator/docker-compose.yml"
 )
 
@@ -35,3 +38,4 @@ for service in "${services[@]}"; do
     start_service "$service_name" "$compose_file"
 done
 
+echo "All services started."

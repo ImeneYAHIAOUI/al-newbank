@@ -12,20 +12,29 @@ import java.util.logging.Logger;
 
 @Component
 public class CostumerCareProxy implements ICostumerCare {
-    private static final Logger log = Logger.getLogger(CreditCardNetworkProxy.class.getName());
-    @Value("costumer.host.baseurl")
+    private static final Logger log = Logger.getLogger(CostumerCareProxy.class.getName());
+
+    @Value("${costumer.host.baseurl:}")
+
     private String costumerHostandPort;
     private RestTemplate restTemplate = new RestTemplate();
 
     @Override
     public AccountDto getAccountByIBAN(String accountNumber) {
         log.info("Getting balance for account number: " + accountNumber);
-        return restTemplate.getForEntity(costumerHostandPort + "/api/costumer/search?iban=" + accountNumber, AccountDto.class).getBody();
+        try{
+            log.info("port and host "+ costumerHostandPort);
+            return restTemplate.getForEntity(costumerHostandPort + "/api/costumer/search?iban=" + accountNumber, AccountDto.class).getBody();
+        } catch (Exception e) {
+            log.warning("Error getting balance for account number: " + e.getMessage());
+            return null;
+        }
     }
 
     @Override
     public AccountDto getAccountByCreditCard(String cardNumber, String expiryDate, String cvv) {
-        log.info("Getting balance for credit card: " + cardNumber);
+        log.info("Getting balance for credit card: " + "/api/costumer/search?number=" + cardNumber + "&date=" + expiryDate + "&cvv=" + cvv);
+
         return restTemplate.getForEntity(costumerHostandPort + "/api/costumer/search?number=" + cardNumber + "&date=" + expiryDate + "&cvv=" + cvv, AccountDto.class).getBody();
     }
 
