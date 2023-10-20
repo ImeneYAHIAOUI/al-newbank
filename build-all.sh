@@ -21,6 +21,8 @@ compile_dir "fees-calculator"
 
 compile_dir "transactions"
 
+compile_dir "payment-settlement"
+
 compile_dir "external-bank"
 
 echo "** Done all"
