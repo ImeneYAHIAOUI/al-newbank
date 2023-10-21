@@ -73,33 +73,33 @@ public class Transactioner implements ITransactionProcessor {
         Application application = validateToken(token);
         log.info("token validated");
         Merchant merchant = application.getMerchant();
-        log.info("Decrypted credit card: "+ cryptedCreditCard);
-        Jws<Claims> jws;
+        log.info("encrypted credit card: "+ cryptedCreditCard);
         try {
-            jws = Jwts.parser().setSigningKey(Integrator.SECRET_KEY).parseClaimsJws(cryptedCreditCard);
+            Jws<Claims> jws = Jwts.parser().setSigningKey(Integrator.SECRET_KEY).parseClaimsJws(cryptedCreditCard);
+            Claims bodyClaims = jws.getBody();
+            String cardNumber = bodyClaims.get("cardNumber", String.class);
+            String expirationDate = bodyClaims.get("expirationDate", String.class);
+            String cvv = bodyClaims.get("cvv", String.class);
+            CreditCard creditCard= new CreditCard();
+            creditCard.setCardNumber(cardNumber);
+            creditCard.setExpiryDate(expirationDate);
+            creditCard.setCvv(cvv);
+            log.info("successfully decrypted credit card");
+
+            CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
+                    new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv())
+            );
+            if (!ccnResponseDto.isApproved()) {
+                throw new CCNException("Payment not authorized");
+            }
+            Transaction transaction = new Transaction(merchant.getBankAccount(), ccnResponseDto.getAuthToken(), amount);
+            transaction.setExternal(true);
+
+            kafkaProducerService.sendMessage(transaction);
         } catch (Exception e) {
             throw new InvalidTokenException("Invalid token");
         }
-        Claims bodyClaims = jws.getBody();
 
-        String cardNumber = bodyClaims.get("cardNumber", String.class);
-        String  expirationDate = bodyClaims.get("expirationDate", String.class);
-        String  cvv = bodyClaims.get("cvv", String.class);
-        CreditCard creditCard= new CreditCard();
-        creditCard.setCardNumber(cardNumber);
-        creditCard.setExpiryDate(expirationDate);
-        creditCard.setCvv(cvv);
-        log.info("successfully decrypted credit card");
 
-        CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
-                new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv())
-        );
-        if (!ccnResponseDto.isApproved()) {
-            throw new CCNException("Payment not authorized");
-        }
-        Transaction transaction = new Transaction(merchant.getBankAccount(), ccnResponseDto.getAuthToken(), amount);
-        transaction.setExternal(true);
-
-        kafkaProducerService.sendMessage(transaction);
     }
 }
