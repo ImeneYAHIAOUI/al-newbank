@@ -11,6 +11,7 @@ import java.util.UUID;
 public class Transaction {
 
     @PrimaryKey
+
     private String id;
     private BankAccount recipient;
     private BankAccount sender;
@@ -105,4 +106,5 @@ public class Transaction {
     public void setId(String id) {
         this.id = id;
     }
+
 }
