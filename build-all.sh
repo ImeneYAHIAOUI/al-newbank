@@ -19,7 +19,7 @@ compile_dir "payment-gateway"
 
 compile_dir "fees-calculator"
 
-compile_dir "transactions"
+compile_dir "transactions-service"
 
 compile_dir "payment-settlement"
 
