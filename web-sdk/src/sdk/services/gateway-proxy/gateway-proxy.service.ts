@@ -128,7 +128,7 @@ const response = await axios.post<string>(
       } else {
     const errorMessage = `Error while processing payment: ${error.message}`;
     this.logger.error(errorMessage);
-    throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+    throw new Error(errorMessage);
   }}
 }
 
