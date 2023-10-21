@@ -2,6 +2,8 @@ package groupB.newbankV5.transactions.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import groupB.newbankV5.transactions.entities.BankAccount;
+
 import groupB.newbankV5.transactions.entities.Transaction;
 import groupB.newbankV5.transactions.entities.TransactionStatus;
 import groupB.newbankV5.transactions.repositories.TransactionRepository;
@@ -13,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
 
 import java.util.List;
 import java.util.stream.Collectors;

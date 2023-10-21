@@ -1,11 +1,14 @@
 package groupB.newbankV5.feescalculator.entities;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
 public class BankAccount {
+    @Column(name = "iban", insertable = false, updatable = false)
     private String IBAN;
+    @Column(name = "bic", insertable = false, updatable = false)
     private String BIC;
 
     @Override

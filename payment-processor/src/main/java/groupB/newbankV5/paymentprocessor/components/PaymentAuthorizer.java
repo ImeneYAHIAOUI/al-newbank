@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @Component
@@ -70,7 +71,8 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
         transaction.setSender(sender);
         transaction.setRecipient(receiver);
         transaction.setAmount(amount);
-        transaction.setId("temporaryId");
+        UUID newTransactionId = UUID.randomUUID();
+        transaction.setId(newTransactionId);
     }
 
     @Override
