@@ -4,6 +4,7 @@ import groupB.newbankV5.mockcreditcardnetwork.connectors.NewBankProxy;
 import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.CreditCardInformationDto;
 import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.CreditCardCheckResponseDto;
 import groupB.newbankV5.mockcreditcardnetwork.exceptions.ExpirationDateException;
+import groupB.newbankV5.mockcreditcardnetwork.exceptions.InvalidCardInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,27 +28,27 @@ public class CreditCardAuthorizer {
         this.newBankProxy = newBankProxy;
     }
 
-    public CreditCardCheckResponseDto ValidateCreditCard(CreditCardInformationDto creditCardInformationDto) {
+    public CreditCardCheckResponseDto ValidateCreditCard(CreditCardInformationDto creditCardInformationDto) throws InvalidCardInformation {
         log.info("Authorizing payment");
         String ccnumber = creditCardInformationDto.getCardNumber();
         if(isValidNewBank(ccnumber)) {
             return newBankProxy.checkNewBankCreditCard(creditCardInformationDto);
         }
         boolean validNumber =  isValidVisa(ccnumber) || isValidMastercard(ccnumber) || isValidAmex(ccnumber);
-        log.info("Valid number: " + validNumber);
         boolean validCVV = isValidCVV(creditCardInformationDto.getCvv());
-        log.info("Valid CVV: " + validCVV);
         boolean validDate = isValidDate(creditCardInformationDto.getExpirationDate());
-        log.info("Valid date: " + validDate);
         boolean response = validNumber && validCVV && validDate;
-        CreditCardCheckResponseDto responseDto = new CreditCardCheckResponseDto();
-        responseDto.setResponse(validNumber && validCVV && validDate);
-        responseDto.setMessage();
-        responseDto.setAuthToken();
-        responseDto.setAccountIBAN("FR2052300000000000000000000");
-        responseDto.setAccountBIC("EXTERNAL");
-        log.info(responseDto.toString());
-        return responseDto;
+        if (response) {
+            CreditCardCheckResponseDto responseDto = new CreditCardCheckResponseDto();
+            responseDto.setResponse(true);
+            responseDto.setMessage();
+            responseDto.setAuthToken();
+            responseDto.setAccountIBAN("FR2052300000000000000000000");
+            responseDto.setAccountBIC("EXTERNAL");
+            log.info(responseDto.toString());
+            return responseDto;
+        }
+        else throw new InvalidCardInformation("Invalid credit card information");
     }
 
     private boolean isValidVisa(String cardNumber) {

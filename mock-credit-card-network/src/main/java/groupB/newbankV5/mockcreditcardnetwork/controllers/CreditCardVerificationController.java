@@ -4,6 +4,7 @@ import groupB.newbankV5.mockcreditcardnetwork.components.CreditCardAuthorizer;
 import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.CreditCardInformationDto;
 import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.CreditCardCheckResponseDto;
 import groupB.newbankV5.mockcreditcardnetwork.exceptions.ExpirationDateException;
+import groupB.newbankV5.mockcreditcardnetwork.exceptions.InvalidCardInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,13 +32,13 @@ public class CreditCardVerificationController {
     public ResponseEntity<CreditCardCheckResponseDto> authorizePayment(@RequestBody CreditCardInformationDto creditCardInformationDto) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(creditCardAuthorizer.ValidateCreditCard(creditCardInformationDto));
-        }
-        catch (ExpirationDateException e) {
+        } catch (InvalidCardInformation e) {
             CreditCardCheckResponseDto errorResponse = new CreditCardCheckResponseDto();
             errorResponse.setResponse(false);
             errorResponse.setMessage(e.getMessage());
             errorResponse.setAuthToken();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+
         }
     }
 
