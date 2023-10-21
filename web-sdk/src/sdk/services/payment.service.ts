@@ -42,22 +42,20 @@ export class PaymentService {
       if (!location) {
         throw new Error('No location information available');
       }
-      console.debug('Location:', location);
+      //console.debug('Location:', location);
       return location;
     } catch (error) {
       throw new Error('Error retrieving location information: ' + error.message);
     }
   }
   // a modifier
-async processCardInfo(paymentInfo: PaymentInfoDTO, applicationId: string,token: string ): Promise<String> {
+async processCardInfo(paymentInfo: PaymentInfoDTO, applicationId: string,token: string ): Promise<Buffer> {
  try {
     this.validateCardInfo(paymentInfo);
     const location = await this.retrieveLocation();
     const [altitude, longitude] = location.split(',');
 
-const jws = require('jws');
-
-const secretKey = process.env.ACCESS_TOKEN_SECRET;
+      const publicKey = await this.gatewayProxyService.getPublicKey(applicationId);
 
 const cardInfo = {
     cardNumber: paymentInfo.cardNumber,
@@ -65,12 +63,7 @@ const cardInfo = {
     cvv: paymentInfo.cvv,
 };
 
-const payload = JSON.stringify(cardInfo);
-const encryptedCardInfo = jws.sign({
-    header: { alg: 'HS256' },
-    payload: payload,
-    secret: secretKey
-});
+      const encryptedCardInfo = crypto.publicEncrypt(publicKey, Buffer.from(JSON.stringify(cardInfo)));
     const payment = {
       cryptedCreditCard: encryptedCardInfo,
       amount: paymentInfo.amount,

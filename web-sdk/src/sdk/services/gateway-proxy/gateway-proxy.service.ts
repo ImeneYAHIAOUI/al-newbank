@@ -106,6 +106,25 @@ async createApiKey(id: string): Promise<string> {
   }
 }
 
+  async getPublicKey(applicationId : string): Promise<string> {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `${this._gatewayBaseUrl}${this._gatewayPath}integration/applications/${applicationId}/publickey`
+        ),
+      );
+      return response.data;
+    } catch (error) {
+    if (error.response && error.response.status === HttpStatus.NOT_FOUND) {
+          this.logger.error(`Application not found`);
+          throw new ApplicationNotFound();
+        } else {
+      const errorMessage = `Error getting public key merchant: ${error.message}`;
+      this.logger.error(errorMessage);
+      throw new Error(errorMessage);
+    }}
+  }
+
 async processPayment( encryptedCardInfo: string): Promise<string> {
   try {
 const httpOptions: AxiosRequestConfig = {
