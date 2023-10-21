@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
 
+
 public class Transaction {
 
 
@@ -17,6 +18,7 @@ public class Transaction {
     }
 
     private UUID id;
+
 
     private BankAccount recipient;
     private BankAccount sender;
