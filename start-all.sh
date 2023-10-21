@@ -7,7 +7,7 @@ services=(
     "customer-care:customer-care/docker-compose.yml"
     "mock-credit-card-network:mock-credit-card-network/docker-compose.yml"
     "payment-gateway:payment-gateway/docker-compose.yml"
-    "transactions:transactions/docker-compose.yml"
+    "transactions-service:transactions-service/docker-compose.yml"
       "external-bank:external-bank/docker-compose.yml"
     "fees-calculator:fees-calculator/docker-compose.yml"
 )

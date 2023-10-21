@@ -1,6 +1,8 @@
 package groupB.newbankV5.paymentprocessor.controllers;
 
 import groupB.newbankV5.paymentprocessor.components.PaymentAuthorizer;
+import groupB.newbankV5.paymentprocessor.controllers.dto.CreditCardInformationDto;
+import groupB.newbankV5.paymentprocessor.controllers.dto.CreditCardResponseDto;
 import groupB.newbankV5.paymentprocessor.controllers.dto.PaymentDetailsDTO;
 import groupB.newbankV5.paymentprocessor.controllers.dto.PaymentResponseDto;
 import groupB.newbankV5.paymentprocessor.interfaces.ITransactionProcessor;
@@ -36,5 +38,14 @@ public class PaymentProcessorController {
         return ResponseEntity.status(HttpStatus.OK).body(transactionProcessor.authorizePayment(paymentDetails));
 
     }
+
+    @PostMapping("/checkCreditCard")
+    public ResponseEntity<CreditCardResponseDto> checkCreditCard(@RequestBody CreditCardInformationDto creditCardInformationDto) {
+        log.info("Checking credit card");
+        return ResponseEntity.status(HttpStatus.OK).body(transactionProcessor.validateCreditCard(creditCardInformationDto));
+
+    }
+
+
 
 }

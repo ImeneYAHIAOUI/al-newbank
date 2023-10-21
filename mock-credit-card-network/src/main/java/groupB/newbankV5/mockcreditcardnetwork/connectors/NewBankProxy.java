@@ -19,8 +19,10 @@ public class NewBankProxy {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    public PaymentResponseDto authorizePayment(CreditCardInformationDto paymentDetailsDTO) {
+    public PaymentResponseDto checkNewBankCreditCard(CreditCardInformationDto creditCardInformationDto) {
         log.info("Authorizing payment");
-        return restTemplate.postForEntity(newBankHostandPort + "/api/payment/process", paymentDetailsDTO, PaymentResponseDto.class).getBody();
+        return restTemplate.postForEntity(newBankHostandPort + "/api/payment/checkCreditCard", creditCardInformationDto, PaymentResponseDto.class).getBody();
     }
+
+
 }

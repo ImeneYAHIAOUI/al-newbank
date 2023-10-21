@@ -27,11 +27,11 @@ public class CreditCardAuthorizer {
         this.newBankProxy = newBankProxy;
     }
 
-    public PaymentResponseDto AuthorizePayment(CreditCardInformationDto creditCardInformationDto) {
+    public PaymentResponseDto ValidateCreditCard(CreditCardInformationDto creditCardInformationDto) {
         log.info("Authorizing payment");
         String ccnumber = creditCardInformationDto.getCardNumber();
         if(isValidNewBank(ccnumber)) {
-            return newBankProxy.authorizePayment(creditCardInformationDto);
+            return newBankProxy.checkNewBankCreditCard(creditCardInformationDto);
         }
         boolean validNumber =  isValidVisa(ccnumber) || isValidMastercard(ccnumber) || isValidAmex(ccnumber);
         log.info("Valid number: " + validNumber);

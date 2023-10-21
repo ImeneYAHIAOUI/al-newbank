@@ -1,7 +1,6 @@
 package groupB.newbankV5.paymentprocessor.entities;
 
 import javax.persistence.*;
-@Embeddable
 public class CreditCard {
 
     private String cardNumber;
