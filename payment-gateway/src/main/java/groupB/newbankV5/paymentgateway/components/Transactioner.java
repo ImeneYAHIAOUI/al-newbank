@@ -97,7 +97,7 @@ public class Transactioner implements ITransactionProcessor {
 
             kafkaProducerService.sendMessage(transaction);
         } catch (Exception e) {
-            throw new InvalidTokenException("Invalid token");
+            throw new InvalidTokenException("Invalid token"+e.getMessage());
         }
 
 
