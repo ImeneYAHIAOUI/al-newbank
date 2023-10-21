@@ -1,75 +1,82 @@
 package groupB.newbankV5.paymentgateway.components;
 
-import groupB.newbankV5.paymentgateway.controllers.IntegratorController;
-import groupB.newbankV5.paymentgateway.controllers.dto.PaymentDto;
 import groupB.newbankV5.paymentgateway.entities.Application;
-import groupB.newbankV5.paymentgateway.entities.ApplicationKeyPair;
+import groupB.newbankV5.paymentgateway.entities.ApplicationAESKey;
 import groupB.newbankV5.paymentgateway.entities.CreditCard;
-import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.interfaces.IRSA;
-import groupB.newbankV5.paymentgateway.repositories.ApplicationKeyPairRepository;
-import groupB.newbankV5.paymentgateway.repositories.ApplicationRepository;
+import groupB.newbankV5.paymentgateway.repositories.ApplicationAESKeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
+import javax.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
 public class Crypto implements IRSA {
+
     private static final Logger log = Logger.getLogger(Crypto.class.getName());
-    private ApplicationKeyPairRepository applicationKeyPairRepository;
+
+    private ApplicationAESKeyRepository applicationAESKeyRepository;
 
     @Autowired
-    public Crypto(ApplicationKeyPairRepository applicationKeyPairRepository) {
-        this.applicationKeyPairRepository = applicationKeyPairRepository;
+    public Crypto(ApplicationAESKeyRepository applicationAESKeyRepository) {
+        this.applicationAESKeyRepository = applicationAESKeyRepository;
     }
 
     @Override
-    public PublicKey getOrGenerateRSAPublicKey(Application application) throws NoSuchAlgorithmException {
-        Optional<ApplicationKeyPair> optApplicationKeyPair =
-                applicationKeyPairRepository.findByApplication(application);
-        if(optApplicationKeyPair.isEmpty()) {
-            KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-            generator.initialize(2048);
-            KeyPair pair = generator.generateKeyPair();
-            ApplicationKeyPair applicationKeyPair = new ApplicationKeyPair();
-            log.info("Generating RSA key pair for the application, the used key format is"
-                    + pair.getPublic().getFormat() );
-            applicationKeyPair.setApplication(application);
-            applicationKeyPair.setPublicKey(pair.getPublic());
-            applicationKeyPair.setPrivateKey(pair.getPrivate());
-            applicationKeyPairRepository.saveAndFlush(applicationKeyPair);
-            return pair.getPublic();
+    public SecretKey getOrGenerateAESKey(Application application) throws NoSuchAlgorithmException {
+        Optional<ApplicationAESKey> optApplicationAESKey = applicationAESKeyRepository.findByApplication(application);
+        if (optApplicationAESKey.isEmpty()) {
+            KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+            keyGenerator.init(256);
+            SecretKey aesKey = keyGenerator.generateKey();
+
+            ApplicationAESKey applicationAESKey = new ApplicationAESKey();
+            applicationAESKey.setApplication(application);
+            applicationAESKey.setAesKey(aesKey.getEncoded());
+            applicationAESKeyRepository.saveAndFlush(applicationAESKey);
+
+            return aesKey;
         }
-        return optApplicationKeyPair.get().getPublicKey();
+        byte[] aesKeyBytes = optApplicationAESKey.get().getAesKey();
+        return new SecretKeySpec(aesKeyBytes, "AES");
     }
 
     @Override
-    public CreditCard decryptPaymentRequestCreditCard(String encryptedData, Application application) throws ApplicationNotFoundException,
-            NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        Optional<ApplicationKeyPair> optApplicationKeyPair =
-                applicationKeyPairRepository.findByApplication(application);
-        if(optApplicationKeyPair.isEmpty()) {
-            throw new ApplicationNotFoundException("Application not found");
-        }
-        Cipher cipher = Cipher.getInstance("RSA");
-        cipher.init(Cipher.DECRYPT_MODE, optApplicationKeyPair.get().getPrivateKey());
+    public String encryptCreditCard(CreditCard creditCard, SecretKey aesKey) throws NoSuchPaddingException,
+            NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, aesKey);
+
+        String plainText = creditCard.getCardNumber() + "," + creditCard.getExpiryDate() + "," + creditCard.getCvv();
+        byte[] encryptedData = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(encryptedData);
+    }
+
+    @Override
+    public CreditCard decryptPaymentRequestCreditCard(String encryptedData, Application application ) throws NoSuchPaddingException,
+            NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        Optional<ApplicationAESKey> optApplicationAESKey = applicationAESKeyRepository.findByApplication(application);
+
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, getOrGenerateAESKey(application));
+
         byte[] encryptedDataBytes = Base64.getDecoder().decode(encryptedData);
         byte[] decryptedData = cipher.doFinal(encryptedDataBytes);
         String decryptedMessage = new String(decryptedData, StandardCharsets.UTF_8);
         String[] decryptedMessageArray = decryptedMessage.split(",");
+
         CreditCard creditCard = new CreditCard();
         creditCard.setCardNumber(decryptedMessageArray[0]);
         creditCard.setExpiryDate(decryptedMessageArray[1]);
         creditCard.setCvv(decryptedMessageArray[2]);
+
         return creditCard;
     }
 }

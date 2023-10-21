@@ -10,6 +10,7 @@ import { AppModule } from './app.module';
 import { prompt } from 'inquirer';
 import {ApplicationInfo} from './sdk/dto/application-info.dto';
 import {PaymentInfoDTO} from './sdk/dto/payment-info.dto';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
@@ -23,7 +24,7 @@ async function bootstrap() {
   app.enableShutdownHooks();
   const gatewayProxyService = app.get(GatewayProxyService);
 
-  const integrationService = new IntegrationService(gatewayProxyService);
+ const integrationService = new IntegrationService(gatewayProxyService);
   const applicationInfo = await prompt([
     {
       type: 'input',
@@ -80,7 +81,7 @@ async function bootstrap() {
       }
     ]);
     const paymentService=new PaymentService(gatewayProxyService);
-    paymentService.processCardInfo(paymentInfo,result.id);
+    paymentService.processCardInfo(paymentInfo,result.id,result.apiKey);
 
 }
 

@@ -46,6 +46,10 @@ public class TransactionerController {
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException,
             NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         log.info("Processing payment request in the Gateway");
+        log.info("Payment details: " + paymentDetails.getCryptedCreditCard());
+        log.info("Payment details: " + paymentDetails.getToken());
+        log.info("Payment details: " + paymentDetails.getAmount());
+
         transactionProcessor.processPayment(paymentDetails.getToken(),
                 paymentDetails.getAmount(),
                 paymentDetails.getCryptedCreditCard());

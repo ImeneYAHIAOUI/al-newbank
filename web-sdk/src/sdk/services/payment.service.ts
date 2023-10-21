@@ -6,6 +6,7 @@ import axios from 'axios';
 import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
 import * as forge from 'node-forge';
+import CryptoJS from 'crypto-js';
 
 export class PaymentService {
   private readonly logger = new Logger(PaymentService.name);
@@ -34,33 +35,38 @@ export class PaymentService {
     }
   }
   // a modifier
-  async processCardInfo(paymentInfo: PaymentInfoDTO,applicationId : string): Promise<Buffer> {
-    try {
-      this.validateCardInfo(paymentInfo);
-      const location = await this.retrieveLocation();
-      const [altitude, longitude] = location.split(',');
-      const token = this.generateAccessToken(applicationId, process.env.ACCESS_TOKEN_SECRET);
-      const r=await this.gatewayProxyService.getPublicKey(applicationId);
-      const payload = {
-        cardNumber: paymentInfo.cardNumber,
-        expirationDate: paymentInfo.expirationDate,
-        cvv: paymentInfo.cvv,
-        altitude: altitude,
-        longitude: longitude,
-        amount: paymentInfo.amount,
-        token: token,
-      };
-      const publicKeyString = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkgyTQdGmxSBb7JIY6xE7bO3r7PmfKTLbKN8c0AGUy2Avu07pO6wy27pFhOD2PETX2qVr7LqGw8c5KbEXqhenGUmyAYbvmusctY+4zZV84Vyhef0qW6+JWO20hPlRgXaO/IQ6LZOhbWSZkDnu6VUFjh7dIuxq2Gu9xhHZZ6lsqXpjBc41sn5+SF7DmaHPSLguFpySgiiSbetlosv1WkDBghJ0McSwKjc0QtCpQQhgypXrmFnh0+FVvEGVEvEJDmQfoVNgmpqcalV9/DZgRsozpBvHiSUUUEa5ui3UkhusKPknluXfeXiG7juhZW1lagaHur+8LQBBjsfzm6ooBs/zkwIDAQAB";
-         const publicKeyBuffer = Buffer.from(publicKeyString, 'base64');
-         const key = crypto.createPublicKey(publicKeyBuffer);
-      const encryptedCardInfo = crypto.publicEncrypt(key, Buffer.from(JSON.stringify(payload)));
-      console.debug('Encrypted Card Information:', encryptedCardInfo.toString('base64'));
-      this.gatewayProxyService.processPayment(encryptedCardInfo.toString('base64'));
-      return encryptedCardInfo;
-    } catch (error) {
-      throw new Error('Error processing card information: ' + error.message);
-    }
-  }
+async processCardInfo(paymentInfo: PaymentInfoDTO, applicationId: string,token: string ): Promise<Buffer> {
+ // try {
+    this.validateCardInfo(paymentInfo);
+    const location = await this.retrieveLocation();
+    const [altitude, longitude] = location.split(',');
+    const aesKey = await this.gatewayProxyService.getAesKey(applicationId);
+
+    const card = {
+      cardNumber: paymentInfo.cardNumber,
+      expirationDate: paymentInfo.expirationDate,
+      cvv: paymentInfo.cvv,
+    };
+
+    const aesKeyBuffer = Buffer.from(aesKey, 'base64');
+    //const aesKeyBuffer='ep490qbQvoaNoG2Bk6dFlqHg2vNorbDRuv3gCBC+Yh8=';
+    var CryptoJS = require("crypto-js/core");
+    CryptoJS.AES = require("crypto-js/aes");
+    //console.debug('AES Key:', aesKeyBuffer.toString('base64'));
+    const encryptedCardInfo = CryptoJS.AES.encrypt(JSON.stringify(card), aesKeyBuffer.toString('base64'))
+    const payment = {
+      CryptedCreditCard: encryptedCardInfo.toString(),
+      amount: paymentInfo.amount,
+      token: token,
+    };
+    this.logger.debug('Payment:', payment);
+    await this.gatewayProxyService.processPayment(payment.toString());
+    return encryptedCardInfo;
+  //} catch (error) {
+    //throw new Error('Error processing card information: ' + error.message);
+  //}
+}
+
 // a modifier
   verifyAccessToken(token: string): boolean {
     try {

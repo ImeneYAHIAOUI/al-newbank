@@ -40,20 +40,20 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
     }
 
     @Override
-    public Application integrateApplication(Application application, Merchant merchant) throws MerchantNotFoundException, ApplicationAlreadyExists {
+    public Application integrateApplication(Application application, Merchant merchant) throws MerchantNotFoundException, ApplicationAlreadyExists,ApplicationNotFoundException {
         Optional<Merchant> optMerchant = merchantRepository.findById(merchant.getId());
         if(optMerchant.isEmpty())
             throw new MerchantNotFoundException("Merchant with Id" + merchant.getId() + "not found");
         Optional<Application> optApplication = applicationRepository.findByNameOrUrl(application.getName(), application.getUrl());
         if(optApplication.isPresent())
             throw new ApplicationAlreadyExists("Application with name " + application.getName() + " or url " + application.getUrl() + " already exists");
-
         Merchant merchantFound = optMerchant.get();
         application.setMerchant(merchantFound);
         merchantFound.setApplication(application);
-
         // Cascading the save in merchant to application
+        applicationRepository.saveAndFlush(application);
         merchantRepository.saveAndFlush(merchant);
+        application.generateToken();
         return applicationRepository.saveAndFlush(application);
     }
 

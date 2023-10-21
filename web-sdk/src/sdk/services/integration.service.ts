@@ -23,7 +23,7 @@ async integrateMerchant(name: string, email: string, iban: string, bic: string):
     if (!emailRegex.test(email)) {
         throw new InvalidMerchantInformationException("Invalid email address.");
     }
-    // doit commencer par 2 lettres suivies de 2 chiffres  puis de 4 lettres ou chiffres, et enfin de 7 chiffres.
+    // doit commencer par 2 lettres suivies de f2 chiffres  puis de 4 lettres ou chiffres, et enfin de 7 chiffres.
     const ibanRegex = /^[A-Z]{2}\d{2}[A-Z0-9]{4}\d{7}([A-Z0-9]?){0,16}$/;
     if (!ibanRegex.test(iban)) {
         throw new InvalidMerchantInformationException("Invalid IBAN.");
@@ -79,9 +79,9 @@ async integrateService(application: ApplicationInfo): Promise<{ id: string, apiK
     );
     const applicationId: string = applicationIntegrationResult.id.toString();
     this.logger.log(`Application integration successful for ${application.name}. Application ID: ${applicationId}`);
-    const apiKeyResult: string = await this.gatewayProxyService.createApiKey(applicationId);
+    //const apiKeyResult: string = await this.gatewayProxyService.createApiKey(applicationId);
     this.logger.log(`API key created successfully for application ID: ${applicationId}`);
-    return { id: applicationId, apiKey: apiKeyResult };
+    return { id: applicationId, apiKey: applicationIntegrationResult.apiKey.toString() };
   } catch (error) {
     if (error instanceof InvalidMerchantInformationException) {
       this.logger.error(`Invalid Merchant Information: ${error.message}`);

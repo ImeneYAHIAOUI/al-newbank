@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.util.Base64;
@@ -32,15 +33,15 @@ public class IntegratorController {
     private final IBusinessIntegrator businessIntegrator;
     private final IApplicationIntegrator applicationIntegrator;
     private final IApplicationFinder applicationFinder;
-    private final IRSA rsa;
+    private final IRSA crypto;
 
     @Autowired
     public IntegratorController(IBusinessIntegrator businessIntegrator, IApplicationIntegrator applicationIntegrator,
-                                IApplicationFinder applicationFinder, IRSA rsa) {
+                                IApplicationFinder applicationFinder, IRSA crypto) {
         this.businessIntegrator = businessIntegrator;
         this.applicationIntegrator = applicationIntegrator;
         this.applicationFinder = applicationFinder;
-        this.rsa = rsa;
+        this.crypto = crypto;
     }
 
     @PostMapping("/merchants")
@@ -51,7 +52,7 @@ public class IntegratorController {
 
     @PostMapping("/applications")
     public ResponseEntity<Application> integrateApplication(@RequestBody ApplicationIntegrationDto applicationIntegrationDto) throws ApplicationAlreadyExists,
-            MerchantNotFoundException {
+            MerchantNotFoundException ,ApplicationNotFoundException{
         log.info("Integrating application " + applicationIntegrationDto.getName());
         Application application = new Application(applicationIntegrationDto.getName(),
                 applicationIntegrationDto.getEmail(),
@@ -78,13 +79,13 @@ public class IntegratorController {
         return ResponseEntity.ok().body(applicationIntegrator.getToken(application));
     }
 
-    @GetMapping("/applications/{id}/publickey")
-    public ResponseEntity<String> getPublicKey(@PathVariable("id") Long id) throws ApplicationNotFoundException,
-            NoSuchAlgorithmException, NoSuchPaddingException {
-        log.info("Getting public key for application " + id);
+    @GetMapping("/applications/{id}/aeskey")
+    public ResponseEntity<String> getAesKey(@PathVariable("id") Long id) throws ApplicationNotFoundException, NoSuchAlgorithmException {
+        log.info("Getting AES key for application " + id);
         Application application = applicationFinder.findApplicationById(id);
-        return ResponseEntity.ok().body(Base64.getEncoder()
-                .encodeToString(rsa.getOrGenerateRSAPublicKey(application).getEncoded()));
+        SecretKey aesKey = crypto.getOrGenerateAESKey(application);
+        return ResponseEntity.ok().body(Base64.getEncoder().encodeToString(aesKey.getEncoded()));
     }
+
 
 }

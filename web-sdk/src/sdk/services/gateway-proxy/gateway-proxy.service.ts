@@ -8,6 +8,9 @@ import { DependenciesConfig } from '../../../shared/config/interfaces/dependenci
 import Axios, { AxiosResponse } from 'axios';
 import { MerchantAlreadyExists } from '../../exceptions/merchant-already-exists.exception';
 import { ApplicationNotFound } from '../../exceptions/application-not-found.exception';
+import { HttpHeaders } from '@angular/common/http';
+import axios, { AxiosRequestConfig } from 'axios';
+
 @Injectable()
 export class GatewayProxyService {
   private readonly logger = new Logger(GatewayProxyService.name);
@@ -59,11 +62,11 @@ async integrateMerchant(merchant: any): Promise<MerchantDTO> {
     }
   }
 
-  async getPublicKey(applicationId : string): Promise<string> {
+  async getAesKey(applicationId : string): Promise<string> {
     try {
       const response = await firstValueFrom(
         this.httpService.get(
-          `${this._gatewayBaseUrl}${this._gatewayPath}integration/applications/${applicationId}/publickey`
+          `${this._gatewayBaseUrl}${this._gatewayPath}integration/applications/${applicationId}/aeskey`
         ),
       );
       return response.data;
@@ -105,12 +108,18 @@ async createApiKey(id: string): Promise<string> {
 
 async processPayment( encryptedCardInfo: string): Promise<string> {
   try {
-    const response = await firstValueFrom(
-      this.httpService.post<string>(
-        `${this._gatewayBaseUrl}${this._gatewayPath}/authorize`,
-        encryptedCardInfo
-      )
-    );
+const httpOptions: AxiosRequestConfig = {
+  headers: {
+    'Content-Type': 'application/json',
+  },
+};
+
+const response = await axios.post<string>(
+  `${this._gatewayBaseUrl}${this._gatewayPath}authorize`,
+  encryptedCardInfo,
+  httpOptions
+);
+
     return response.data;
   } catch (error) {
   if (error.response && error.response.status === HttpStatus.NOT_FOUND) {
