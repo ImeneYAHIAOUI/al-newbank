@@ -28,6 +28,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.math.BigDecimal;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.logging.Logger;
 
 @Service
@@ -69,29 +70,24 @@ public class Transactioner implements ITransactionProcessor {
     @Override
     public void processPayment(String token, BigDecimal amount, String cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
-            BadPaddingException, InvalidKeyException {
+            BadPaddingException, InvalidKeyException, InvalidKeySpecException {
         Application application = validateToken(token);
         log.info("token validated");
         Merchant merchant = application.getMerchant();
-        log.info("encrypted credit card: "+ cryptedCreditCard);
-        try {
-            CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
-            log.info("successfully decrypted credit card");
+        log.info("encrypted credit card: " + cryptedCreditCard);
 
-            CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
-                    new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv())
-            );
-            if (!ccnResponseDto.isApproved()) {
-                throw new CCNException("Payment not authorized");
-            }
-            Transaction transaction = new Transaction(merchant.getBankAccount(), ccnResponseDto.getAuthToken(), amount);
-            transaction.setExternal(true);
+        CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
+        log.info("successfully decrypted credit card");
 
-            kafkaProducerService.sendMessage(transaction);
-        } catch (Exception e) {
-            throw new InvalidTokenException("Invalid token"+e.getMessage());
+        CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
+                new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv())
+        );
+        if (!ccnResponseDto.isApproved()) {
+            throw new CCNException("Payment not authorized");
         }
+        Transaction transaction = new Transaction(merchant.getBankAccount(), ccnResponseDto.getAuthToken(), amount);
+        transaction.setExternal(true);
 
-
+        kafkaProducerService.sendMessage(transaction);
     }
 }
