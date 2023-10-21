@@ -3,19 +3,20 @@ package groupB.newbankV5.paymentprocessor.entities;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Transaction {
 
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    private String id;
+    private UUID id;
 
     private BankAccount recipient;
     private BankAccount sender;
