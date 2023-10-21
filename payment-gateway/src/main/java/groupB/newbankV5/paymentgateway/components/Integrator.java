@@ -50,7 +50,6 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
         Merchant merchantFound = optMerchant.get();
         application.setMerchant(merchantFound);
         merchantFound.setApplication(application);
-        // Cascading the save in merchant to application
         applicationRepository.saveAndFlush(application);
         merchantRepository.saveAndFlush(merchant);
         application.generateToken();
@@ -67,7 +66,6 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
         applicationRepository.saveAndFlush(applicationFound);
         return token;
     }
-
     @Override
     public String getToken(Application application) throws ApplicationNotFoundException {
         Optional<Application> optApplication = applicationRepository.findById(application.getId());

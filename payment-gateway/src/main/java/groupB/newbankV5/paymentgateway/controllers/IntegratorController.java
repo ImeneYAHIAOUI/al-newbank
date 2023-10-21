@@ -79,12 +79,12 @@ public class IntegratorController {
         return ResponseEntity.ok().body(applicationIntegrator.getToken(application));
     }
 
-    @GetMapping("/applications/{id}/aeskey")
+    @GetMapping("/applications/{id}/publickey")
     public ResponseEntity<String> getAesKey(@PathVariable("id") Long id) throws ApplicationNotFoundException, NoSuchAlgorithmException {
-        log.info("Getting AES key for application " + id);
+        log.info("Getting public key for application " + id);
         Application application = applicationFinder.findApplicationById(id);
-        SecretKey aesKey = crypto.getOrGenerateAESKey(application);
-        return ResponseEntity.ok().body(Base64.getEncoder().encodeToString(aesKey.getEncoded()));
+        PublicKey publicKey = crypto.getOrGenerateRSAPublicKey(application);
+        return ResponseEntity.ok().body(Base64.getEncoder().encodeToString(publicKey.getEncoded()));
     }
 
 
