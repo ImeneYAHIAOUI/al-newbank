@@ -12,13 +12,14 @@ import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 
 public interface IRSA {
 //     SecretKey getOrGenerateAESKey(Application application) throws NoSuchAlgorithmException;
 //     String encryptCreditCard(CreditCard creditCard, SecretKey aesKey) throws NoSuchPaddingException,
 //             NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException;
      CreditCard decryptPaymentRequestCreditCard(String encryptedData, Application application ) throws NoSuchPaddingException,
-             NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, ApplicationNotFoundException;
+             NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, ApplicationNotFoundException, InvalidKeySpecException;
 
      PublicKey getOrGenerateRSAPublicKey(Application application) throws NoSuchAlgorithmException;
 }

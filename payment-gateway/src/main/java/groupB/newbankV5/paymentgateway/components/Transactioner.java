@@ -75,15 +75,7 @@ public class Transactioner implements ITransactionProcessor {
         Merchant merchant = application.getMerchant();
         log.info("encrypted credit card: "+ cryptedCreditCard);
         try {
-            Jws<Claims> jws = Jwts.parser().setSigningKey(Integrator.SECRET_KEY).parseClaimsJws(cryptedCreditCard);
-            Claims bodyClaims = jws.getBody();
-            String cardNumber = bodyClaims.get("cardNumber", String.class);
-            String expirationDate = bodyClaims.get("expirationDate", String.class);
-            String cvv = bodyClaims.get("cvv", String.class);
-            CreditCard creditCard= new CreditCard();
-            creditCard.setCardNumber(cardNumber);
-            creditCard.setExpiryDate(expirationDate);
-            creditCard.setCvv(cvv);
+            CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
             log.info("successfully decrypted credit card");
 
             CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(

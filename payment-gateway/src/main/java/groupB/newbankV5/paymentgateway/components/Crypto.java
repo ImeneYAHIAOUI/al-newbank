@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import javax.crypto.*;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -53,14 +55,22 @@ public class Crypto implements IRSA {
     public CreditCard decryptPaymentRequestCreditCard(String encryptedData, Application application)
             throws
             NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException,
-            BadPaddingException, ApplicationNotFoundException {
+            BadPaddingException, ApplicationNotFoundException, InvalidKeySpecException {
         Optional<ApplicationKeyPair> optApplicationKeyPair =
                 applicationKeyPairRepository.findByApplication(application);
         if(optApplicationKeyPair.isEmpty()) {
             throw new ApplicationNotFoundException("Application not found");
         }
+
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        byte [] encoded = Base64.getDecoder().decode(Base64.getEncoder().encode(
+                optApplicationKeyPair.get().getPrivateKey().getEncoded()
+        ));
+        PKCS8EncodedKeySpec keySpec1 = new PKCS8EncodedKeySpec(encoded);
+        PrivateKey privateKey = kf.generatePrivate(keySpec1);
+
         Cipher decryptCipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-1AndMGF1Padding");
-        decryptCipher.init(Cipher.DECRYPT_MODE, optApplicationKeyPair.get().getPrivateKey());
+        decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
 
         byte[] encryptedMessageBytes = Base64.getDecoder().decode(encryptedData);
         byte[] decryptedMessageBytes = decryptCipher.doFinal(encryptedMessageBytes);
