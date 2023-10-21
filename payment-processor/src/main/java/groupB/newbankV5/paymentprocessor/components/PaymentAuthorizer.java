@@ -1,16 +1,11 @@
 package groupB.newbankV5.paymentprocessor.components;
 
+import groupB.newbankV5.paymentprocessor.config.KafkaProducerService;
 import groupB.newbankV5.paymentprocessor.connectors.ExternalBankProxy;
 import groupB.newbankV5.paymentprocessor.connectors.dto.AccountDto;
-import groupB.newbankV5.paymentprocessor.controllers.dto.PaymentDetailsDTO;
-import groupB.newbankV5.paymentprocessor.controllers.dto.PaymentResponseDto;
-import groupB.newbankV5.paymentprocessor.controllers.dto.TransferDto;
-import groupB.newbankV5.paymentprocessor.controllers.dto.TransferResponseDto;
-import groupB.newbankV5.paymentprocessor.entities.CreditCard;
-import groupB.newbankV5.paymentprocessor.entities.Transaction;
-import groupB.newbankV5.paymentprocessor.entities.TransactionType;
+import groupB.newbankV5.paymentprocessor.controllers.dto.*;
+import groupB.newbankV5.paymentprocessor.entities.*;
 import groupB.newbankV5.paymentprocessor.interfaces.*;
-import groupB.newbankV5.paymentprocessor.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,68 +22,110 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
 
     private static final String NEWBANK_IBAN_REGEX = "^FR\\d{2}20523\\d+$";
 
-    private final TransactionRepository transactionRepository;
     private final ICostumerCare costumerCare;
 
 
     private final ExternalBankProxy externalBankProxy;
+    private final KafkaProducerService kafkaProducerService;
     @Autowired
-    public PaymentAuthorizer(TransactionRepository transactionRepository, ICostumerCare costumerCare, ICreditCardNetwork creditCardNetwork, ExternalBankProxy externalBankProxy) {
-        this.transactionRepository = transactionRepository;
+    public PaymentAuthorizer(ICostumerCare costumerCare, ExternalBankProxy externalBankProxy, KafkaProducerService kafkaProducerService) {
         this.costumerCare = costumerCare;
         this.externalBankProxy = externalBankProxy;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
 
     @Override
     public PaymentResponseDto authorizePayment(PaymentDetailsDTO paymentDetails) {
         log.info("Authorizing payment");
+        Transaction transaction = new Transaction();
+        AccountDto accountDto = costumerCare.getAccountByCreditCard(paymentDetails.getCardNumber(), paymentDetails.getExpirationDate(), paymentDetails.getCvv());
+        if (accountDto == null) {
+            return new PaymentResponseDto(false, "Account not found", generateAuthToken());
+        }
+        fillCommunTransactionInformation(transaction, accountDto, paymentDetails.getToAccountIBAN(), paymentDetails.getToAccountBIC(), paymentDetails.getAmount());
+        String authToken = generateAuthToken();
+        transaction.setExternal(true);
+        transaction.setAuthorizationToken(authToken);
 
         if(isFraudulent(paymentDetails) ) {
-            return new PaymentResponseDto(false, "Fraudulent transaction", generateAuthToken(10));
+            transaction.setStatus(TransactionStatus.FAILED);
+            kafkaProducerService.sendMessage(transaction);
+            return new PaymentResponseDto(false, "Fraudulent transaction", generateAuthToken());
         }
-        AccountDto accountDto = costumerCare.getAccountByCreditCard(paymentDetails.getCardNumber(), paymentDetails.getExpirationDate(), paymentDetails.getCvv());
         if (!hasSufficientFunds(accountDto, paymentDetails.getAmount())) {
-            return new PaymentResponseDto(false, "Insufficient funds", generateAuthToken(10));
+            transaction.setStatus(TransactionStatus.FAILED);
+            kafkaProducerService.sendMessage(transaction);
+            return new PaymentResponseDto(false, "Insufficient funds", generateAuthToken());
         }
-        CreditCard creditCard = new CreditCard(paymentDetails.getCardHolderName(), paymentDetails.getCardNumber(), paymentDetails.getExpirationDate(), paymentDetails.getCvv());
-        deductFunds(accountDto.getAccountId(), paymentDetails.getAmount());
-        Transaction transaction = new Transaction(creditCard, paymentDetails.getToAccountIBAN(), paymentDetails.getAmount(), TransactionType.CREDIT);
-        transactionRepository.save(transaction);
-        return new PaymentResponseDto(true, "Payment authorized", generateAuthToken(10));
+        transaction.setStatus(TransactionStatus.AUTHORIZED);
+        kafkaProducerService.sendMessage(transaction);
+        return new PaymentResponseDto(true, "Payment authorized", generateAuthToken());
 
+    }
+
+    private void fillCommunTransactionInformation(Transaction transaction, AccountDto accountDto, String toAccountIBAN, String toAccountBIC, BigDecimal amount) {
+        BankAccount sender = new BankAccount(accountDto.getIBAN(), accountDto.getBIC());
+        BankAccount receiver = new BankAccount(toAccountIBAN, toAccountBIC);
+        transaction.setSender(sender);
+        transaction.setRecipient(receiver);
+        transaction.setAmount(amount);
+        transaction.setId("temporaryId");
     }
 
     @Override
     public TransferResponseDto authorizeTransfer(TransferDto transferDetails) {
         log.info("Authorizing transfer");
-        if(isFraudulent(transferDetails)) {
-            return new TransferResponseDto(false, "Fraudulent transaction", generateAuthToken(10));
-        }
+        Transaction transaction = new Transaction();
         AccountDto accountDto = costumerCare.getAccountByIBAN(transferDetails.getFromAccountIBAN());
-        if (!hasSufficientFunds(accountDto, transferDetails.getAmount())) {
-            return new TransferResponseDto(false, "Insufficient funds", generateAuthToken(10));
+        if (accountDto == null) {
+            return new TransferResponseDto(false, "Account not found", generateAuthToken());
         }
-        Transaction transaction;
+
+        fillCommunTransactionInformation(transaction, accountDto, transferDetails.getToAccountIBAN(), transferDetails.getToAccountBIC(), transferDetails.getAmount());
+        String authToken = generateAuthToken();
+        transaction.setAuthorizationToken(authToken);
+
+        if(isFraudulent(transferDetails)) {
+            transaction.setStatus(TransactionStatus.FAILED);
+            kafkaProducerService.sendMessage(transaction);
+            return new TransferResponseDto(false, "Fraudulent transaction", generateAuthToken());
+        }
+        if (!hasSufficientFunds(accountDto, transferDetails.getAmount())) {
+            transaction.setStatus(TransactionStatus.FAILED);
+            kafkaProducerService.sendMessage(transaction);
+            return new TransferResponseDto(false, "Insufficient funds", generateAuthToken());
+        }
+        transaction.setStatus(TransactionStatus.AUTHORIZED);
         if (isNewBankAccount(transferDetails.getToAccountIBAN())) {
-            transaction = new Transaction(transferDetails.getFromAccountIBAN(), transferDetails.getToAccountIBAN(), transferDetails.getAmount(), TransactionType.TRANSFER);
-            AccountDto accountDto2 = costumerCare.getAccountByIBAN(transferDetails.getToAccountIBAN());
-            depositFund(accountDto2.getAccountId(), transferDetails.getAmount());
-            transactionRepository.save(transaction);
-            return new TransferResponseDto(true, "Transfer authorized", generateAuthToken(10));
+            transaction.setExternal(false);
+            kafkaProducerService.sendMessage(transaction);
+            return new TransferResponseDto(true, "Transfer authorized", generateAuthToken());
 
         } else {
             //call external bank authorizer
             if(externalBankProxy.authorizeTransfer(transferDetails).isAuthorized()){
-                transaction = new Transaction(transferDetails.getFromAccountIBAN(), transferDetails.getToAccountIBAN(), transferDetails.getAmount(), TransactionType.DEBIT);
-                transactionRepository.save(transaction);
-                return new TransferResponseDto(true, "Transfer authorized", generateAuthToken(10));
+                transaction.setExternal(true);
+                kafkaProducerService.sendMessage(transaction);
+                return new TransferResponseDto(true, "Transfer authorized", generateAuthToken());
             }  else{
-                return new TransferResponseDto(false, "Transfer failed", generateAuthToken(10));
+                transaction.setStatus(TransactionStatus.FAILED);
+                kafkaProducerService.sendMessage(transaction);
+                return new TransferResponseDto(false, "Transfer failed", generateAuthToken());
 
             }
         }
 
+    }
+
+    @Override
+    public CreditCardResponseDto validateCreditCard(CreditCardInformationDto paymentDetails) {
+        AccountDto accountDto = costumerCare.getAccountByCreditCard(paymentDetails.getCardNumber(), paymentDetails.getExpirationDate(), paymentDetails.getCvv());
+        if(accountDto != null){
+            return new CreditCardResponseDto(true, "Credit card validated", generateAuthToken());
+        } else{
+            return new CreditCardResponseDto(false, "Credit card not validated", generateAuthToken());
+        }
     }
 
     @Override
@@ -141,12 +178,12 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
         return accountIban.matches(NEWBANK_IBAN_REGEX);
     }
 
-    private String generateAuthToken(int length) {
+    private String generateAuthToken() {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder sb = new StringBuilder(length);
+        StringBuilder sb = new StringBuilder(10);
         SecureRandom random = new SecureRandom();
 
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < 10; i++) {
             int randomIndex = random.nextInt(characters.length());
             char randomChar = characters.charAt(randomIndex);
             sb.append(randomChar);

@@ -9,8 +9,8 @@ services:
       - spring-newbank-network
 
   transactions-service:
-    image: "newbank/transactions"
-    container_name: "transaction-service"
+    image: "newbank/transactions-service"
+    container_name: "transactions-service"
     ports:
       - "5000:8080"
     depends_on:
