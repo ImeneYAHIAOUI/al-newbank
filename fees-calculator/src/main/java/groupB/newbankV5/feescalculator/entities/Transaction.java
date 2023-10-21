@@ -1,10 +1,9 @@
 package groupB.newbankV5.feescalculator.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 public class Transaction {
@@ -12,21 +11,45 @@ public class Transaction {
     @Id
     @GeneratedValue
     @Column(name = "Transaction_id", nullable = false)
-    private Long id;
-    @ManyToOne
-    @JoinColumn(name = "merchant_merchant_id")
-    private Merchant merchant;
+    private UUID id;
+    private BankAccount recipient;
+    private BankAccount sender;
+    private Boolean isExternal;
     private String authorizationToken;
     private BigDecimal amount;
     private BigDecimal fees;
     private TransactionStatus status;
 
-    public Merchant getMerchant() {
-        return merchant;
+    public TransactionStatus getStatus() {
+        return status;
     }
 
-    public void setMerchant(Merchant merchant) {
-        this.merchant = merchant;
+    public BankAccount getRecipient() {
+        return recipient;
+    }
+
+    public BankAccount getSender() {
+        return sender;
+    }
+
+    public void setSender(BankAccount sender) {
+        this.sender = sender;
+    }
+
+    public Boolean getExternal() {
+        return isExternal;
+    }
+
+    public void setExternal(Boolean external) {
+        isExternal = external;
+    }
+
+    public void setRecipient(BankAccount recipient) {
+        this.recipient = recipient;
+    }
+
+    public void setStatus(TransactionStatus status) {
+        this.status = status;
     }
 
     public BigDecimal getFees() {
@@ -42,21 +65,19 @@ public class Transaction {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Transaction that = (Transaction) o;
-        return Objects.equals(merchant, that.merchant) && Objects.equals(authorizationToken, that.authorizationToken) && Objects.equals(amount, that.amount);
+        return Objects.equals(recipient, that.recipient) && Objects.equals(authorizationToken, that.authorizationToken) && Objects.equals(amount, that.amount);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(merchant, authorizationToken, amount);
+        return Objects.hash(recipient, authorizationToken, amount);
     }
 
     public Transaction() {
     }
 
-    public Transaction(@JsonProperty Merchant merchant,
-                       @JsonProperty String authorizationToken,
-                       @JsonProperty BigDecimal amount) {
-        this.merchant = merchant;
+    public Transaction(BankAccount recipient, String authorizationToken, BigDecimal amount) {
+        this.recipient = recipient;
         this.authorizationToken = authorizationToken;
         this.amount = amount;
     }
@@ -69,11 +90,11 @@ public class Transaction {
         this.authorizationToken = authorizationToken;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

@@ -1,5 +1,5 @@
-* What was done : This week, we focused on securing operations. We've looked at how to safely transfer data from our SDK to the gateway and chose encryption methods. We've also worked on strengthening the gateway's protection against potential attacks (rate limiter).
-* What is planned : We plan to implement the security strategies identified in the gateway and across the rest of our system, followed by thorough testing.
-* Issues :  Overcomplication due to Misplaced Focus.
-* Risk :  Delay in the development due to an excessive focus on less critical aspects 
-* Flag : Red
+* What was done : understanding of our project's objectives. We've established the project's scope, crafted use cases and personas, and engaged in discussions regarding the definition and creation of an SDK. Subsequently, we've initiated the planning of our software architecture.
+* What is planned : Our plan is to start breaking down the project into user stories and kickstart the development process. We have decided to develop the project using Spring.
+* Issues : Partial understanding of certain project-related aspects.
+* Risk : revise the architecture later in case of inadequate understanding of the subject matter.
+* RYG flag : Yellow

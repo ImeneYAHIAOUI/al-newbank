@@ -1,3 +1,3 @@
 export interface DependenciesConfig {
-  load_balancer_url: string;
+  gateaway_url_with_port: string;
 }

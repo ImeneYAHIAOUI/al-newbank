@@ -1,0 +1,15 @@
+version: "3.3"
+
+services:
+  externalbank-service:
+    image: "newbank/external-bank"
+    container_name: "externalbank-service"
+    restart: always
+    ports:
+      - 5010:8080
+    networks:
+      - spring-newbank-network
+
+networks:
+  spring-newbank-network:
+    external: true

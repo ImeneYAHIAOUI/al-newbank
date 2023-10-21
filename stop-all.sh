@@ -6,6 +6,8 @@ services=(
     "customer-care:customer-care/docker-compose.yml"
     "mock-credit-card-network:mock-credit-card-network/docker-compose.yml"
     "payment-gateway:payment-gateway/docker-compose.yml"
+    "fees-calculator:fees-calculator/docker-compose.yml"
+    "newbank:docker-compose.yml"
 )
 
 container_ids=()

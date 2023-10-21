@@ -1,0 +1,26 @@
+version: '3.1'
+services:
+  cassandra:
+    image: cassandra
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+    networks:
+      - spring-newbank-network
+
+  transactions-service:
+    image: "newbank/transactions"
+    container_name: "transaction-service"
+    ports:
+      - "5000:8080"
+    depends_on:
+      - cassandra
+    environment:
+      - CASSANDRA_HOST=cassandra
+    restart: on-failure
+    networks:
+      - spring-newbank-network
+
+networks:
+  spring-newbank-network:
+    external: true
