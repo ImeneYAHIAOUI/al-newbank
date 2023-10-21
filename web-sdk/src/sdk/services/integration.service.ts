@@ -100,9 +100,6 @@ export class IntegrationService {
       const applicationId: string = applicationIntegrationResult.id.toString();
       this.logger.log(`Application integration successful for ${application.name}. Application ID: ${applicationId}`);
 
-      // const apiKeyResult: string = await this.gatewayProxyService.createApiKey(applicationId);
-      // this.logger.log(`API key created successfully for application ID: ${applicationId}`);
-
       return { id: applicationId, apiKey: applicationIntegrationResult.apiKey.toString() };
 
     } catch (error) {
