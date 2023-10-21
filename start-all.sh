@@ -15,12 +15,6 @@ services=(
 )
 
 container_ids=()
-#
-network="spring-newbank-network"
-echo "Creating network $network"
-docker network create $network
-
-docker compose -f docker-compose.yml up -d
 
 echo "starting all"
 

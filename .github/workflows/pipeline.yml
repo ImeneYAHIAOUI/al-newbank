@@ -1,0 +1,27 @@
+name: Maven Build and Test
+
+on:
+  pull_request :
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+        env:
+          SERVER_USERNAME: ${{ secrets.GITHUB_ACTOR }}
+          SERVER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Test
+        run: |
+          mvn clean install -B

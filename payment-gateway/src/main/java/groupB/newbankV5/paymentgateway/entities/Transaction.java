@@ -53,14 +53,6 @@ public class Transaction {
         this.status = status;
     }
 
-    public BigDecimal getFees() {
-        return fees;
-    }
-
-    public void setFees(BigDecimal fees) {
-        this.fees = fees;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

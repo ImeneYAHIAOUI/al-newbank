@@ -1,13 +1,15 @@
 version: "3.3"
 
 services:
-  marsy-weather-service:
-    image: "sdk/sdk-payment"
+  sdk-service:
+    image: "newbank/web-sdk"
     restart: always
     ports:
-      - 3002:3000
+      - 3002:8080
+    environment:
+      - LOAD_BALANCER_URL=${LOAD_BALANCER}
     networks:
-      - nestjs-sdk-network
+      - spring-newbank-network
 networks:
-  nestjs-sdk-network:
+  spring-newbank-network:
     driver: bridge

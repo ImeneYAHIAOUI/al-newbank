@@ -1,6 +1,5 @@
 package groupB.newbankV5.paymentgateway.components;
 
-import groupB.newbankV5.paymentgateway.controllers.IntegratorController;
 import groupB.newbankV5.paymentgateway.controllers.dto.PaymentDto;
 import groupB.newbankV5.paymentgateway.entities.Application;
 import groupB.newbankV5.paymentgateway.entities.ApplicationKeyPair;
@@ -18,13 +17,11 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
-import java.util.Base64;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 @Service
 public class Crypto implements IRSA {
-    private static final Logger log = Logger.getLogger(Crypto.class.getName());
+
     private ApplicationKeyPairRepository applicationKeyPairRepository;
 
     @Autowired
@@ -41,8 +38,6 @@ public class Crypto implements IRSA {
             generator.initialize(2048);
             KeyPair pair = generator.generateKeyPair();
             ApplicationKeyPair applicationKeyPair = new ApplicationKeyPair();
-            log.info("Generating RSA key pair for the application, the used key format is"
-                    + pair.getPublic().getFormat() );
             applicationKeyPair.setApplication(application);
             applicationKeyPair.setPublicKey(pair.getPublic());
             applicationKeyPair.setPrivateKey(pair.getPrivate());
@@ -53,7 +48,7 @@ public class Crypto implements IRSA {
     }
 
     @Override
-    public CreditCard decryptPaymentRequestCreditCard(String encryptedData, Application application) throws ApplicationNotFoundException,
+    public CreditCard decryptPaymentRequestCreditCard(byte[] encryptedData, Application application) throws ApplicationNotFoundException,
             NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Optional<ApplicationKeyPair> optApplicationKeyPair =
                 applicationKeyPairRepository.findByApplication(application);
@@ -62,8 +57,7 @@ public class Crypto implements IRSA {
         }
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.DECRYPT_MODE, optApplicationKeyPair.get().getPrivateKey());
-        byte[] encryptedDataBytes = Base64.getDecoder().decode(encryptedData);
-        byte[] decryptedData = cipher.doFinal(encryptedDataBytes);
+        byte[] decryptedData = cipher.doFinal(encryptedData);
         String decryptedMessage = new String(decryptedData, StandardCharsets.UTF_8);
         String[] decryptedMessageArray = decryptedMessage.split(",");
         CreditCard creditCard = new CreditCard();

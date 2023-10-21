@@ -14,5 +14,5 @@ import java.security.PublicKey;
 
 public interface IRSA {
      PublicKey getOrGenerateRSAPublicKey(Application application) throws NoSuchAlgorithmException;
-     CreditCard decryptPaymentRequestCreditCard(String encryptedData, Application application) throws ApplicationNotFoundException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException;
+     CreditCard decryptPaymentRequestCreditCard(byte[] encryptedData, Application application) throws ApplicationNotFoundException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException;
 }
