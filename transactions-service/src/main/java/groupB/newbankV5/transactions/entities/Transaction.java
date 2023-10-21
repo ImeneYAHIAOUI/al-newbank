@@ -77,6 +77,20 @@ public class Transaction {
     public Transaction() {
     }
 
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id='" + id + '\'' +
+                ", recipient=" + recipient +
+                ", sender=" + sender +
+                ", isExternal=" + isExternal +
+                ", authorizationToken='" + authorizationToken + '\'' +
+                ", amount=" + amount +
+                ", fees=" + fees +
+                ", status=" + status +
+                '}';
+    }
+
     public Transaction(BankAccount recipient, String authorizationToken, BigDecimal amount) {
         this.recipient = recipient;
         this.authorizationToken = authorizationToken;

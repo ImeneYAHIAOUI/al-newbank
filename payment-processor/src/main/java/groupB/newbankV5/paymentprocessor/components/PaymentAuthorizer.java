@@ -52,16 +52,16 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
         if(isFraudulent(paymentDetails) ) {
             transaction.setStatus(TransactionStatus.FAILED);
             kafkaProducerService.sendMessage(transaction);
-            return new PaymentResponseDto(false, "Fraudulent transaction", generateAuthToken());
+            return new PaymentResponseDto(false, "Fraudulent transaction", authToken);
         }
         if (!hasSufficientFunds(accountDto, paymentDetails.getAmount())) {
             transaction.setStatus(TransactionStatus.FAILED);
             kafkaProducerService.sendMessage(transaction);
-            return new PaymentResponseDto(false, "Insufficient funds", generateAuthToken());
+            return new PaymentResponseDto(false, "Insufficient funds", authToken);
         }
         transaction.setStatus(TransactionStatus.AUTHORIZED);
         kafkaProducerService.sendMessage(transaction);
-        return new PaymentResponseDto(true, "Payment authorized", generateAuthToken());
+        return new PaymentResponseDto(true, "Payment authorized", authToken);
 
     }
 
@@ -91,29 +91,29 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
         if(isFraudulent(transferDetails)) {
             transaction.setStatus(TransactionStatus.FAILED);
             kafkaProducerService.sendMessage(transaction);
-            return new TransferResponseDto(false, "Fraudulent transaction", generateAuthToken());
+            return new TransferResponseDto(false, "Fraudulent transaction", authToken);
         }
         if (!hasSufficientFunds(accountDto, transferDetails.getAmount())) {
             transaction.setStatus(TransactionStatus.FAILED);
             kafkaProducerService.sendMessage(transaction);
-            return new TransferResponseDto(false, "Insufficient funds", generateAuthToken());
+            return new TransferResponseDto(false, "Insufficient funds", authToken);
         }
         transaction.setStatus(TransactionStatus.AUTHORIZED);
         if (isNewBankAccount(transferDetails.getToAccountIBAN())) {
             transaction.setExternal(false);
             kafkaProducerService.sendMessage(transaction);
-            return new TransferResponseDto(true, "Transfer authorized", generateAuthToken());
+            return new TransferResponseDto(true, "Transfer authorized", authToken);
 
         } else {
             //call external bank authorizer
             if(externalBankProxy.authorizeTransfer(transferDetails).isAuthorized()){
                 transaction.setExternal(true);
                 kafkaProducerService.sendMessage(transaction);
-                return new TransferResponseDto(true, "Transfer authorized", generateAuthToken());
+                return new TransferResponseDto(true, "Transfer authorized", authToken);
             }  else{
                 transaction.setStatus(TransactionStatus.FAILED);
                 kafkaProducerService.sendMessage(transaction);
-                return new TransferResponseDto(false, "Transfer failed", generateAuthToken());
+                return new TransferResponseDto(false, "Transfer failed", authToken);
 
             }
         }
