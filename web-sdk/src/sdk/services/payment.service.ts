@@ -14,13 +14,27 @@ export class PaymentService {
   constructor(
     private readonly gatewayProxyService: GatewayProxyService,
   ) {}
-    // a modifier
-  validateCardInfo(paymentInfo: PaymentInfoDTO): void {
-    if (!paymentInfo || !paymentInfo.cardNumber || !paymentInfo.expirationDate || !paymentInfo.cvv) {
-      throw new Error('Invalid card information');
-    }
-  }
-  // a modifier
+
+  validateCardInfo(paymentInfo) {
+     if (!paymentInfo || !paymentInfo.cardNumber || !paymentInfo.expirationDate || !paymentInfo.cvv) {
+         throw new Error('Invalid card information');
+     }
+
+     const cardNumberRegex = /^\d{16}$/;
+     if (!cardNumberRegex.test(paymentInfo.cardNumber)) {
+         throw new Error('Invalid card number. It should be a 16-digit number.');
+     }
+
+     const expirationDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+     if (!expirationDateRegex.test(paymentInfo.expirationDate)) {
+         throw new Error('Invalid expiration date. It should be in the format MM/YY.');
+     }
+
+     const cvvRegex = /^\d{3}$/;
+     if (!cvvRegex.test(paymentInfo.cvv)) {
+         throw new Error('Invalid CVV. It should be a 3-digit number.');
+     }
+ }
   async retrieveLocation(): Promise<string> {
     try {
       const ipInfoResponse = await axios.get('https://ipinfo.io');
@@ -36,28 +50,27 @@ export class PaymentService {
   }
   // a modifier
 async processCardInfo(paymentInfo: PaymentInfoDTO, applicationId: string,token: string ): Promise<String> {
- // try {
+ try {
     this.validateCardInfo(paymentInfo);
     const location = await this.retrieveLocation();
     const [altitude, longitude] = location.split(',');
-const card = {
-  cardNumber: paymentInfo.cardNumber,
-  expirationDate: paymentInfo.expirationDate,
-  cvv: paymentInfo.cvv,
+
+const jws = require('jws');
+
+const secretKey = process.env.ACCESS_TOKEN_SECRET;
+
+const cardInfo = {
+    cardNumber: paymentInfo.cardNumber,
+    expirationDate: paymentInfo.expirationDate,
+    cvv: paymentInfo.cvv,
 };
-    const secretKey = process.env.ACCESS_TOKEN_SECRET;
-    const encryptedCardInfo = jwt.sign(
-            {
-                  cardNumber: paymentInfo.cardNumber,
-                  expirationDate: paymentInfo.expirationDate,
-                  cvv: paymentInfo.cvv,
-            },
-            secretKey,
-            {
-                expiresIn: '1h',
-                algorithm: 'HS256'
-            }
-        );
+
+const payload = JSON.stringify(cardInfo);
+const encryptedCardInfo = jws.sign({
+    header: { alg: 'HS256' },
+    payload: payload,
+    secret: secretKey
+});
     const payment = {
       cryptedCreditCard: encryptedCardInfo,
       amount: paymentInfo.amount,
@@ -65,26 +78,9 @@ const card = {
     this.logger.debug('Payment:', payment);
     await this.gatewayProxyService.processPayment(JSON.stringify(payment));
     return encryptedCardInfo;
-  //} catch (error) {
-    //throw new Error('Error processing card information: ' + error.message);
-  //}
+  } catch (error) {
+    throw new Error('Error processing card information: ' + error.message);
+  }
 }
-
-// a modifier
-  verifyAccessToken(token: string): boolean {
-    try {
-      const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-      this.logger.log('Access token verified successfully');
-      return true;
-    } catch (error) {
-      this.logger.error(`Error verifying access token: ${error.message}`);
-      return false;
-    }
-  }
-// a modifier
-  generateAccessToken(id: string, secretKey: string): string {
-    const accessToken = jwt.sign({ id }, secretKey, { expiresIn: '1y' });
-    return accessToken;
-  }
 
 }
