@@ -5,6 +5,7 @@ import appConfig from './shared/config/app.config';
 import { GatewayProxyService } from './sdk/services/gateway-proxy/gateway-proxy.service';
 import dependenciesConfig from './shared/config/dependencies.config';
 import { ConfigModule } from '@nestjs/config';
+import { IntegrationService } from './sdk/services/./integration.service';
 @Module({
  imports: [
      ConfigModule.forRoot({
@@ -15,6 +16,6 @@ import { ConfigModule } from '@nestjs/config';
                                 max : 100
                               }),HttpModule],
   controllers: [],
-  providers: [GatewayProxyService],
+  providers: [GatewayProxyService,IntegrationService],
 })
 export class AppModule {}

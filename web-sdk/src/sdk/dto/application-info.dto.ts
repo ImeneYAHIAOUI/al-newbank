@@ -5,5 +5,4 @@ export class ApplicationInfo {
   BIC: string;
   url: string;
   description: string;
-  merchantId: number;
 }
