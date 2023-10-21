@@ -11,11 +11,12 @@ import javax.crypto.NoSuchPaddingException;
 import java.math.BigDecimal;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 public interface ITransactionProcessor {
     Application validateToken(String token) throws InvalidTokenException, ApplicationNotFoundException;
 
     void processPayment(String token, BigDecimal amount, String cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
-            BadPaddingException, InvalidKeyException;
+            BadPaddingException, InvalidKeyException, InvalidKeySpecException;
 }
