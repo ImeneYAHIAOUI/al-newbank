@@ -16,25 +16,26 @@ export class PaymentService {
   ) {}
 
   validateCardInfo(paymentInfo) {
-     if (!paymentInfo || !paymentInfo.cardNumber || !paymentInfo.expirationDate || !paymentInfo.cvv) {
-         throw new Error('Invalid card information');
-     }
+    if (!paymentInfo || !paymentInfo.cardNumber || !paymentInfo.expirationDate || !paymentInfo.cvv) {
+      throw new Error('Invalid card information');
+    }
 
-     const cardNumberRegex = /^\d{16}$/;
-     if (!cardNumberRegex.test(paymentInfo.cardNumber)) {
-         throw new Error('Invalid card number. It should be a 16-digit number.');
-     }
+    const cardNumberRegex = /^\d{16}$/;
+    if (!cardNumberRegex.test(paymentInfo.cardNumber)) {
+      throw new Error('Invalid card number. It should be a 16-digit number.');
+    }
 
-     const expirationDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
-     if (!expirationDateRegex.test(paymentInfo.expirationDate)) {
-         throw new Error('Invalid expiration date. It should be in the format MM/YY.');
-     }
+    const expirationDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+    if (!expirationDateRegex.test(paymentInfo.expirationDate)) {
+      throw new Error('Invalid expiration date. It should be in the format MM/YY.');
+    }
 
-     const cvvRegex = /^\d{3}$/;
-     if (!cvvRegex.test(paymentInfo.cvv)) {
-         throw new Error('Invalid CVV. It should be a 3-digit number.');
-     }
- }
+    const cvvRegex = /^\d{3}$/;
+    if (!cvvRegex.test(paymentInfo.cvv)) {
+      throw new Error('Invalid CVV. It should be a 3-digit number.');
+    }
+  }
+
   async retrieveLocation(): Promise<string> {
     try {
       const ipInfoResponse = await axios.get('https://ipinfo.io');
@@ -42,38 +43,51 @@ export class PaymentService {
       if (!location) {
         throw new Error('No location information available');
       }
-      //console.debug('Location:', location);
+      this.logger.debug('Location:', location);
       return location;
     } catch (error) {
       throw new Error('Error retrieving location information: ' + error.message);
     }
   }
-  // a modifier
-async processCardInfo(paymentInfo: PaymentInfoDTO, applicationId: string,token: string ): Promise<Buffer> {
- try {
-    this.validateCardInfo(paymentInfo);
-    const location = await this.retrieveLocation();
-    const [altitude, longitude] = location.split(',');
+
+  async processCardInfo(paymentInfo: PaymentInfoDTO, applicationId: string, token: string): Promise<Buffer> {
+    try {
+      this.validateCardInfo(paymentInfo);
+      const location = await this.retrieveLocation();
+      const [altitude, longitude] = location.split(',');
 
       const publicKey = await this.gatewayProxyService.getPublicKey(applicationId);
+      this.logger.debug('Public key:', publicKey);
 
-const cardInfo = {
-    cardNumber: paymentInfo.cardNumber,
-    expirationDate: paymentInfo.expirationDate,
-    cvv: paymentInfo.cvv,
-};
+      const cardInfo = {
+        cardNumber: paymentInfo.cardNumber,
+        expirationDate: paymentInfo.expirationDate,
+        cvv: paymentInfo.cvv,
+      };
+      this.logger.debug('Card info:', Buffer.from(JSON.stringify(cardInfo)));
 
-      const encryptedCardInfo = crypto.publicEncrypt(publicKey, Buffer.from(JSON.stringify(cardInfo)));
-    const payment = {
-      cryptedCreditCard: encryptedCardInfo,
-      amount: paymentInfo.amount,
-      token: token,};
-    this.logger.debug('Payment:', payment);
-    await this.gatewayProxyService.processPayment(JSON.stringify(payment));
-    return encryptedCardInfo;
-  } catch (error) {
-    throw new Error('Error processing card information: ' + error.message);
+      const plaintext = `${paymentInfo.cardNumber.toString()},${paymentInfo.expirationDate.toString()},${paymentInfo.cvv.toString()}`;
+      this.logger.debug('Plaintext:', plaintext);
+
+      const buffer = Buffer.from(plaintext, "utf8");
+      const encryptedCardInfo = crypto.publicEncrypt(
+        "-----BEGIN PUBLIC KEY-----\n" + publicKey + "\n-----END PUBLIC KEY-----",
+        buffer
+      );
+
+      const payment = {
+        cryptedCreditCard: encryptedCardInfo.toString('base64'),
+        amount: paymentInfo.amount,
+        token: token,
+      };
+      this.logger.debug('Payment:', payment);
+
+      await this.gatewayProxyService.processPayment(JSON.stringify(payment));
+      return encryptedCardInfo;
+    } catch (error) {
+      throw new Error('Error processing card information: ' + error.message);
+    }
   }
 }
 
-}
+
