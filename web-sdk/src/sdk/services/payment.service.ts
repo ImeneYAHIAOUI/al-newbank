@@ -5,19 +5,34 @@ import { InvalidTokenException } from '../exceptions/invalid-token.exception';
 import axios from 'axios';
 import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
+import * as forge from 'node-forge';
+import CryptoJS from 'crypto-js';
 
 export class PaymentService {
   private readonly logger = new Logger(PaymentService.name);
-  private _applicationId: string;
-
 
   constructor(
     private readonly gatewayProxyService: GatewayProxyService,
   ) {}
 
-  validateCardInfo(paymentInfo: PaymentInfoDTO): void {
+  validateCardInfo(paymentInfo) {
     if (!paymentInfo || !paymentInfo.cardNumber || !paymentInfo.expirationDate || !paymentInfo.cvv) {
       throw new Error('Invalid card information');
+    }
+
+    const cardNumberRegex = /^\d{16}$/;
+    if (!cardNumberRegex.test(paymentInfo.cardNumber)) {
+      throw new Error('Invalid card number. It should be a 16-digit number.');
+    }
+
+    const expirationDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+    if (!expirationDateRegex.test(paymentInfo.expirationDate)) {
+      throw new Error('Invalid expiration date. It should be in the format MM/YY.');
+    }
+
+    const cvvRegex = /^\d{3}$/;
+    if (!cvvRegex.test(paymentInfo.cvv)) {
+      throw new Error('Invalid CVV. It should be a 3-digit number.');
     }
   }
 
@@ -28,55 +43,51 @@ export class PaymentService {
       if (!location) {
         throw new Error('No location information available');
       }
-      console.debug('Location:', location);
+      this.logger.debug('Location:', location);
       return location;
     } catch (error) {
       throw new Error('Error retrieving location information: ' + error.message);
     }
   }
 
-  async processCardInfo(paymentInfo: PaymentInfoDTO): Promise<Buffer> {
+  async processCardInfo(paymentInfo: PaymentInfoDTO, applicationId: string, token: string): Promise<Buffer> {
     try {
       this.validateCardInfo(paymentInfo);
       const location = await this.retrieveLocation();
       const [altitude, longitude] = location.split(',');
-      const token = this.generateAccessToken(this._applicationId, process.env.ACCESS_TOKEN_SECRET);
-      const publicKey = await this.gatewayProxyService.getPublicKey(this._applicationId);
-      const payload = {
+
+      const publicKey = await this.gatewayProxyService.getPublicKey(applicationId);
+      this.logger.debug('Public key:', publicKey);
+
+      const cardInfo = {
         cardNumber: paymentInfo.cardNumber,
         expirationDate: paymentInfo.expirationDate,
         cvv: paymentInfo.cvv,
-        altitude: altitude,
-        longitude: longitude,
+      };
+      this.logger.debug('Card info:', Buffer.from(JSON.stringify(cardInfo)));
+
+      const plaintext = `${paymentInfo.cardNumber.toString()},${paymentInfo.expirationDate.toString()},${paymentInfo.cvv.toString()}`;
+      this.logger.debug('Plaintext:', plaintext);
+
+      const buffer = Buffer.from(plaintext, "utf8");
+      const encryptedCardInfo = crypto.publicEncrypt(
+        "-----BEGIN PUBLIC KEY-----\n" + publicKey + "\n-----END PUBLIC KEY-----",
+        buffer
+      );
+
+      const payment = {
+        cryptedCreditCard: encryptedCardInfo.toString('base64'),
         amount: paymentInfo.amount,
         token: token,
       };
-      const encryptedCardInfo = crypto.publicEncrypt(publicKey, Buffer.from(JSON.stringify(payload)));
-      console.debug('Encrypted Card Information:', encryptedCardInfo.toString('base64'));
-      this.gatewayProxyService.processPayment(encryptedCardInfo.toString('base64'));
+      this.logger.debug('Payment:', payment);
+
+      await this.gatewayProxyService.processPayment(JSON.stringify(payment));
       return encryptedCardInfo;
     } catch (error) {
       throw new Error('Error processing card information: ' + error.message);
     }
   }
-
-  verifyAccessToken(token: string): boolean {
-    try {
-      const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-      this.logger.log('Access token verified successfully');
-      return true;
-    } catch (error) {
-      this.logger.error(`Error verifying access token: ${error.message}`);
-      return false;
-    }
-  }
-
-  generateAccessToken(id: string, secretKey: string): string {
-    const accessToken = jwt.sign({ id }, secretKey, { expiresIn: '1y' });
-    return accessToken;
-  }
-
-  set applicationId(value: string) {
-    this._applicationId = value;
-  }
 }
+
+

@@ -4,6 +4,7 @@ import groupB.newbankV5.paymentgateway.config.KafkaProducerService;
 import groupB.newbankV5.paymentgateway.connectors.CreditCardNetworkProxy;
 import groupB.newbankV5.paymentgateway.connectors.dto.CcnResponseDto;
 import groupB.newbankV5.paymentgateway.connectors.dto.PaymentDetailsDTO;
+import groupB.newbankV5.paymentgateway.controllers.TransactionerController;
 import groupB.newbankV5.paymentgateway.entities.Application;
 import groupB.newbankV5.paymentgateway.entities.CreditCard;
 import groupB.newbankV5.paymentgateway.entities.Merchant;
@@ -27,11 +28,15 @@ import javax.crypto.NoSuchPaddingException;
 import java.math.BigDecimal;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.logging.Logger;
 
 @Service
 public class Transactioner implements ITransactionProcessor {
     private final Integer FEE_RATE = 10;
     private final double FLAT_FEE = 0.03;
+    private static final Logger log = Logger.getLogger(Transactioner.class.getName());
+
     private ApplicationRepository applicationRepository;
     private CreditCardNetworkProxy creditCardNetworkProxy;
     private IRSA rsa;
@@ -61,13 +66,19 @@ public class Transactioner implements ITransactionProcessor {
                 .orElseThrow(() -> new ApplicationNotFoundException("Application with id " + applicationId + " not found"));
     }
 
+
     @Override
     public void processPayment(String token, BigDecimal amount, String cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
-            BadPaddingException, InvalidKeyException {
+            BadPaddingException, InvalidKeyException, InvalidKeySpecException {
         Application application = validateToken(token);
+        log.info("token validated");
         Merchant merchant = application.getMerchant();
+        log.info("encrypted credit card: " + cryptedCreditCard);
+
         CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
+        log.info("successfully decrypted credit card");
+
         CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
                 new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv())
         );
