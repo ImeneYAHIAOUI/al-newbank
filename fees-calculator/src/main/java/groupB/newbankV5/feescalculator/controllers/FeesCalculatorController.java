@@ -38,7 +38,7 @@ public class FeesCalculatorController {
         return ResponseEntity.ok().body("OK");
     }
 
-    @KafkaListener(topics = "topic-transactions", groupId = "group_id")
+    @KafkaListener(topics = "topic-fees-calculator", groupId = "group_id")
     public void receiveTransaction(@Payload String payload, ConsumerRecord<String, Transaction> cr) {
         // Process the received message
         try {

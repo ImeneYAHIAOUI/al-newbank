@@ -17,6 +17,6 @@ public class KafkaProducerService {
     }
 
     public void sendMessage(Object message) {
-        kafkaTemplate.send("topic-transactions", message);
+        kafkaTemplate.send("topic-fees-calculator", message);
     }
 }
