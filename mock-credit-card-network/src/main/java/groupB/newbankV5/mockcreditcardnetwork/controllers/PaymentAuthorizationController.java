@@ -30,7 +30,7 @@ public class PaymentAuthorizationController {
     @PostMapping("/authorize")
     public ResponseEntity<PaymentResponseDto> authorizePayment(@RequestBody CreditCardInformationDto creditCardInformationDto) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(creditCardAuthorizer.AuthorizePayment(creditCardInformationDto));
+            return ResponseEntity.status(HttpStatus.OK).body(creditCardAuthorizer.ValidateCreditCard(creditCardInformationDto));
         }
         catch (ExpirationDateException e) {
             PaymentResponseDto errorResponse = new PaymentResponseDto();

@@ -1,8 +1,9 @@
 package groupB.newbankV5.transactions.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import groupB.newbankV5.transactions.entities.Transaction;
 import groupB.newbankV5.transactions.entities.TransactionStatus;
-import groupB.newbankV5.transactions.interfaces.IPersister;
 import groupB.newbankV5.transactions.repositories.TransactionRepository;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -22,8 +23,15 @@ public class TransactionController {
 
     private final Logger log = LoggerFactory.getLogger(TransactionController.class);
 
+    private final TransactionRepository transactionRepository;
+
+
+    private final ObjectMapper objectMapper;
     @Autowired
-    private TransactionRepository transactionRepository;
+    public TransactionController(ObjectMapper objectMapper, TransactionRepository transactionRepository) {
+        this.objectMapper = objectMapper;
+        this.transactionRepository = transactionRepository;
+    }
 
     @GetMapping("/health")
     public String health() {
@@ -55,10 +63,15 @@ public class TransactionController {
     }
 
     @KafkaListener(topics = "topic-transactions", groupId = "group_id")
-    public void receiveTransaction(@Payload Transaction transaction, ConsumerRecord<String, Transaction> cr) {
+    public void receiveTransaction(@Payload String payload, ConsumerRecord<String, Transaction> cr) {
         // Process the received message
-        log.info("Received transaction: " + transaction.toString());
-        // Save a new one or save with the updated status
-        transactionRepository.save(transaction);
+        try {
+            Transaction transaction = objectMapper.readValue(payload, Transaction.class);
+            log.info("Received transaction: " + transaction.toString());
+            // Save a new one or save with the updated status
+            transactionRepository.save(transaction);
+        } catch (JsonProcessingException e) {
+            log.error("Error processing transaction: " + e.getMessage());
+        }
     }
 }

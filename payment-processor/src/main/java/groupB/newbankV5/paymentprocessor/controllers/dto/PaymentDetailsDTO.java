@@ -9,18 +9,20 @@ public class PaymentDetailsDTO {
     private String cvv;
     private BigDecimal amount;
     private String toAccountIBAN;
+    private String toAccountBIC;
 
     public PaymentDetailsDTO() {
         // Default constructor
     }
 
-    public PaymentDetailsDTO(String cardHolderName, String cardNumber, String expirationDate, String cvv, BigDecimal amount, String toAccountIBAN) {
+    public PaymentDetailsDTO(String cardHolderName, String cardNumber, String expirationDate, String cvv, BigDecimal amount, String toAccountIBAN, String toAccountBIC) {
         this.cardHolderName = cardHolderName;
         this.cardNumber = cardNumber;
         this.expirationDate = expirationDate;
         this.cvv = cvv;
         this.amount = amount;
         this.toAccountIBAN = toAccountIBAN;
+        this.toAccountBIC = toAccountBIC;
     }
 
     public String getToAccountIBAN() {
@@ -80,5 +82,13 @@ public class PaymentDetailsDTO {
                 ", cvv='" + cvv + '\'' +
                 ", amount=" + amount +
                 '}';
+    }
+
+    public String getToAccountBIC() {
+        return toAccountBIC;
+    }
+
+    public void setToAccountBIC(String toAccountBIC) {
+        this.toAccountBIC = toAccountBIC;
     }
 }
