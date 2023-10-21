@@ -124,7 +124,7 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
     public CreditCardResponseDto validateCreditCard(CreditCardInformationDto paymentDetails) {
         AccountDto accountDto = costumerCare.getAccountByCreditCard(paymentDetails.getCardNumber(), paymentDetails.getExpirationDate(), paymentDetails.getCvv());
         if(accountDto != null){
-            return new CreditCardResponseDto(true, "Credit card validated", generateAuthToken());
+            return new CreditCardResponseDto(true, "Credit card validated", generateAuthToken(), accountDto.getIBAN(), accountDto.getBIC());
         } else{
             return new CreditCardResponseDto(false, "Credit card not validated", generateAuthToken());
         }

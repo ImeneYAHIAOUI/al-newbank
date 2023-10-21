@@ -2,7 +2,7 @@ package groupB.newbankV5.mockcreditcardnetwork.components;
 
 import groupB.newbankV5.mockcreditcardnetwork.connectors.NewBankProxy;
 import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.CreditCardInformationDto;
-import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.PaymentResponseDto;
+import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.CreditCardCheckResponseDto;
 import groupB.newbankV5.mockcreditcardnetwork.exceptions.ExpirationDateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ public class CreditCardAuthorizer {
         this.newBankProxy = newBankProxy;
     }
 
-    public PaymentResponseDto ValidateCreditCard(CreditCardInformationDto creditCardInformationDto) {
+    public CreditCardCheckResponseDto ValidateCreditCard(CreditCardInformationDto creditCardInformationDto) {
         log.info("Authorizing payment");
         String ccnumber = creditCardInformationDto.getCardNumber();
         if(isValidNewBank(ccnumber)) {
@@ -40,10 +40,12 @@ public class CreditCardAuthorizer {
         boolean validDate = isValidDate(creditCardInformationDto.getExpirationDate());
         log.info("Valid date: " + validDate);
         boolean response = validNumber && validCVV && validDate;
-        PaymentResponseDto responseDto = new PaymentResponseDto();
+        CreditCardCheckResponseDto responseDto = new CreditCardCheckResponseDto();
         responseDto.setResponse(validNumber && validCVV && validDate);
         responseDto.setMessage();
         responseDto.setAuthToken();
+        responseDto.setAccountIBAN("FR2052300000000000000000000");
+        responseDto.setAccountBIC("EXTERNAL");
         log.info(responseDto.toString());
         return responseDto;
     }

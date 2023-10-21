@@ -5,6 +5,9 @@ public class CcnResponseDto {
     boolean response;
     String message;
     String authToken;
+
+    String AccountIBAN;
+    String AccountBIC;
     public CcnResponseDto() {
     }
     public CcnResponseDto(boolean response) {
@@ -20,6 +23,26 @@ public class CcnResponseDto {
         this.response = response;
         this.message = message;
         this.authToken = authToken;
+    }
+
+    public boolean isResponse() {
+        return response;
+    }
+
+    public String getAccountIBAN() {
+        return AccountIBAN;
+    }
+
+    public void setAccountIBAN(String accountIBAN) {
+        AccountIBAN = accountIBAN;
+    }
+
+    public String getAccountBIC() {
+        return AccountBIC;
+    }
+
+    public void setAccountBIC(String accountBIC) {
+        AccountBIC = accountBIC;
     }
 
     public boolean isApproved() {

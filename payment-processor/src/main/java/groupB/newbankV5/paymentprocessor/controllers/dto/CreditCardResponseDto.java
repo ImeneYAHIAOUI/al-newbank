@@ -2,25 +2,52 @@ package groupB.newbankV5.paymentprocessor.controllers.dto;
 
 public class CreditCardResponseDto {
 
-    private boolean valid;
+    private boolean response;
     private String message;
     private String authToken;
+
+    private String AccountIBAN;
+    private String AccountBIC;
 
     public CreditCardResponseDto() {
     }
 
-    public CreditCardResponseDto(boolean valid, String message, String authToken) {
-        this.valid = valid;
+    public CreditCardResponseDto(boolean response, String message, String authToken) {
+        this.response = response;
         this.message = message;
         this.authToken = authToken;
     }
 
-    public boolean isValid() {
-        return valid;
+    public CreditCardResponseDto(boolean response, String message, String authToken, String accountIBAN, String accountBIC) {
+        this.response = response;
+        this.message = message;
+        this.authToken = authToken;
+        AccountIBAN = accountIBAN;
+        AccountBIC = accountBIC;
     }
 
-    public void setValid(boolean valid) {
-        this.valid = valid;
+    public String getAccountIBAN() {
+        return AccountIBAN;
+    }
+
+    public void setAccountIBAN(String accountIBAN) {
+        AccountIBAN = accountIBAN;
+    }
+
+    public String getAccountBIC() {
+        return AccountBIC;
+    }
+
+    public void setAccountBIC(String accountBIC) {
+        AccountBIC = accountBIC;
+    }
+
+    public boolean isResponse() {
+        return response;
+    }
+
+    public void setResponse(boolean response) {
+        this.response = response;
     }
 
     public String getMessage() {

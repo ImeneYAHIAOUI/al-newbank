@@ -8,7 +8,7 @@ public class PaymentDetailsDTO {
     private String expirationDate;
     private String cvv;
     private BigDecimal amount;
-    private String toAccountIBAN;
+
 
     public PaymentDetailsDTO() {
         // Default constructor
@@ -27,22 +27,16 @@ public class PaymentDetailsDTO {
         this.cvv = cvv;
     }
 
-    public PaymentDetailsDTO(String cardHolderName, String cardNumber, String expirationDate, String cvv, BigDecimal amount, String toAccountIBAN) {
+    public PaymentDetailsDTO(String cardHolderName, String cardNumber, String expirationDate, String cvv, BigDecimal amount) {
         this.cardHolderName = cardHolderName;
         this.cardNumber = cardNumber;
         this.expirationDate = expirationDate;
         this.cvv = cvv;
         this.amount = amount;
-        this.toAccountIBAN = toAccountIBAN;
+
     }
 
-    public String getToAccountIBAN() {
-        return toAccountIBAN;
-    }
 
-    public void setToAccountIBAN(String toAccountIBAN) {
-        this.toAccountIBAN = toAccountIBAN;
-    }
 
     public String getCardHolderName() {
         return cardHolderName;

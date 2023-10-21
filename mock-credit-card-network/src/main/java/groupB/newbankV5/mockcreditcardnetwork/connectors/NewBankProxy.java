@@ -1,7 +1,7 @@
 package groupB.newbankV5.mockcreditcardnetwork.connectors;
 
 import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.CreditCardInformationDto;
-import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.PaymentResponseDto;
+import groupB.newbankV5.mockcreditcardnetwork.controllers.dto.CreditCardCheckResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -19,9 +19,9 @@ public class NewBankProxy {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    public PaymentResponseDto checkNewBankCreditCard(CreditCardInformationDto creditCardInformationDto) {
+    public CreditCardCheckResponseDto checkNewBankCreditCard(CreditCardInformationDto creditCardInformationDto) {
         log.info("Authorizing payment");
-        return restTemplate.postForEntity(newBankHostandPort + "/api/payment/checkCreditCard", creditCardInformationDto, PaymentResponseDto.class).getBody();
+        return restTemplate.postForEntity(newBankHostandPort + "/api/payment/checkCreditCard", creditCardInformationDto, CreditCardCheckResponseDto.class).getBody();
     }
 
 

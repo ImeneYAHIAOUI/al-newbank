@@ -3,26 +3,57 @@ package groupB.newbankV5.mockcreditcardnetwork.controllers.dto;
 
 import java.security.SecureRandom;
 
-public class PaymentResponseDto {
+public class CreditCardCheckResponseDto {
     boolean response;
     String message;
     String authToken;
 
-    public PaymentResponseDto() {
+    String AccountIBAN;
+    String AccountBIC;
+
+    public CreditCardCheckResponseDto() {
     }
-    public PaymentResponseDto(boolean response) {
+    public CreditCardCheckResponseDto(boolean response) {
         this.response = response;
     }
 
-    public PaymentResponseDto(boolean response, String message) {
+    public CreditCardCheckResponseDto(boolean response, String message) {
         this.response = response;
         this.message = message;
     }
 
-    public PaymentResponseDto(boolean response, String message, String authToken) {
+    public CreditCardCheckResponseDto(boolean response, String message, String authToken) {
         this.response = response;
         this.message = message;
         this.authToken = authToken;
+    }
+
+    public boolean isResponse() {
+        return response;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
+
+    public String getAccountIBAN() {
+        return AccountIBAN;
+    }
+
+    public void setAccountIBAN(String accountIBAN) {
+        AccountIBAN = accountIBAN;
+    }
+
+    public String getAccountBIC() {
+        return AccountBIC;
+    }
+
+    public void setAccountBIC(String accountBIC) {
+        AccountBIC = accountBIC;
     }
 
     public boolean getResponse() {
