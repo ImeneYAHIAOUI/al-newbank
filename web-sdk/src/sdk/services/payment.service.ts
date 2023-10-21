@@ -35,32 +35,35 @@ export class PaymentService {
     }
   }
   // a modifier
-async processCardInfo(paymentInfo: PaymentInfoDTO, applicationId: string,token: string ): Promise<Buffer> {
+async processCardInfo(paymentInfo: PaymentInfoDTO, applicationId: string,token: string ): Promise<String> {
  // try {
     this.validateCardInfo(paymentInfo);
     const location = await this.retrieveLocation();
     const [altitude, longitude] = location.split(',');
-    const aesKey = await this.gatewayProxyService.getAesKey(applicationId);
-
-    const card = {
-      cardNumber: paymentInfo.cardNumber,
-      expirationDate: paymentInfo.expirationDate,
-      cvv: paymentInfo.cvv,
-    };
-
-    const aesKeyBuffer = Buffer.from(aesKey, 'base64');
-    //const aesKeyBuffer='ep490qbQvoaNoG2Bk6dFlqHg2vNorbDRuv3gCBC+Yh8=';
-    var CryptoJS = require("crypto-js/core");
-    CryptoJS.AES = require("crypto-js/aes");
-    //console.debug('AES Key:', aesKeyBuffer.toString('base64'));
-    const encryptedCardInfo = CryptoJS.AES.encrypt(JSON.stringify(card), aesKeyBuffer.toString('base64'))
+const card = {
+  cardNumber: paymentInfo.cardNumber,
+  expirationDate: paymentInfo.expirationDate,
+  cvv: paymentInfo.cvv,
+};
+    const secretKey = process.env.ACCESS_TOKEN_SECRET;
+    const encryptedCardInfo = jwt.sign(
+            {
+                  cardNumber: paymentInfo.cardNumber,
+                  expirationDate: paymentInfo.expirationDate,
+                  cvv: paymentInfo.cvv,
+            },
+            secretKey,
+            {
+                expiresIn: '1h',
+                algorithm: 'HS256'
+            }
+        );
     const payment = {
-      CryptedCreditCard: encryptedCardInfo.toString(),
+      cryptedCreditCard: encryptedCardInfo,
       amount: paymentInfo.amount,
-      token: token,
-    };
+      token: token,};
     this.logger.debug('Payment:', payment);
-    await this.gatewayProxyService.processPayment(payment.toString());
+    await this.gatewayProxyService.processPayment(JSON.stringify(payment));
     return encryptedCardInfo;
   //} catch (error) {
     //throw new Error('Error processing card information: ' + error.message);

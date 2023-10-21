@@ -10,7 +10,7 @@ public class ApplicationAESKey {
     @Column(name = "ApplicationAESKey_id", nullable = false)
     private Long id;
 
-    @Column(length = 2048)
+    @Column(length = 256)
     private byte[] aesKey;
 
     @OneToOne

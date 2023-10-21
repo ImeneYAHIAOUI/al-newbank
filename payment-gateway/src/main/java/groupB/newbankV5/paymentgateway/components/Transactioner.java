@@ -65,6 +65,7 @@ public class Transactioner implements ITransactionProcessor {
                 .orElseThrow(() -> new ApplicationNotFoundException("Application with id " + applicationId + " not found"));
     }
 
+
     @Override
     public void processPayment(String token, BigDecimal amount, String cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
@@ -73,7 +74,21 @@ public class Transactioner implements ITransactionProcessor {
         log.info("token validated");
         Merchant merchant = application.getMerchant();
         log.info("Decrypted credit card: "+ cryptedCreditCard);
-        CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
+        Jws<Claims> jws;
+        try {
+            jws = Jwts.parser().setSigningKey(Integrator.SECRET_KEY).parseClaimsJws(cryptedCreditCard);
+        } catch (Exception e) {
+            throw new InvalidTokenException("Invalid token");
+        }
+        Claims bodyClaims = jws.getBody();
+
+        String cardNumber = bodyClaims.get("cardNumber", String.class);
+        String  expirationDate = bodyClaims.get("expirationDate", String.class);
+        String  cvv = bodyClaims.get("cvv", String.class);
+        CreditCard creditCard= new CreditCard();
+        creditCard.setCardNumber(cardNumber);
+        creditCard.setExpiryDate(expirationDate);
+        creditCard.setCvv(cvv);
         log.info("successfully decrypted credit card");
 
         CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(

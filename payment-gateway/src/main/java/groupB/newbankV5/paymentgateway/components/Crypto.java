@@ -41,10 +41,12 @@ public class Crypto implements IRSA {
             applicationAESKey.setApplication(application);
             applicationAESKey.setAesKey(aesKey.getEncoded());
             applicationAESKeyRepository.saveAndFlush(applicationAESKey);
-
+            log.info("AES Key generated for application " + aesKey.toString());
             return aesKey;
         }
+
         byte[] aesKeyBytes = optApplicationAESKey.get().getAesKey();
+        log.info("AES Key generated for application " + new SecretKeySpec(aesKeyBytes, "AES").toString());
         return new SecretKeySpec(aesKeyBytes, "AES");
     }
 
@@ -63,9 +65,9 @@ public class Crypto implements IRSA {
     public CreditCard decryptPaymentRequestCreditCard(String encryptedData, Application application ) throws NoSuchPaddingException,
             NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Optional<ApplicationAESKey> optApplicationAESKey = applicationAESKeyRepository.findByApplication(application);
-
+        log.info("aes key: " + new SecretKeySpec(optApplicationAESKey.get().getAesKey(), "AES").toString());
         Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.DECRYPT_MODE, getOrGenerateAESKey(application));
+        cipher.init(Cipher.DECRYPT_MODE,new SecretKeySpec(optApplicationAESKey.get().getAesKey(), "AES"));
 
         byte[] encryptedDataBytes = Base64.getDecoder().decode(encryptedData);
         byte[] decryptedData = cipher.doFinal(encryptedDataBytes);
