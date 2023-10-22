@@ -1,6 +1,9 @@
 package groupB.newbankV5.paymentgateway.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import groupB.newbankV5.paymentgateway.components.Integrator;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,6 +13,7 @@ import java.sql.Date;
 import java.util.Objects;
 
 @Entity
+@JsonIdentityInfo(generator= ObjectIdGenerators.UUIDGenerator.class, property="id")
 public class Application {
     @Id
     @GeneratedValue
@@ -23,9 +27,7 @@ public class Application {
     @Column(unique = true, length = 2048)
     private String apiKey;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "Merchant_id")
-    @JsonManagedReference
+    @OneToOne(mappedBy = "application")
     private Merchant merchant;
 
     public Application() {

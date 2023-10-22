@@ -1,5 +1,6 @@
 package groupB.newbankV5.paymentgateway.controllers;
 
+import groupB.newbankV5.paymentgateway.controllers.dto.ApplicationDto;
 import groupB.newbankV5.paymentgateway.controllers.dto.ApplicationIntegrationDto;
 import groupB.newbankV5.paymentgateway.entities.Application;
 import groupB.newbankV5.paymentgateway.entities.Merchant;
@@ -51,7 +52,7 @@ public class IntegratorController {
     }
 
     @PostMapping("/applications")
-    public ResponseEntity<Application> integrateApplication(@RequestBody ApplicationIntegrationDto applicationIntegrationDto) throws ApplicationAlreadyExists,
+    public ResponseEntity<ApplicationDto> integrateApplication(@RequestBody ApplicationIntegrationDto applicationIntegrationDto) throws ApplicationAlreadyExists,
             MerchantNotFoundException ,ApplicationNotFoundException{
         log.info("Integrating application " + applicationIntegrationDto.getName());
         Application application = new Application(applicationIntegrationDto.getName(),
@@ -60,7 +61,7 @@ public class IntegratorController {
                 applicationIntegrationDto.getDescription());
         Merchant merchant = new Merchant();
         merchant.setId(applicationIntegrationDto.getMerchantId());
-        return ResponseEntity.ok().body(applicationIntegrator.integrateApplication(application, merchant));
+        return ResponseEntity.ok().body(ApplicationDto.applicationDtoFactory(applicationIntegrator.integrateApplication(application, merchant)));
     }
 
     @PostMapping("/applications/{id}/token")
