@@ -13,7 +13,7 @@ public class Account {
     @GeneratedValue
     @Column(name = "Account_id", nullable = false)
     private Long id;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "CustomerProfile_id")
     private CustomerProfile customerProfile;
     private String IBAN;

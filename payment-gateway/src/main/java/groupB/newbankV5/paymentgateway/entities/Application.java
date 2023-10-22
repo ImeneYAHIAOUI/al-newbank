@@ -1,5 +1,6 @@
 package groupB.newbankV5.paymentgateway.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import groupB.newbankV5.paymentgateway.components.Integrator;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,7 +23,9 @@ public class Application {
     @Column(unique = true, length = 2048)
     private String apiKey;
 
-    @OneToOne(mappedBy = "application")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "Merchant_id")
+    @JsonManagedReference
     private Merchant merchant;
 
     public Application() {
@@ -119,5 +122,17 @@ public class Application {
     @Override
     public int hashCode() {
         return Objects.hash(name, email, url, description, apiKey, merchant);
+    }
+    @Override
+    public String toString() {
+        return "Application{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", url='" + url + '\'' +
+                ", description='" + description + '\'' +
+                ", apiKey='" + apiKey + '\'' +
+                ", merchant=" + merchant +
+                '}';
     }
 }

@@ -50,9 +50,12 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
         Merchant merchantFound = optMerchant.get();
         application.setMerchant(merchantFound);
         merchantFound.setApplication(application);
+
         applicationRepository.saveAndFlush(application);
-        merchantRepository.saveAndFlush(merchant);
+        merchantRepository.saveAndFlush(merchantFound);
         application.generateToken();
+        Application applicationFound = applicationRepository.saveAndFlush(application);
+        log.info("Application " + applicationFound.toString() + " integrated");
         return applicationRepository.saveAndFlush(application);
     }
 

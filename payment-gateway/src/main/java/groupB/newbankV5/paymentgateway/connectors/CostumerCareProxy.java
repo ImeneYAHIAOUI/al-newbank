@@ -33,7 +33,7 @@ public class CostumerCareProxy implements ICostumerCare {
     public void updateBalance(long accountId, BigDecimal amount, String operation) {
         log.info("Updating balance for account number: " + accountId);
         UpdateFundsDto updateFundsDto = new UpdateFundsDto(amount, operation);
-        restTemplate.put(costumerHostandPort + "/api/costumer/funds/" + accountId, updateFundsDto);
+        restTemplate.put(costumerHostandPort + "/api/costumer"+accountId+"/funds" , updateFundsDto);
     }
 
 

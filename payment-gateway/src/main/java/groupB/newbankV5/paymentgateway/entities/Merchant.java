@@ -1,5 +1,7 @@
 package groupB.newbankV5.paymentgateway.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -14,6 +16,7 @@ public class Merchant {
     @Embedded
     private BankAccount bankAccount;
     @OneToOne(cascade = CascadeType.ALL)
+    @JsonBackReference
     private Application application;
 
     public Application getApplication() {
@@ -76,5 +79,16 @@ public class Merchant {
     @Override
     public int hashCode() {
         return Objects.hash(name, email, bankAccount, application);
+    }
+
+    @Override
+    public String toString() {
+        return "Merchant{" +
+                "id=" + id +
+                ", merchantName='" + name + '\'' +
+                ", merchantEmail='" + email + '\'' +
+                ", bankAccount=" + bankAccount +
+                ", application=" + application +
+                '}';
     }
 }

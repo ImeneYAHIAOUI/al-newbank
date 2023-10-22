@@ -11,6 +11,8 @@ services:
     depends_on:
       gateway-db:
           condition: service_healthy
+      nginx:
+          condition: service_started
     environment:
       - CCN_WITH_PORT=${CCN_WITH_PORT}
       - COSTUMER_WITH_PORT=${COSTUMER_WITH_PORT}
