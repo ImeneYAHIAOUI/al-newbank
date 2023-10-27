@@ -28,6 +28,9 @@ public class CreditCardNetworkProxy implements ICreditCardNetwork {
         creditCardInformationDto.setCardNumber(paymentDetailsDTO.getCardNumber());
         creditCardInformationDto.setExpirationDate(paymentDetailsDTO.getExpirationDate());
         creditCardInformationDto.setCvv(paymentDetailsDTO.getCvv());
+        creditCardInformationDto.setAmount(paymentDetailsDTO.getAmount());
+        log.info("Credit card infos "+ creditCardInformationDto.getAmount() + " " +creditCardInformationDto.getCardNumber() + " " + creditCardInformationDto.getCvv() + " " + creditCardInformationDto.getExpirationDate());
+
         try {
             return restTemplate.postForEntity(ccnHostandPort + "/api/payment/authorize",
                     creditCardInformationDto, CcnResponseDto.class).getBody();

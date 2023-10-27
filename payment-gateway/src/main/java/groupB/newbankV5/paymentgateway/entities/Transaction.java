@@ -11,7 +11,16 @@ public class Transaction {
 //    @GeneratedValue
 //    @Column(name = "Transaction_id", nullable = false)
     private UUID id;
-//    @ManyToOne
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    //    @ManyToOne
 //    @JoinColumn(name = "merchant_merchant_id")
     private BankAccount recipient;
     private BankAccount sender;

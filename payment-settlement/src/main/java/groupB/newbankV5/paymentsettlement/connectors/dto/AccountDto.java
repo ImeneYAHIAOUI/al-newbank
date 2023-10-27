@@ -6,12 +6,15 @@ public class AccountDto {
     long id;
     BigDecimal balance;
 
+    private BigDecimal reservedBalance;
+
     public AccountDto() {
     }
 
-    public AccountDto(long accountId, BigDecimal balance) {
+    public AccountDto(long accountId, BigDecimal balance, BigDecimal reservedBalance) {
         this.id = accountId;
         this.balance = balance;
+        this.reservedBalance = reservedBalance;
     }
 
     public long getId() {
@@ -33,5 +36,13 @@ public class AccountDto {
     @Override
     public String toString() {
         return "AccountDto{" + "accountId=" + id + ", balance=" + balance + '}';
+    }
+
+    public BigDecimal getReservedBalance() {
+        return reservedBalance;
+    }
+
+    public void setReservedBalance(BigDecimal reservedBalance) {
+        this.reservedBalance = reservedBalance;
     }
 }

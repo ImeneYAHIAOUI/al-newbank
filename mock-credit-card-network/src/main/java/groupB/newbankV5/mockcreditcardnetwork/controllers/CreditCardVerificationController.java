@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.logging.Logger;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping(path = CreditCardVerificationController.BASE_URI, produces = APPLICATION_JSON_VALUE)
 public class CreditCardVerificationController {
+    private static final Logger log = Logger.getLogger(CreditCardVerificationController.class.getName());
 
     public static final String BASE_URI = "/api/payment";
 
@@ -31,6 +34,7 @@ public class CreditCardVerificationController {
     @PostMapping("authorize")
     public ResponseEntity<CreditCardCheckResponseDto> authorizePayment(@RequestBody CreditCardInformationDto creditCardInformationDto) {
         try {
+            log.info("Credit card infos "+ creditCardInformationDto.getAmount() + " " +creditCardInformationDto.getCardNumber() + " " + creditCardInformationDto.getCvv() + " " + creditCardInformationDto.getExpirationDate());
             return ResponseEntity.status(HttpStatus.OK).body(creditCardAuthorizer.ValidateCreditCard(creditCardInformationDto));
         } catch (InvalidCardInformation e) {
             CreditCardCheckResponseDto errorResponse = new CreditCardCheckResponseDto();

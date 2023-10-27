@@ -8,7 +8,6 @@ import {IntegrationService} from './sdk/services/integration.service';
 import {PaymentService} from './sdk/services/payment.service';
 import { AppModule } from './app.module';
 import { prompt } from 'inquirer';
-import {ApplicationInfo} from './sdk/dto/application-info.dto';
 import {PaymentInfoDTO} from './sdk/dto/payment-info.dto';
 
 async function bootstrap() {

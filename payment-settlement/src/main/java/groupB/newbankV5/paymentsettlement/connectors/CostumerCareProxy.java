@@ -1,6 +1,7 @@
 package groupB.newbankV5.paymentsettlement.connectors;
 
 import groupB.newbankV5.paymentsettlement.connectors.dto.AccountDto;
+import groupB.newbankV5.paymentsettlement.connectors.dto.ReserveFundsDto;
 import groupB.newbankV5.paymentsettlement.connectors.dto.UpdateFundsDto;
 import groupB.newbankV5.paymentsettlement.interfaces.ICostumerCare;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,8 +41,13 @@ public class CostumerCareProxy implements ICostumerCare {
         log.info("Updating balance for account number: " + accountId);
         UpdateFundsDto updateFundsDto = new UpdateFundsDto(amount, operation);
         restTemplate.put(costumerHostandPort + "/api/costumer/" + accountId+ "/funds", updateFundsDto);
+    }
 
-
+    @Override
+    public void releaseFunds(long accountId, BigDecimal amount) {
+        log.info("Releasing funds for account number: " + accountId);
+        ReserveFundsDto releaseFundsDto = new ReserveFundsDto(amount);
+        restTemplate.put(costumerHostandPort + "/api/costumer/" + accountId+ "/releasefunds", releaseFundsDto);
     }
 
 

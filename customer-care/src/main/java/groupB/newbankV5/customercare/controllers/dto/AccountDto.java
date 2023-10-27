@@ -1,10 +1,7 @@
 package groupB.newbankV5.customercare.controllers.dto;
 
 import groupB.newbankV5.customercare.entities.Account;
-import groupB.newbankV5.customercare.entities.CreditCard;
-import groupB.newbankV5.customercare.entities.CustomerProfile;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -16,9 +13,10 @@ public class AccountDto {
     private String IBAN;
     private String BIC;
     private BigDecimal balance;
+    private BigDecimal reservedBalance;
     private SavingsAccountDto savingsAccount;
 
-    private CreditCardDto creditCard;
+    private List<CreditCardDto> creditCards;
 
     public SavingsAccountDto getSavingsAccount() {
         return savingsAccount;
@@ -32,13 +30,7 @@ public class AccountDto {
         return customerProfile;
     }
 
-    public CreditCardDto getCreditCard() {
-        return creditCard;
-    }
 
-    public void setCreditCards(CreditCardDto creditCard) {
-        this.creditCard = creditCard;
-    }
 
     public void setCustomerProfile(CustomerProfileDto customerProfile) {
         this.customerProfile = customerProfile;
@@ -47,14 +39,15 @@ public class AccountDto {
     public AccountDto() {
     }
 
-    public AccountDto(Long id, CustomerProfileDto customerProfile, String IBAN, String BIC, BigDecimal balance, CreditCardDto creditCards,
+    public AccountDto(Long id, CustomerProfileDto customerProfile, String IBAN, String BIC, BigDecimal balance, BigDecimal reservedBalance, List<CreditCardDto> creditCards,
                       SavingsAccountDto savingsAccount) {
         this.id = id;
         this.customerProfile = customerProfile;
         this.IBAN = IBAN;
         this.BIC = BIC;
         this.balance = balance;
-        this.creditCard = creditCards;
+        this.reservedBalance = reservedBalance;
+        this.creditCards = creditCards;
         this.savingsAccount = savingsAccount;
     }
 
@@ -91,18 +84,33 @@ public class AccountDto {
     }
 
     public static AccountDto accountDtoFactory(Account account) {
-        CreditCardDto creditCardDto = null;
-        if (account.getCreditCard() != null) {
-            creditCardDto = CreditCardDto.creditCardFactory(account.getCreditCard());
-        }
+        List<CreditCardDto> creditCardDto = account.getCreditCards().stream().map(CreditCardDto::creditCardFactory).toList();
+
         return new AccountDto(
                 account.getId(),
                 CustomerProfileDto.customerProfileFactory(account.getCustomerProfile()),
                 account.getIBAN(),
                 account.getBIC(),
                 account.getBalance(),
-                creditCardDto,
+                account.getReservedBalance()
+                , creditCardDto,
                 SavingsAccountDto.savingsAccountFactory(account.getSavingsAccount())
         );
+    }
+
+    public List<CreditCardDto> getCreditCards() {
+        return creditCards;
+    }
+
+    public void setCreditCards(List<CreditCardDto> creditCards) {
+        this.creditCards = creditCards;
+    }
+
+    public BigDecimal getReservedBalance() {
+        return reservedBalance;
+    }
+
+    public void setReservedBalance(BigDecimal reservedBalance) {
+        this.reservedBalance = reservedBalance;
     }
 }

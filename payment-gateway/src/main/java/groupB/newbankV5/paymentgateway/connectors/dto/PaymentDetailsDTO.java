@@ -14,10 +14,11 @@ public class PaymentDetailsDTO {
         // Default constructor
     }
 
-    public PaymentDetailsDTO(String cardNumber, String expirationDate, String cvv) {
+    public PaymentDetailsDTO(String cardNumber, String expirationDate, String cvv, BigDecimal amount) {
         this.cardNumber = cardNumber;
         this.expirationDate = expirationDate;
         this.cvv = cvv;
+        this.amount = amount;
     }
 
     public PaymentDetailsDTO(String cardHolderName, String cardNumber, String expirationDate, String cvv) {
@@ -25,6 +26,7 @@ public class PaymentDetailsDTO {
         this.cardNumber = cardNumber;
         this.expirationDate = expirationDate;
         this.cvv = cvv;
+        this.amount = amount;
     }
 
     public PaymentDetailsDTO(String cardHolderName, String cardNumber, String expirationDate, String cvv, BigDecimal amount) {

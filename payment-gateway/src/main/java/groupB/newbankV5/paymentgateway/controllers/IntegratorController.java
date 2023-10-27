@@ -8,10 +8,7 @@ import groupB.newbankV5.paymentgateway.exceptions.ApplicationAlreadyExists;
 import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.exceptions.MerchantAlreadyExistsException;
 import groupB.newbankV5.paymentgateway.exceptions.MerchantNotFoundException;
-import groupB.newbankV5.paymentgateway.interfaces.IApplicationFinder;
-import groupB.newbankV5.paymentgateway.interfaces.IApplicationIntegrator;
-import groupB.newbankV5.paymentgateway.interfaces.IBusinessIntegrator;
-import groupB.newbankV5.paymentgateway.interfaces.IRSA;
+import groupB.newbankV5.paymentgateway.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,18 +29,36 @@ public class IntegratorController {
     private static final Logger log = Logger.getLogger(IntegratorController.class.getName());
     public static final String BASE_URI = "/api/gateway/integration";
     private final IBusinessIntegrator businessIntegrator;
+    private final IBusinessFinder businessFinder;
     private final IApplicationIntegrator applicationIntegrator;
     private final IApplicationFinder applicationFinder;
     private final IRSA crypto;
 
     @Autowired
-    public IntegratorController(IBusinessIntegrator businessIntegrator, IApplicationIntegrator applicationIntegrator,
-                                IApplicationFinder applicationFinder, IRSA crypto) {
+    public IntegratorController(IBusinessIntegrator businessIntegrator, IBusinessFinder businessFinder,
+                                IApplicationIntegrator applicationIntegrator, IApplicationFinder applicationFinder,
+                                IRSA crypto) {
         this.businessIntegrator = businessIntegrator;
+        this.businessFinder = businessFinder;
         this.applicationIntegrator = applicationIntegrator;
         this.applicationFinder = applicationFinder;
         this.crypto = crypto;
     }
+
+    @GetMapping("/applications/{id}")
+    public ResponseEntity<Application> getApplication(@PathVariable("id") Long id) throws ApplicationNotFoundException {
+        log.info("Getting application " + id);
+        Application application = applicationFinder.findApplicationById(id);
+        return ResponseEntity.ok().body(application);
+    }
+
+    @GetMapping("/merchants/{id}")
+    public ResponseEntity<Merchant> getMerchant(@PathVariable("id") Long id) throws MerchantNotFoundException {
+        log.info("Getting merchant " + id);
+        Merchant merchant = businessFinder.findMerchantById(id);
+        return ResponseEntity.ok().body(merchant);
+    }
+
 
     @PostMapping("/merchants")
     public ResponseEntity<Merchant> integrateMerchant(@RequestBody Merchant merchant) throws MerchantAlreadyExistsException {

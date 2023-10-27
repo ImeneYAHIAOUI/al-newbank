@@ -16,6 +16,14 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "new-bank": [
+        "libs/nest/new-bank/src"
+      ],
+      "new-bank/*": [
+        "libs/nest/new-bank/src/*"
+      ]
+    }
   }
 }

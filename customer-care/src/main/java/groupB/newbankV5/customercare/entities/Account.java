@@ -20,23 +20,28 @@ public class Account {
     private String BIC;
     private BigDecimal balance;
 
+    private BigDecimal reservedBalance;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="SavingsAccount_id")
     private SavingsAccount savingsAccount;
 
-    @Embedded
-    private CreditCard creditCard;
+    @OneToMany(targetEntity = CreditCard.class, mappedBy = "account", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<CreditCard> creditCards = new ArrayList<>();
 
     public CustomerProfile getCustomerProfile() {
         return customerProfile;
     }
 
-    public CreditCard getCreditCard() {
-        return creditCard;
+    public List<CreditCard> getCreditCards() {
+        return creditCards;
     }
 
-    public void setCreditCard(CreditCard creditCard) {
-        this.creditCard = creditCard;
+    public void setCreditCards(List<CreditCard> creditCard) {
+        this.creditCards = creditCard;
+    }
+    public void addCreditCard(CreditCard creditCard) {
+        this.creditCards.add(creditCard);
     }
 
     public void setCustomerProfile(CustomerProfile customerProfile) {
@@ -52,6 +57,7 @@ public class Account {
         this.IBAN = IBAN;
         this.BIC = BIC;
         this.balance = BigDecimal.valueOf(0);
+        this.reservedBalance = BigDecimal.valueOf(0);
         this.savingsAccount = new SavingsAccount();
     }
     public Long getId() {
@@ -88,17 +94,13 @@ public class Account {
 
     @Override
     public String toString() {
-        String creditCard = "";
-        if (this.creditCard != null) {
-            creditCard = this.creditCard.toString();
-        }
+
         return "Account{" +
                 "id=" + id +
                 ", customerProfile=" + customerProfile +
                 ", IBAN='" + IBAN + '\'' +
                 ", BIC='" + BIC + '\'' +
                 ", balance=" + balance +
-                ", creditCards=" + creditCard +
                 ", savingsAccount=" + savingsAccount +
                 '}';
     }
@@ -111,4 +113,11 @@ public class Account {
         return savingsAccount;
     }
 
+    public BigDecimal getReservedBalance() {
+        return reservedBalance;
+    }
+
+    public void setReservedBalance(BigDecimal reservedBalance) {
+        this.reservedBalance = reservedBalance;
+    }
 }

@@ -1,13 +1,13 @@
 package groupB.newbankV5.customercare.exceptions;
 
-public class AccountNotFoundException extends RuntimeException{
-    public AccountNotFoundException(String message) {
-        super(message);
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+
+public class AccountNotFoundException extends Exception {
+    public AccountNotFoundException(String id) {
+        super("Account with id " + id+" not found");
     }
 
-    public AccountNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
 
 
 }

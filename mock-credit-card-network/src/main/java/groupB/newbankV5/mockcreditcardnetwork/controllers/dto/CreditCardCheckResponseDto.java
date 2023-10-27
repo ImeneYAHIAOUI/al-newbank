@@ -10,6 +10,15 @@ public class CreditCardCheckResponseDto {
 
     String AccountIBAN;
     String AccountBIC;
+    String cardType;
+
+    public String getCardType() {
+        return cardType;
+    }
+
+    public void setCardType(String cardType) {
+        this.cardType = cardType;
+    }
 
     public CreditCardCheckResponseDto() {
     }

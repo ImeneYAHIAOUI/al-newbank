@@ -1,6 +1,8 @@
 package groupB.newbankV5.paymentprocessor.connectors;
 
 import groupB.newbankV5.paymentprocessor.connectors.dto.AccountDto;
+import groupB.newbankV5.paymentprocessor.connectors.dto.CreditCardInformationDto;
+import groupB.newbankV5.paymentprocessor.connectors.dto.ReserveFundsDto;
 import groupB.newbankV5.paymentprocessor.connectors.dto.UpdateFundsDto;
 import groupB.newbankV5.paymentprocessor.interfaces.ICostumerCare;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,9 +49,14 @@ public class CostumerCareProxy implements ICostumerCare {
     public void updateBalance(long accountId, BigDecimal amount, String operation) {
         log.info("Updating balance for account number: " + accountId);
         UpdateFundsDto updateFundsDto = new UpdateFundsDto(amount, operation);
-        restTemplate.put(costumerHostandPort + "/api/costumer"+accountId+"/funds" , updateFundsDto);
+        restTemplate.put(costumerHostandPort + "/api/costumer/"+accountId+"/funds" , updateFundsDto);
+    }
 
-
+    @Override
+    public void reserveFunds(long accountId, BigDecimal amount, String cardNumber, String expirationDate, String cvv) {
+        log.info("Reserving funds for account number: " + accountId);
+        ReserveFundsDto reserveFundsDto = new ReserveFundsDto(amount, cardNumber, expirationDate, cvv);
+        restTemplate.put(costumerHostandPort + "/api/costumer/"+accountId+"/reservedfunds" , reserveFundsDto);
     }
 
 

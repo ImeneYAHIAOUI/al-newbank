@@ -10,4 +10,6 @@ public interface ICostumerCare {
 
 
     void updateBalance(long accountId, BigDecimal amount, String operation);
+
+    void releaseFunds(long accountId, BigDecimal amount);
 }

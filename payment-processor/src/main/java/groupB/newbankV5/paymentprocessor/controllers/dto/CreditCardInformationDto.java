@@ -1,18 +1,23 @@
 package groupB.newbankV5.paymentprocessor.controllers.dto;
 
+import java.math.BigDecimal;
+
 public class CreditCardInformationDto {
 
     private String cardNumber;
     private String expirationDate;
     private String cvv;
+    private BigDecimal amount;
+
 
     public CreditCardInformationDto() {
     }
 
-    public CreditCardInformationDto(String cardNumber, String expirationDate, String cvv) {
+    public CreditCardInformationDto(String cardNumber, String expirationDate, String cvv, BigDecimal amount) {
         this.cardNumber = cardNumber;
         this.expirationDate = expirationDate;
         this.cvv = cvv;
+        this.amount = amount;
     }
 
 
@@ -49,4 +54,11 @@ public class CreditCardInformationDto {
                 '}';
     }
 
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
 }

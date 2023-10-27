@@ -8,6 +8,7 @@ import groupB.newbankV5.paymentgateway.exceptions.MerchantAlreadyExistsException
 import groupB.newbankV5.paymentgateway.exceptions.MerchantNotFoundException;
 import groupB.newbankV5.paymentgateway.interfaces.IApplicationFinder;
 import groupB.newbankV5.paymentgateway.interfaces.IApplicationIntegrator;
+import groupB.newbankV5.paymentgateway.interfaces.IBusinessFinder;
 import groupB.newbankV5.paymentgateway.interfaces.IBusinessIntegrator;
 import groupB.newbankV5.paymentgateway.repositories.ApplicationRepository;
 import groupB.newbankV5.paymentgateway.repositories.MerchantRepository;
@@ -18,7 +19,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
-public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, IApplicationFinder {
+public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, IApplicationFinder, IBusinessFinder {
 
     private static final Logger log = Logger.getLogger(Integrator.class.getName());
     public static String SECRET_KEY = "4242XX424208";
@@ -40,6 +41,14 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
     }
 
     @Override
+    public Merchant findMerchantById(Long id) throws MerchantNotFoundException {
+        Optional<Merchant> optMerchant = merchantRepository.findById(id);
+        if(optMerchant.isEmpty())
+            throw new MerchantNotFoundException("Merchant with Id " + id + " not found");
+        return optMerchant.get();
+    }
+
+    @Override
     public Application integrateApplication(Application application, Merchant merchant) throws MerchantNotFoundException, ApplicationAlreadyExists,ApplicationNotFoundException {
         Optional<Merchant> optMerchant = merchantRepository.findById(merchant.getId());
         if(optMerchant.isEmpty())
@@ -51,8 +60,9 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
         application.setMerchant(merchantFound);
         merchantFound.setApplication(application);
 
-        applicationRepository.saveAndFlush(application);
+        application = applicationRepository.saveAndFlush(application);
         merchantRepository.saveAndFlush(merchantFound);
+
         application.generateToken();
         Application applicationFound = applicationRepository.saveAndFlush(application);
         log.info("Application " + applicationFound.toString() + " integrated");

@@ -11,7 +11,6 @@ import { ApplicationNotFound } from '../../exceptions/application-not-found.exce
 import { HttpHeaders } from '@angular/common/http';
 import axios, { AxiosRequestConfig } from 'axios';
 
-@Injectable()
 export class GatewayProxyService {
   private readonly logger = new Logger(GatewayProxyService.name);
   private readonly _gatewayBaseUrl: string;

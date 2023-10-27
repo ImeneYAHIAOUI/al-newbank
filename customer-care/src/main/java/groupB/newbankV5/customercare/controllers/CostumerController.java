@@ -2,19 +2,20 @@ package groupB.newbankV5.customercare.controllers;
 
 import groupB.newbankV5.customercare.components.dto.AccountCreationDto;
 import groupB.newbankV5.customercare.controllers.dto.AccountDto;
+import groupB.newbankV5.customercare.controllers.dto.ReserveFundsDto;
 import groupB.newbankV5.customercare.controllers.dto.UpdateFundsDto;
 import groupB.newbankV5.customercare.entities.Account;
 
-import groupB.newbankV5.customercare.interfaces.AccountFinder;
-import groupB.newbankV5.customercare.interfaces.AccountRegistration;
-import groupB.newbankV5.customercare.interfaces.SavingsAccountHandler;
-import groupB.newbankV5.customercare.interfaces.VirtualCardRequester;
+import groupB.newbankV5.customercare.entities.CardType;
+import groupB.newbankV5.customercare.exceptions.AccountNotFoundException;
+import groupB.newbankV5.customercare.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -30,13 +31,15 @@ public class CostumerController {
     private final AccountRegistration accountRegistration;
     private final VirtualCardRequester virtualCardRequester;
     private final SavingsAccountHandler savingsAccountHandler;
+    private final FundsHandler fundsHandler;
 
     @Autowired
-    public CostumerController(AccountFinder accountFinder, AccountRegistration accountRegistration, VirtualCardRequester virtualCardRequester, SavingsAccountHandler savingsAccountHandler) {
+    public CostumerController(AccountFinder accountFinder, AccountRegistration accountRegistration, VirtualCardRequester virtualCardRequester, SavingsAccountHandler savingsAccountHandler, FundsHandler fundsHandler) {
         this.accountFinder = accountFinder;
         this.accountRegistration = accountRegistration;
         this.virtualCardRequester = virtualCardRequester;
         this.savingsAccountHandler = savingsAccountHandler;
+        this.fundsHandler = fundsHandler;
     }
 
 
@@ -73,11 +76,15 @@ public class CostumerController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<AccountDto> getAccountById(@PathVariable  long id) {
+    public ResponseEntity<AccountDto> getAccountById(@PathVariable  long id) throws AccountNotFoundException {
         log.info("Getting account by id");
-        Account account = accountFinder.findAccountById(id).orElseThrow();
-        AccountDto accountDto = AccountDto.accountDtoFactory(account);
+        Optional<Account> account = accountFinder.findAccountById(id);
+        if(account.isEmpty()) {
+            throw new AccountNotFoundException(String.valueOf(id));
+        }
+        AccountDto accountDto = AccountDto.accountDtoFactory(account.get());
         return ResponseEntity.status(200).body(accountDto);
+
     }
 
 
@@ -89,11 +96,19 @@ public class CostumerController {
         return ResponseEntity.status(201).body(accountDto);
     }
 
-    @PostMapping("{id}/virtualCard")
-    public ResponseEntity<AccountDto> createVirtualCard(@PathVariable long id) {
+    @PostMapping("{id}/virtualCard/debit")
+    public ResponseEntity<AccountDto> createVirtualDebitCard(@PathVariable long id) {
         log.info("Creating virtual card");
         Account account = accountFinder.findAccountById(id).orElseThrow();
-        AccountDto accountDto = AccountDto.accountDtoFactory(virtualCardRequester.requestVirtualCard(account));
+        AccountDto accountDto = AccountDto.accountDtoFactory(virtualCardRequester.requestVirtualCard(account, CardType.DEBIT));
+        return ResponseEntity.status(201).body(accountDto);
+    }
+
+    @PostMapping("{id}/virtualCard/credit")
+    public ResponseEntity<AccountDto> createVirtualCreditCard(@PathVariable long id) {
+        log.info("Creating virtual card");
+        Account account = accountFinder.findAccountById(id).orElseThrow();
+        AccountDto accountDto = AccountDto.accountDtoFactory(virtualCardRequester.requestVirtualCard(account, CardType.CREDIT));
         return ResponseEntity.status(201).body(accountDto);
     }
 
@@ -102,9 +117,36 @@ public class CostumerController {
         log.info("Updating funds");
         log.info("Updating funds");
         Account account = accountFinder.findAccountById(id).orElseThrow();
-        BigDecimal balance = account.getBalance();
         try {
-            account = accountRegistration.updateFunds(account, updateFundsDto.getAmount(), updateFundsDto.getOperation());
+            account = fundsHandler.updateFunds(account, updateFundsDto.getAmount(), updateFundsDto.getOperation());
+        } catch (Exception e) {
+            return ResponseEntity.status(400).build();
+        }
+        AccountDto accountDto = AccountDto.accountDtoFactory(account);
+        return ResponseEntity.status(200).body(accountDto);
+
+    }
+
+    @PutMapping("{id}/reservedfunds")
+    public ResponseEntity<AccountDto> updateReservedFunds(@PathVariable long id, @RequestBody ReserveFundsDto reserveFundsDto) {
+        log.info("Updating reserved funds");
+        Account account = accountFinder.findAccountById(id).orElseThrow();
+        try {
+            account = fundsHandler.addReservedFunds(account, reserveFundsDto.getAmount(), reserveFundsDto.getCardNumber(), reserveFundsDto.getExpirationDate(), reserveFundsDto.getCvv());
+        } catch (Exception e) {
+            return ResponseEntity.status(400).build();
+        }
+        AccountDto accountDto = AccountDto.accountDtoFactory(account);
+        return ResponseEntity.status(200).body(accountDto);
+
+    }
+
+    @PutMapping("{id}/releasefunds")
+    public ResponseEntity<AccountDto> releaseReservedFunds(@PathVariable long id, @RequestBody ReserveFundsDto reserveFundsDto) {
+        log.info("Releasing reserved funds");
+        Account account = accountFinder.findAccountById(id).orElseThrow();
+        try {
+            account = fundsHandler.releaseReservedFunds(account, reserveFundsDto.getAmount());
         } catch (Exception e) {
             return ResponseEntity.status(400).build();
         }

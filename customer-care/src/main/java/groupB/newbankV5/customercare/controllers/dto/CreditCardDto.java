@@ -1,7 +1,9 @@
 package groupB.newbankV5.customercare.controllers.dto;
 
-import groupB.newbankV5.customercare.entities.Account;
+import groupB.newbankV5.customercare.entities.CardType;
 import groupB.newbankV5.customercare.entities.CreditCard;
+
+import java.math.BigDecimal;
 
 
 public class CreditCardDto {
@@ -10,12 +12,18 @@ public class CreditCardDto {
     private String cardHolderName;
     private String expiryDate;
     private String cvv;
+    private BigDecimal limit;
+    private BigDecimal restOfLimit;
+    private CardType cardType;
 
-    public CreditCardDto( String cardNumber, String cardHolderName, String expiryDate, String cvv) {
+    public CreditCardDto(String cardNumber, String cardHolderName, String expiryDate, String cvv, BigDecimal limit, BigDecimal restOfLimit, CardType cardType) {
         this.cardNumber = cardNumber;
         this.cardHolderName = cardHolderName;
         this.expiryDate = expiryDate;
         this.cvv = cvv;
+        this.limit = limit;
+        this.restOfLimit = restOfLimit;
+        this.cardType = cardType;
     }
 
 
@@ -57,7 +65,32 @@ public class CreditCardDto {
                 creditCard.getCardNumber(),
                 creditCard.getCardHolderName(),
                 creditCard.getExpiryDate(),
-                creditCard.getCvv()
-        );
+                creditCard.getCvv(),
+                creditCard.getLimit(),
+                creditCard.getRestOfLimit(), creditCard.getCardType());
+    }
+
+    public BigDecimal getRestOfLimit() {
+        return restOfLimit;
+    }
+
+    public void setRestOfLimit(BigDecimal restOfLimit) {
+        this.restOfLimit = restOfLimit;
+    }
+
+    public BigDecimal getLimit() {
+        return limit;
+    }
+
+    public void setLimit(BigDecimal limit) {
+        this.limit = limit;
+    }
+
+    public CardType getCardType() {
+        return cardType;
+    }
+
+    public void setCardType(CardType cardType) {
+        this.cardType = cardType;
     }
 }

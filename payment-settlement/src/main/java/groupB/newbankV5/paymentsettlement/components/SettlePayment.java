@@ -27,13 +27,13 @@ public class SettlePayment {
     }
 
     public boolean hasSufficientFunds(AccountDto accountDto, BigDecimal amount) {
-        BigDecimal balance =  accountDto.getBalance();
+        BigDecimal balance =  accountDto.getReservedBalance();
         return balance.compareTo(amount) >= 0;
     }
 
     public void deductFunds(long accountId, BigDecimal amount) {
         log.info("Deducting funds");
-        costumerCare.updateBalance(accountId, amount, "withdraw");
+        costumerCare.releaseFunds(accountId, amount);
     }
 
     public void depositFund(long accountId, BigDecimal amount) {

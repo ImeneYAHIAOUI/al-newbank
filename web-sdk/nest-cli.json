@@ -3,6 +3,18 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "webpack": true
+  },
+  "projects": {
+    "nest/new-bank": {
+      "type": "library",
+      "root": "libs/nest/new-bank",
+      "entryFile": "index",
+      "sourceRoot": "libs/nest/new-bank/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/nest/new-bank/tsconfig.lib.json"
+      }
+    }
   }
 }

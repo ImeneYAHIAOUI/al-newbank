@@ -49,7 +49,7 @@ public class GlobalControllerAdvice {
         return errorDTO;
     }
     @ExceptionHandler({MerchantNotFoundException.class})
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorDTO handleExceptions(MerchantNotFoundException e) {
         ErrorDTO errorDTO = new ErrorDTO();
         errorDTO.setError(e.getMessage());
@@ -57,7 +57,7 @@ public class GlobalControllerAdvice {
         return errorDTO;
     }
     @ExceptionHandler({InvalidTokenException.class})
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorDTO handleExceptions(InvalidTokenException e) {
         ErrorDTO errorDTO = new ErrorDTO();
         errorDTO.setError(e.getMessage());
@@ -66,7 +66,7 @@ public class GlobalControllerAdvice {
     }
 
     @ExceptionHandler({CCNException.class})
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorDTO handleExceptions(CCNException e) {
         ErrorDTO errorDTO = new ErrorDTO();
         errorDTO.setError(e.getMessage());

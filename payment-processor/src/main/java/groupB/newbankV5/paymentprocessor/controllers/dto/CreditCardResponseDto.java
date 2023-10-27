@@ -8,6 +8,7 @@ public class CreditCardResponseDto {
 
     private String AccountIBAN;
     private String AccountBIC;
+    private String cardType;
 
     public CreditCardResponseDto() {
     }
@@ -18,12 +19,13 @@ public class CreditCardResponseDto {
         this.authToken = authToken;
     }
 
-    public CreditCardResponseDto(boolean response, String message, String authToken, String accountIBAN, String accountBIC) {
+    public CreditCardResponseDto(boolean response, String message, String authToken, String accountIBAN, String accountBIC, String cardType) {
         this.response = response;
         this.message = message;
         this.authToken = authToken;
         AccountIBAN = accountIBAN;
         AccountBIC = accountBIC;
+        this.cardType = cardType;
     }
 
     public String getAccountIBAN() {
@@ -64,5 +66,13 @@ public class CreditCardResponseDto {
 
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
+    }
+
+    public String getCardType() {
+        return cardType;
+    }
+
+    public void setCardType(String cardType) {
+        this.cardType = cardType;
     }
 }

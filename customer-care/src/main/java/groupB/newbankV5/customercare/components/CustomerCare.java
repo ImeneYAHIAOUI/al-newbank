@@ -1,17 +1,18 @@
 package groupB.newbankV5.customercare.components;
 
 import groupB.newbankV5.customercare.components.dto.AccountCreationDto;
-import groupB.newbankV5.customercare.entities.Account;
-import groupB.newbankV5.customercare.entities.CustomerProfile;
-import groupB.newbankV5.customercare.entities.SavingsAccount;
+import groupB.newbankV5.customercare.connectors.dto.CreditCardDto;
+import groupB.newbankV5.customercare.entities.*;
 import groupB.newbankV5.customercare.exceptions.InsufficientFundsException;
 import groupB.newbankV5.customercare.interfaces.AccountFinder;
 import groupB.newbankV5.customercare.interfaces.AccountRegistration;
+import groupB.newbankV5.customercare.interfaces.FundsHandler;
 import groupB.newbankV5.customercare.interfaces.SavingsAccountHandler;
 import groupB.newbankV5.customercare.repositories.AccountRepository;
 import groupB.newbankV5.customercare.repositories.AccountSavingsRepository;
 import groupB.newbankV5.customercare.repositories.CustomerProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
 
 @Component
 @Transactional
-public class CustomerCare implements AccountFinder, AccountRegistration, SavingsAccountHandler {
+public class CustomerCare implements AccountFinder, AccountRegistration, SavingsAccountHandler, FundsHandler {
 
     private final AccountRepository accountRepository;
     private final CustomerProfileRepository customerProfileRepository;
@@ -51,7 +52,7 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
 
     @Override
     public Optional<Account> findByCreditCard(String number, String expiryDate, String cvv) {
-        return accountRepository.findByCreditCardCardNumberAndCreditCardExpiryDateAndCreditCardCvv(number,expiryDate,cvv);
+        return accountRepository.findByCreditCardsCardNumberAndCreditCardsExpiryDateAndCreditCardsCvv(number,expiryDate,cvv);
     }
 
     @Override
@@ -91,9 +92,28 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
     }
 
     @Override
+    public Account addReservedFunds(Account account, BigDecimal amount, String cardNumber, String expirationDate, String cvv) {
+        account.setReservedBalance(account.getReservedBalance().add(amount));
+        account.setBalance(account.getBalance().subtract(amount));
+        CreditCard creditCard = account.getCreditCards().stream().filter(card -> card.getCardNumber().equals(cardNumber) && card.getExpiryDate().equals(expirationDate) && card.getCvv().equals(cvv)).findFirst().orElseThrow();
+        creditCard.setRestOfLimit(creditCard.getRestOfLimit().subtract(amount));
+        return accountRepository.save(account);
+    }
+
+
+
+    @Override
+    public Account releaseReservedFunds(Account account, BigDecimal amount) {
+        account.setReservedBalance(account.getReservedBalance().subtract(amount));
+        return accountRepository.save(account);
+    }
+
+    @Override
     public void deleteAccount(Account account) {
         accountRepository.delete(account);
     }
+
+
 
     private String generateRandomIBAN() {
         Random random = new Random();
@@ -150,6 +170,19 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
         account.setBalance(account.getBalance().subtract(amount));
         account.setSavingsAccount(savingsAccount);
         return accountRepository.save(account);
+    }
+
+    @Scheduled(cron = "0 0 0 1 * *")
+    @Override
+    public void resetCreditCardLimit(){
+        List<Account> accounts = accountRepository.findAll();
+        for(Account account: accounts){
+            account.getCreditCards().forEach(creditCard -> {
+                creditCard.setLimit(Constants.DEFAULT_CARD_LIMIT);
+                creditCard.setRestOfLimit(Constants.DEFAULT_CARD_LIMIT);
+            });
+            accountRepository.save(account);
+        }
     }
 
 

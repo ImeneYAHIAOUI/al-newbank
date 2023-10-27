@@ -5,10 +5,7 @@ import groupB.newbankV5.paymentgateway.connectors.CreditCardNetworkProxy;
 import groupB.newbankV5.paymentgateway.connectors.dto.CcnResponseDto;
 import groupB.newbankV5.paymentgateway.connectors.dto.PaymentDetailsDTO;
 import groupB.newbankV5.paymentgateway.controllers.TransactionerController;
-import groupB.newbankV5.paymentgateway.entities.Application;
-import groupB.newbankV5.paymentgateway.entities.CreditCard;
-import groupB.newbankV5.paymentgateway.entities.Merchant;
-import groupB.newbankV5.paymentgateway.entities.Transaction;
+import groupB.newbankV5.paymentgateway.entities.*;
 import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.exceptions.CCNException;
 import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;
@@ -29,6 +26,7 @@ import java.math.BigDecimal;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @Service
@@ -80,13 +78,16 @@ public class Transactioner implements ITransactionProcessor {
         log.info("successfully decrypted credit card");
 
         CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
-                new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv())
+                new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv(), amount)
         );
         if (!ccnResponseDto.isApproved()) {
             throw new CCNException("Payment not authorized");
         }
         Transaction transaction = new Transaction(merchant.getBankAccount(), ccnResponseDto.getAuthToken(), amount);
+        transaction.setId(UUID.randomUUID());
         transaction.setExternal(true);
+        transaction.setSender(new BankAccount(ccnResponseDto.getAccountIBAN(),ccnResponseDto.getAccountBIC()));
+        transaction.setRecipient(merchant.getBankAccount());
 
         kafkaProducerService.sendMessage(transaction);
     }

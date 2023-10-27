@@ -10,7 +10,6 @@ public class SavingsAccountDto {
 
     public static SavingsAccountDto savingsAccountFactory(SavingsAccount savingsAccount) {
         SavingsAccountDto savingsAccountDto = new SavingsAccountDto();
-        System.out.println("here");
         if(savingsAccount == null) {
             savingsAccountDto.setBalance(BigDecimal.valueOf(0));
         }else{

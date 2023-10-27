@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Optional<Account> findByIBAN(String IBAN);
-    Optional<Account> findByCreditCardCardNumberAndCreditCardExpiryDateAndCreditCardCvv(
+    Optional<Account> findByCreditCardsCardNumberAndCreditCardsExpiryDateAndCreditCardsCvv(
             String cardNumber, String expiryDate, String cvv);
 }
 

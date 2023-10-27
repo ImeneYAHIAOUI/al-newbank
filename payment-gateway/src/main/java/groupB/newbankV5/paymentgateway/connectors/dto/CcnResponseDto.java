@@ -8,6 +8,16 @@ public class CcnResponseDto {
 
     String AccountIBAN;
     String AccountBIC;
+    String cardType;
+
+    public String getCardType() {
+        return cardType;
+    }
+
+    public void setCardType(String cardType) {
+        this.cardType = cardType;
+    }
+
     public CcnResponseDto() {
     }
     public CcnResponseDto(boolean response) {
