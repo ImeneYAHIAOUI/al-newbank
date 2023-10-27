@@ -38,7 +38,7 @@ class IntegrationService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 this.validateMerchantInfo(name, email, iban, bic);
-                const merchant = { name, email, bankAccount: { IBAN: iban, BIC: bic } };
+                const merchant = { name, email, bankAccount: { iban: iban, bic: bic } };
                 return yield this.gatewayService.integrateMerchant(merchant);
             }
             catch (error) {

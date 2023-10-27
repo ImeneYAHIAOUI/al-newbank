@@ -1,6 +1,6 @@
 {
   "name": "@imeneyahiaoui/newbank-sdk",
-  "version": "1.0.7",
+  "version": "1.0.11",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -10,5 +10,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "@nestjs/common": "^10.2.7",
+    "class-validator": "^0.14.0",
+    "crypto": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.9"
+  },
   "description": ""
 }

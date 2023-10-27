@@ -27,6 +27,7 @@ class GatewayProxyService {
             try {
                 const url = `${this._gatewayBaseUrl}${this._gatewayPath}integration/merchants`;
                 console.log(`Integration process started for merchant`);
+                console.log(merchant);
                 const response = yield axios_1.default.post(url, merchant);
                 return response.data;
             }

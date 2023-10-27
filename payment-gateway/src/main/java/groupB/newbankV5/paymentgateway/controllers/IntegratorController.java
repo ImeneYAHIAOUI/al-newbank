@@ -2,6 +2,7 @@ package groupB.newbankV5.paymentgateway.controllers;
 
 import groupB.newbankV5.paymentgateway.controllers.dto.ApplicationDto;
 import groupB.newbankV5.paymentgateway.controllers.dto.ApplicationIntegrationDto;
+import groupB.newbankV5.paymentgateway.controllers.dto.MerchantDto;
 import groupB.newbankV5.paymentgateway.entities.Application;
 import groupB.newbankV5.paymentgateway.entities.Merchant;
 import groupB.newbankV5.paymentgateway.exceptions.ApplicationAlreadyExists;
@@ -61,8 +62,9 @@ public class IntegratorController {
 
 
     @PostMapping("/merchants")
-    public ResponseEntity<Merchant> integrateMerchant(@RequestBody Merchant merchant) throws MerchantAlreadyExistsException {
-        log.info("Integrating merchant " + merchant.getName());
+    public ResponseEntity<Merchant> integrateMerchant(@RequestBody MerchantDto merchantDto) throws MerchantAlreadyExistsException {
+        log.info("Integrating merchant " + merchantDto.getName());
+        Merchant merchant =  new Merchant(merchantDto.getName(), merchantDto.getEmail(), merchantDto.getBankAccount());
         return ResponseEntity.ok().body(businessIntegrator.integrateBusiness(merchant));
     }
 
