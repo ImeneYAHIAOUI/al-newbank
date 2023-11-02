@@ -1,5 +1,6 @@
 package groupB.newbankV5.customercare.interfaces;
 
+import groupB.newbankV5.customercare.controllers.dto.ReleaseFundsDto;
 import groupB.newbankV5.customercare.entities.Account;
 import org.springframework.scheduling.annotation.Scheduled;
 

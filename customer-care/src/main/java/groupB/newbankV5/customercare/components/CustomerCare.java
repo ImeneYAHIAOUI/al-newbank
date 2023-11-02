@@ -1,13 +1,9 @@
 package groupB.newbankV5.customercare.components;
 
 import groupB.newbankV5.customercare.components.dto.AccountCreationDto;
-import groupB.newbankV5.customercare.connectors.dto.CreditCardDto;
 import groupB.newbankV5.customercare.entities.*;
 import groupB.newbankV5.customercare.exceptions.InsufficientFundsException;
-import groupB.newbankV5.customercare.interfaces.AccountFinder;
-import groupB.newbankV5.customercare.interfaces.AccountRegistration;
-import groupB.newbankV5.customercare.interfaces.FundsHandler;
-import groupB.newbankV5.customercare.interfaces.SavingsAccountHandler;
+import groupB.newbankV5.customercare.interfaces.*;
 import groupB.newbankV5.customercare.repositories.AccountRepository;
 import groupB.newbankV5.customercare.repositories.AccountSavingsRepository;
 import groupB.newbankV5.customercare.repositories.CustomerProfileRepository;
@@ -24,12 +20,15 @@ import java.util.logging.Logger;
 
 @Component
 @Transactional
-public class CustomerCare implements AccountFinder, AccountRegistration, SavingsAccountHandler, FundsHandler {
+public class CustomerCare implements AccountFinder, AccountRegistration, SavingsAccountHandler, FundsHandler,BusinessAccount {
 
     private final AccountRepository accountRepository;
     private final CustomerProfileRepository customerProfileRepository;
 
     private final AccountSavingsRepository savingsAccountRepository;
+
+    public static final BigDecimal WEEKLY_PAYMENT_LIMIT = BigDecimal.valueOf(1000);
+    public static final BigDecimal WEEKLY_PAYMENT_LIMIT_BUSINESS = BigDecimal.valueOf(5000);
 
     private static final Logger log = Logger.getLogger(CustomerCare.class.getName());
 
@@ -72,7 +71,8 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
         customerProfile.setFiscalCountry(accountCreationDto.getFiscalCountry());
         customerProfile.setAddress(accountCreationDto.getAddress());
         customerProfileRepository.save(customerProfile);
-        Account account = new Account(customerProfile, generateRandomIBAN(), generateRandomBIC());
+        Account account = new Account(customerProfile, generateRandomIBAN(), generateRandomBIC(),
+                WEEKLY_PAYMENT_LIMIT);
         return accountRepository.save(account);
     }
 
@@ -157,6 +157,8 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
 
     }
 
+
+
     @Override
     public Account moveToSavingsAccount(Account account, BigDecimal amount) {
         System.out.printf("account: %s%n", account);
@@ -172,6 +174,12 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
         return accountRepository.save(account);
     }
 
+    @Override
+    public Account upgradeToBusinessAccount(Account account) {
+        account.setType(AccountType.BUSINESS);
+        account.setWeekly_payment_limit(WEEKLY_PAYMENT_LIMIT_BUSINESS);
+        return accountRepository.save(account);
+    }
     @Scheduled(cron = "0 0 0 1 * *")
     @Override
     public void resetCreditCardLimit(){

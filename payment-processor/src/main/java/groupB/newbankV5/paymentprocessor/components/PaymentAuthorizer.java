@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
+import java.util.Arrays;
+
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -20,6 +22,7 @@ import java.util.logging.Logger;
 @Component
 public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, IFraudDetector {
     private static final Logger log = Logger.getLogger(PaymentAuthorizer.class.getName());
+
     private static final BigDecimal HIGH_TRANSACTION_THRESHOLD = new BigDecimal(1000);
 
     private static final BigDecimal LOW_TRANSACTION_THRESHOLD = new BigDecimal(0);
@@ -28,13 +31,15 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
 
     private final ICostumerCare customerCare;
 
-
     private final ExternalBankProxy externalBankProxy;
+
+    private final TransactionHandler transactionCache;
     private final KafkaProducerService kafkaProducerService;
-    @Autowired
-    public PaymentAuthorizer(ICostumerCare costumerCare, ExternalBankProxy externalBankProxy, KafkaProducerService kafkaProducerService) {
+   
+    public PaymentAuthorizer(ICostumerCare costumerCare, ExternalBankProxy externalBankProxy, TransactionHandler transactionCache, KafkaProducerService kafkaProducerService) {
         this.customerCare = costumerCare;
         this.externalBankProxy = externalBankProxy;
+        this.transactionCache = transactionCache;
         this.kafkaProducerService = kafkaProducerService;
     }
 
@@ -52,10 +57,15 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
         transaction.setExternal(true);
         transaction.setAuthorizationToken(authToken);
 
-        if(isFraudulent(paymentDetails) ) {
+        if(isFraudulent(paymentDetails)) {
             transaction.setStatus(TransactionStatus.FAILED);
             kafkaProducerService.sendMessage(transaction);
             return new PaymentResponseDto(false, "Fraudulent transaction", authToken);
+        }
+        if(!checkLimit(accountDto, paymentDetails.getAmount())){
+            transaction.setStatus(TransactionStatus.FAILED);
+            kafkaProducerService.sendMessage(transaction);
+            return new PaymentResponseDto(false, "limit payment", generateAuthToken());
         }
         if (!hasSufficientFunds(accountDto, paymentDetails.getAmount())) {
             transaction.setStatus(TransactionStatus.FAILED);
@@ -63,6 +73,7 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
             return new PaymentResponseDto(false, "Insufficient funds", authToken);
         }
         transaction.setStatus(TransactionStatus.AUTHORIZED);
+
         customerCare.reserveFunds(accountDto.getId(), paymentDetails.getAmount(), paymentDetails.getCardNumber(), paymentDetails.getExpirationDate(), paymentDetails.getCvv());
         kafkaProducerService.sendMessage(transaction);
         return new PaymentResponseDto(true, "Payment authorized", authToken);
@@ -102,9 +113,15 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
             kafkaProducerService.sendMessage(transaction);
             return new TransferResponseDto(false, "Insufficient funds", authToken);
         }
+        if(!checkLimit(accountDto, transferDetails.getAmount())){
+            transaction.setStatus(TransactionStatus.FAILED);
+            kafkaProducerService.sendMessage(transaction);
+            return new TransferResponseDto(false, "limit transfer", generateAuthToken());
+        }
         transaction.setStatus(TransactionStatus.AUTHORIZED);
         if (isNewBankAccount(transferDetails.getToAccountIBAN())) {
             transaction.setExternal(false);
+
             deductFunds(accountDto.getId(), transferDetails.getAmount());
             AccountDto destinationAccount = customerCare.getAccountByIBAN(transferDetails.getToAccountIBAN());
             depositFund(destinationAccount.getId(), transferDetails.getAmount());
@@ -115,6 +132,7 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
             if(externalBankProxy.authorizeTransfer(transferDetails).isAuthorized()){
                 transaction.setExternal(true);
                 kafkaProducerService.sendMessage(transaction);
+                transactionCache.addTransaction(transaction);
                 return new TransferResponseDto(true, "Transfer authorized", authToken);
             }  else{
                 transaction.setStatus(TransactionStatus.FAILED);
@@ -152,6 +170,20 @@ public class PaymentAuthorizer implements ITransactionProcessor, IFundsHandler, 
         return balance.compareTo(amount) >= 0;
     }
 
+    private boolean checkLimit(AccountDto accountDto, BigDecimal amount){
+        log.info("checking limit");
+        String iban = accountDto.getIBAN();
+        BigDecimal result =  transactionCache.getTransactionsWeekly(iban).stream()
+                .map(Transaction::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .add(amount);
+        log.info("testing amount is " + result + " "+
+                (result.compareTo(accountDto.getLimit())  < 0 ));
+
+
+
+        return (result.compareTo(accountDto.getLimit())  < 0 );
+    }
 
     @Override
     public void deductFunds(long accountId, BigDecimal amount) {

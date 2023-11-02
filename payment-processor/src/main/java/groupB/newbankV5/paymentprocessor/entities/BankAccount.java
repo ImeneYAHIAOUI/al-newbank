@@ -1,8 +1,11 @@
 package groupB.newbankV5.paymentprocessor.entities;
 
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 import java.util.Objects;
 
-public class BankAccount {
+@Embeddable
+public class BankAccount  {
 
     private String IBAN;
     private String BIC;

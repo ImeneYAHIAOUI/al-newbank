@@ -1,6 +1,7 @@
 package groupB.newbankV5.paymentsettlement.entities;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Transaction {
@@ -12,6 +13,8 @@ public class Transaction {
     private String authorizationToken;
     private BigDecimal amount;
     private BigDecimal fees;
+
+    private LocalDateTime time;
     private TransactionStatus status;
 
     public TransactionStatus getStatus() {
@@ -47,6 +50,9 @@ public class Transaction {
     }
 
     public BigDecimal getFees() {
+        if (fees == null){
+            return BigDecimal.ZERO;
+        }
         return fees;
     }
 
@@ -74,6 +80,14 @@ public class Transaction {
         this.recipient = recipient;
         this.authorizationToken = authorizationToken;
         this.amount = amount;
+    }
+
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalDateTime time) {
+        this.time = time;
     }
 
     public String getAuthorizationToken() {

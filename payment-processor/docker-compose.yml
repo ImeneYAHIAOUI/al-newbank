@@ -10,6 +10,18 @@ services:
       - CCN_WITH_PORT=${CCN_SERVICE}:8080
       - COSTUMER_WITH_PORT=${COSTUMER_SERVICE}:8080
       - EXTERNALBANK_WITH_PORT=${EXTERNAL_BANK_SERVICE}:8080
+      - TRANSACTION_WITH_PORT=${TRANSACTION_SERVICE}:8080
+    depends_on:
+      - transaction-db
+    networks:
+      - spring-newbank-network
+  transaction-db:
+    image: postgres:15.2
+    container_name: "transaction-db"
+    environment:
+      - POSTGRES_PASSWORD=postgrespass
+      - POSTGRES_USER=postgresuser
+      - POSTGRES_DB=transaction-db
     networks:
       - spring-newbank-network
     # the postgres DB to be connected to the backend (watch out: no volume specified, everything can be lost)

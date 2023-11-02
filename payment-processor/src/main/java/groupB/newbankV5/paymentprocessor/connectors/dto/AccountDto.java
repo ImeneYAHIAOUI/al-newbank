@@ -10,16 +10,19 @@ public class AccountDto {
 
     private BigDecimal balance;
 
+    private BigDecimal limit;
     private List<CreditCardDto> creditCards;
 
     public AccountDto() {
     }
 
-    public AccountDto(String IBAN, String BIC, BigDecimal balance, List<CreditCardDto> creditCards) {
+
+    public AccountDto(String IBAN, String BIC, BigDecimal balance, List<CreditCardDto> creditCards, BigDecimal limit) {
         this.IBAN = IBAN;
         this.BIC = BIC;
         this.balance = balance;
         this.creditCards = creditCards;
+      this.limit = limit ;
     }
 
     public String getIBAN() {
@@ -46,6 +49,13 @@ public class AccountDto {
         this.balance = balance;
     }
 
+    public BigDecimal getLimit() {
+        return limit;
+    }
+
+    public void setLimit(BigDecimal limit) {
+        this.limit = limit;
+    }
     public List<CreditCardDto> getCreditCards() {
         return creditCards;
     }

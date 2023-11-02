@@ -1,6 +1,7 @@
 package groupB.newbankV5.paymentgateway.entities;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -12,18 +13,15 @@ public class Transaction {
 //    @Column(name = "Transaction_id", nullable = false)
     private UUID id;
 
-    public UUID getId() {
-        return id;
-    }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
 
     //    @ManyToOne
 //    @JoinColumn(name = "merchant_merchant_id")
     private BankAccount recipient;
     private BankAccount sender;
+
+    private LocalDateTime time;
+
     private Boolean isExternal;
     private String authorizationToken;
     private BigDecimal amount;
@@ -90,6 +88,23 @@ public class Transaction {
         this.recipient = recipient;
         this.authorizationToken = authorizationToken;
         this.amount = amount;
+        this.time = LocalDateTime.now();
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalDateTime time) {
+        this.time = time;
     }
 
     public String getAuthorizationToken() {

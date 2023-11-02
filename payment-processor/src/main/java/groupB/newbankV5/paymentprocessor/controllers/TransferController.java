@@ -1,16 +1,21 @@
 package groupB.newbankV5.paymentprocessor.controllers;
 
-import groupB.newbankV5.paymentprocessor.controllers.dto.PaymentDetailsDTO;
+import groupB.newbankV5.paymentprocessor.components.TransactionHandler;
+import groupB.newbankV5.paymentprocessor.connectors.TransactionProxy;
 import groupB.newbankV5.paymentprocessor.controllers.dto.TransferDto;
 import groupB.newbankV5.paymentprocessor.controllers.dto.TransferResponseDto;
+import groupB.newbankV5.paymentprocessor.entities.Transaction;
 import groupB.newbankV5.paymentprocessor.interfaces.ITransactionProcessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -21,10 +26,17 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class TransferController {
     private static final Logger log = Logger.getLogger(TransferController.class.getName());
     private final ITransactionProcessor transactionProcessor;
+
+    private final TransactionHandler transactionCache;
+
+    private final TransactionProxy transactionProxy;
     public static final String BASE_URI = "/api/transfer";
 
-    public TransferController(ITransactionProcessor transactionProcessor) {
+    public TransferController(ITransactionProcessor transactionProcessor, TransactionHandler transactionCache,
+            TransactionProxy transactionProxy) {
         this.transactionProcessor = transactionProcessor;
+        this.transactionCache = transactionCache;
+        this.transactionProxy = transactionProxy;
     }
 
 
@@ -34,4 +46,11 @@ public class TransferController {
         return ResponseEntity.status(HttpStatus.OK).body(transactionProcessor.authorizeTransfer(transferDto));
 
     }
+
+    @GetMapping("test")
+    public ResponseEntity<List<Transaction>> get(@RequestParam("iban") String iban) {
+        log.info("Processing transfer");
+        return ResponseEntity.status(HttpStatus.OK).body(transactionCache.getTransactionsWeekly(iban));
+    }
+
 }

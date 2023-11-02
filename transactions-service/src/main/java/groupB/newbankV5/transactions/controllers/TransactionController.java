@@ -11,6 +11,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -18,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,6 +56,7 @@ public class TransactionController {
         return transactionRepository.findAll();
     }
 
+
     @GetMapping("/toSettle")
     public List<Transaction> transactionToSettle(){
         log.info("Received request to get transactions to settle");
@@ -64,6 +69,17 @@ public class TransactionController {
     public ResponseEntity<String> saveTransactions(@RequestBody List<Transaction> transactions) {
         transactionRepository.saveAll(transactions);
         return ResponseEntity.ok("Transactions saved successfully");
+    }
+
+    @GetMapping("/weekly")
+    public List<Transaction> get(@RequestParam("iban") String iban) {
+        LocalDateTime time = LocalDate.now().minusDays(6).atStartOfDay();
+        return transactionRepository.findAll().stream()
+                .filter(transaction -> transaction.getSender().getIBAN().equals(iban))
+                .filter(transaction -> transaction.getTime() != null)
+                .filter(transaction -> !transaction.getStatus().equals(TransactionStatus.FAILED))
+                .filter(transaction -> transaction.getTime().isAfter(time))
+                .collect(Collectors.toList());
     }
 
     @KafkaListener(topics = "topic-transactions", groupId = "group_id")

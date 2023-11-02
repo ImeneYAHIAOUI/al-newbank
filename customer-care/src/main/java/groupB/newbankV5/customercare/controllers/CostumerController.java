@@ -6,6 +6,12 @@ import groupB.newbankV5.customercare.controllers.dto.ReserveFundsDto;
 import groupB.newbankV5.customercare.controllers.dto.UpdateFundsDto;
 import groupB.newbankV5.customercare.entities.Account;
 
+import groupB.newbankV5.customercare.exceptions.AccountNotFoundException;
+import groupB.newbankV5.customercare.interfaces.AccountFinder;
+import groupB.newbankV5.customercare.interfaces.AccountRegistration;
+import groupB.newbankV5.customercare.interfaces.BusinessAccount;
+import groupB.newbankV5.customercare.interfaces.SavingsAccountHandler;
+import groupB.newbankV5.customercare.interfaces.VirtualCardRequester;
 import groupB.newbankV5.customercare.entities.CardType;
 import groupB.newbankV5.customercare.exceptions.AccountNotFoundException;
 import groupB.newbankV5.customercare.interfaces.*;
@@ -31,14 +37,17 @@ public class CostumerController {
     private final AccountRegistration accountRegistration;
     private final VirtualCardRequester virtualCardRequester;
     private final SavingsAccountHandler savingsAccountHandler;
+    private final BusinessAccount businessAccount;
+
     private final FundsHandler fundsHandler;
 
     @Autowired
-    public CostumerController(AccountFinder accountFinder, AccountRegistration accountRegistration, VirtualCardRequester virtualCardRequester, SavingsAccountHandler savingsAccountHandler, FundsHandler fundsHandler) {
+    public CostumerController(AccountFinder accountFinder, AccountRegistration accountRegistration, VirtualCardRequester virtualCardRequester, SavingsAccountHandler savingsAccountHandler, FundsHandler fundsHandler, BusinessAccount businessAccount) {
         this.accountFinder = accountFinder;
         this.accountRegistration = accountRegistration;
         this.virtualCardRequester = virtualCardRequester;
         this.savingsAccountHandler = savingsAccountHandler;
+        this.businessAccount = businessAccount;
         this.fundsHandler = fundsHandler;
     }
 
@@ -167,6 +176,21 @@ public class CostumerController {
         }
         AccountDto accountDto = AccountDto.accountDtoFactory(account);
         return ResponseEntity.status(200).body(accountDto);
+
+    }
+
+    @PostMapping("{id}/upgrade")
+    public ResponseEntity<AccountDto> upgrade(@PathVariable long id){
+        log.info("upgrading account to business");
+        try{
+            Account account = accountFinder.findAccountById(id).orElseThrow();
+            businessAccount.upgradeToBusinessAccount(account);
+            AccountDto accountDto = AccountDto.accountDtoFactory(account);
+            return ResponseEntity.status(200).body(accountDto);
+        } catch (Exception e) {
+            System.out.printf("Error: %s", e.getMessage());
+            return ResponseEntity.status(400).build();
+        }
 
     }
 }

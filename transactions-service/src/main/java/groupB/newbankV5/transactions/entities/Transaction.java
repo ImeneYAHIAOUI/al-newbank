@@ -4,6 +4,7 @@ import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -16,6 +17,9 @@ public class Transaction {
     private BankAccount recipient;
     private BankAccount sender;
     private Boolean isExternal;
+
+    private LocalDateTime time;
+
     private String authorizationToken;
     private BigDecimal amount;
     private BigDecimal fees;
@@ -121,4 +125,11 @@ public class Transaction {
         this.id = id;
     }
 
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalDateTime time) {
+        this.time = time;
+    }
 }

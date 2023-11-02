@@ -1,6 +1,10 @@
 package groupB.newbankV5.customercare.controllers.dto;
 
 import groupB.newbankV5.customercare.entities.Account;
+import groupB.newbankV5.customercare.entities.AccountType;
+import groupB.newbankV5.customercare.entities.CreditCard;
+import groupB.newbankV5.customercare.entities.CustomerProfile;
+
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,7 +20,43 @@ public class AccountDto {
     private BigDecimal reservedBalance;
     private SavingsAccountDto savingsAccount;
 
+    private BigDecimal limit;
+
+    private AccountType type;
+
+    private CreditCardDto creditCard;
+
     private List<CreditCardDto> creditCards;
+
+    public AccountDto(Long id, CustomerProfileDto customerProfileDto, String iban, String bic, BigDecimal balance, SavingsAccountDto savingsAccountDto, AccountType type, BigDecimal weeklyPaymentLimit, BigDecimal reservedBalance, List<CreditCardDto> creditCardDto, SavingsAccountDto savingsAccountDto1) {
+        this.id = id;
+        this.customerProfile = customerProfileDto;
+        this.IBAN = iban;
+        this.BIC = bic;
+        this.balance = balance;
+        this.savingsAccount = savingsAccountDto;
+        this.type = type;
+        this.limit = weeklyPaymentLimit;
+        this.reservedBalance = reservedBalance;
+        this.creditCards = creditCardDto;
+        this.savingsAccount = savingsAccountDto1;
+    }
+
+    public BigDecimal getLimit() {
+        return limit;
+    }
+
+    public void setLimit(BigDecimal limit) {
+        this.limit = limit;
+    }
+
+    public AccountType getType() {
+        return type;
+    }
+
+    public void setType(AccountType type) {
+        this.type = type;
+    }
 
     public SavingsAccountDto getSavingsAccount() {
         return savingsAccount;
@@ -39,8 +79,9 @@ public class AccountDto {
     public AccountDto() {
     }
 
+
     public AccountDto(Long id, CustomerProfileDto customerProfile, String IBAN, String BIC, BigDecimal balance, BigDecimal reservedBalance, List<CreditCardDto> creditCards,
-                      SavingsAccountDto savingsAccount) {
+                      SavingsAccountDto savingsAccount, AccountType type, BigDecimal limit) {
         this.id = id;
         this.customerProfile = customerProfile;
         this.IBAN = IBAN;
@@ -49,6 +90,8 @@ public class AccountDto {
         this.reservedBalance = reservedBalance;
         this.creditCards = creditCards;
         this.savingsAccount = savingsAccount;
+        this.type = type;
+        this.limit = limit;
     }
 
     public Long getId() {
@@ -92,6 +135,9 @@ public class AccountDto {
                 account.getIBAN(),
                 account.getBIC(),
                 account.getBalance(),
+                SavingsAccountDto.savingsAccountFactory(account.getSavingsAccount()),
+                account.getType(),
+                account.getWeekly_payment_limit(),
                 account.getReservedBalance()
                 , creditCardDto,
                 SavingsAccountDto.savingsAccountFactory(account.getSavingsAccount())

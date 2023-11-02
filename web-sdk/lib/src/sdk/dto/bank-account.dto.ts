@@ -1,10 +1,10 @@
 
 export class BankAccountDTO {
-  iban: string;
-  bic: string;
+  IBAN: string;
+  BIC: string;
 
-  constructor(iban: string, bic: string) {
-    this.iban = iban;
-    this.bic = iban;
+  constructor(IBAN: string, BIC: string) {
+    this.IBAN = IBAN;
+    this.BIC = BIC;
   }
 }

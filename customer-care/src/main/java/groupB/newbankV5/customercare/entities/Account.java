@@ -9,23 +9,30 @@ import java.util.List;
 
 @Entity
 public class Account {
+
     @Id
     @GeneratedValue
     @Column(name = "Account_id", nullable = false)
     private Long id;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "CustomerProfile_id")
-    private CustomerProfile customerProfile;
-    private String IBAN;
-    private String BIC;
-    private BigDecimal balance;
+    protected CustomerProfile customerProfile;
+    protected String IBAN;
+    protected String BIC;
+
+    protected AccountType type;
+    protected BigDecimal balance;
+
+    private BigDecimal weekly_payment_limit ;
 
     private BigDecimal reservedBalance;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="SavingsAccount_id")
-    private SavingsAccount savingsAccount;
+    protected SavingsAccount savingsAccount;
 
+
+    protected CreditCard creditCard;
     @OneToMany(targetEntity = CreditCard.class, mappedBy = "account", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<CreditCard> creditCards = new ArrayList<>();
 
@@ -52,13 +59,15 @@ public class Account {
         this.savingsAccount = new SavingsAccount();
     }
 
-    public Account(CustomerProfile customerProfile, String IBAN, String BIC ) {
+    public Account(CustomerProfile customerProfile, String IBAN, String BIC,
+            BigDecimal weekly_payment_limit) {
         this.customerProfile = customerProfile;
         this.IBAN = IBAN;
         this.BIC = BIC;
         this.balance = BigDecimal.valueOf(0);
         this.reservedBalance = BigDecimal.valueOf(0);
         this.savingsAccount = new SavingsAccount();
+        this.weekly_payment_limit = weekly_payment_limit;
     }
     public Long getId() {
         return id;
@@ -103,6 +112,24 @@ public class Account {
                 ", balance=" + balance +
                 ", savingsAccount=" + savingsAccount +
                 '}';
+    }
+
+    public AccountType getType() {
+        return type;
+    }
+
+
+    public BigDecimal getWeekly_payment_limit() {
+        return weekly_payment_limit;
+    }
+
+    public void setType(AccountType type) {
+        this.type = type;
+    }
+
+
+    public void setWeekly_payment_limit(BigDecimal weekly_payment_limit) {
+        this.weekly_payment_limit = weekly_payment_limit;
     }
 
     public void setSavingsAccount(SavingsAccount savingsAccount) {

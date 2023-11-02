@@ -47,7 +47,7 @@ export class IntegrationService {
     try {
       this.validateMerchantInfo(name, email, iban, bic);
 
-      const merchant = { name, email, bankAccount: { iban: iban, bic: bic } };
+      const merchant = { name, email, bankAccount: { IBAN: iban, BIC: bic } };
       return await this.gatewayService.integrateMerchant(merchant);
     } catch (error: any) {
       console.error(`Error in integrating merchant: ${error.message}`);
