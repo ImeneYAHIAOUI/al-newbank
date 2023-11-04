@@ -11,7 +11,6 @@ export class GatewayProxyService {
   constructor(load_balancer_host: string) {
     this._gatewayBaseUrl = `http://${load_balancer_host}`;
   }
-
   async integrateMerchant(merchant: any): Promise<MerchantDTO> {
     try {
       const url = `${this._gatewayBaseUrl}${this._gatewayPath}integration/merchants`;
