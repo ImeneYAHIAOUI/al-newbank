@@ -52,3 +52,4 @@ HELP.md
 ### general .idea
 .idea/
 /web-sdk/lib/node_modules/
+/client-test/node_modules/
