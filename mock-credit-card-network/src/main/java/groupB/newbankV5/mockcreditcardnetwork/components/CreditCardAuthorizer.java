@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 @Component
@@ -40,11 +41,15 @@ public class CreditCardAuthorizer {
         boolean response = validNumber && validCVV && validDate;
         if (response) {
             CreditCardCheckResponseDto responseDto = new CreditCardCheckResponseDto();
+            Random random = new Random();
+            int randomValue = random.nextInt(2);
+            String cardType = (randomValue == 0) ? "DEBIT" : "CREDIT";
             responseDto.setResponse(true);
             responseDto.setMessage();
             responseDto.setAuthToken();
             responseDto.setAccountIBAN("FR2052300000000000000000000");
             responseDto.setAccountBIC("EXTERNAL");
+            responseDto.setCardType(cardType);
             log.info(responseDto.toString());
             return responseDto;
         }

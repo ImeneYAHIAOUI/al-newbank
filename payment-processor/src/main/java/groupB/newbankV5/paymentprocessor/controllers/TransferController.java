@@ -1,6 +1,5 @@
 package groupB.newbankV5.paymentprocessor.controllers;
 
-import groupB.newbankV5.paymentprocessor.components.TransactionHandler;
 import groupB.newbankV5.paymentprocessor.connectors.TransactionProxy;
 import groupB.newbankV5.paymentprocessor.controllers.dto.TransferDto;
 import groupB.newbankV5.paymentprocessor.controllers.dto.TransferResponseDto;
@@ -27,16 +26,12 @@ public class TransferController {
     private static final Logger log = Logger.getLogger(TransferController.class.getName());
     private final ITransactionProcessor transactionProcessor;
 
-    private final TransactionHandler transactionCache;
 
-    private final TransactionProxy transactionProxy;
     public static final String BASE_URI = "/api/transfer";
 
-    public TransferController(ITransactionProcessor transactionProcessor, TransactionHandler transactionCache,
-            TransactionProxy transactionProxy) {
+    public TransferController(ITransactionProcessor transactionProcessor,
+                              TransactionProxy transactionProxy) {
         this.transactionProcessor = transactionProcessor;
-        this.transactionCache = transactionCache;
-        this.transactionProxy = transactionProxy;
     }
 
 
@@ -47,10 +42,5 @@ public class TransferController {
 
     }
 
-    @GetMapping("test")
-    public ResponseEntity<List<Transaction>> get(@RequestParam("iban") String iban) {
-        log.info("Processing transfer");
-        return ResponseEntity.status(HttpStatus.OK).body(transactionCache.getTransactionsWeekly(iban));
-    }
 
 }

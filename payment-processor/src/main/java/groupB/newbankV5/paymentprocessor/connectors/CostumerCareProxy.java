@@ -1,9 +1,6 @@
 package groupB.newbankV5.paymentprocessor.connectors;
 
-import groupB.newbankV5.paymentprocessor.connectors.dto.AccountDto;
-import groupB.newbankV5.paymentprocessor.connectors.dto.CreditCardInformationDto;
-import groupB.newbankV5.paymentprocessor.connectors.dto.ReserveFundsDto;
-import groupB.newbankV5.paymentprocessor.connectors.dto.UpdateFundsDto;
+import groupB.newbankV5.paymentprocessor.connectors.dto.*;
 import groupB.newbankV5.paymentprocessor.interfaces.ICostumerCare;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -57,6 +54,13 @@ public class CostumerCareProxy implements ICostumerCare {
         log.info("Reserving funds for account number: " + accountId);
         ReserveFundsDto reserveFundsDto = new ReserveFundsDto(amount, cardNumber, expirationDate, cvv);
         restTemplate.put(costumerHostandPort + "/api/costumer/"+accountId+"/reservedfunds" , reserveFundsDto);
+    }
+
+    @Override
+    public void deduceWeeklyLimit(long accountId, BigDecimal amount) {
+        log.info("Deducing weekly limit for account number: " + accountId);
+        UpdateWeeklyLimitDto updateWeeklyLimitDto = new UpdateWeeklyLimitDto(amount);
+        restTemplate.put(costumerHostandPort + "/api/costumer/"+accountId+"/deduceweeklylimit" , updateWeeklyLimitDto);
     }
 
 

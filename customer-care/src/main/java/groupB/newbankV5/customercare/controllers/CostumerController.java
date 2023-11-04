@@ -1,11 +1,10 @@
 package groupB.newbankV5.customercare.controllers;
 
 import groupB.newbankV5.customercare.components.dto.AccountCreationDto;
-import groupB.newbankV5.customercare.controllers.dto.AccountDto;
-import groupB.newbankV5.customercare.controllers.dto.ReserveFundsDto;
-import groupB.newbankV5.customercare.controllers.dto.UpdateFundsDto;
+import groupB.newbankV5.customercare.controllers.dto.*;
 import groupB.newbankV5.customercare.entities.Account;
 
+import groupB.newbankV5.customercare.entities.AccountType;
 import groupB.newbankV5.customercare.exceptions.AccountNotFoundException;
 import groupB.newbankV5.customercare.interfaces.AccountFinder;
 import groupB.newbankV5.customercare.interfaces.AccountRegistration;
@@ -13,13 +12,11 @@ import groupB.newbankV5.customercare.interfaces.BusinessAccount;
 import groupB.newbankV5.customercare.interfaces.SavingsAccountHandler;
 import groupB.newbankV5.customercare.interfaces.VirtualCardRequester;
 import groupB.newbankV5.customercare.entities.CardType;
-import groupB.newbankV5.customercare.exceptions.AccountNotFoundException;
 import groupB.newbankV5.customercare.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -59,6 +56,14 @@ public class CostumerController {
         log.info("Getting all accounts");
         List<Account> accountRegistration = accountFinder.findAll();
         List<AccountDto> accountDto = accountRegistration.stream().map(AccountDto::accountDtoFactory).toList();
+        return ResponseEntity.status(200).body(accountDto);
+    }
+
+    @GetMapping("bankAccount")
+    public ResponseEntity<bankAccountDto> getAllBankAccounts() {
+        log.info("Getting bank virtual account");
+        Account account = accountFinder.findByType(AccountType.NEWBANK_VIRTUAL_ACCOUNT).orElseThrow();
+        bankAccountDto accountDto = new bankAccountDto(account.getBalance());
         return ResponseEntity.status(200).body(accountDto);
     }
 
@@ -151,11 +156,11 @@ public class CostumerController {
     }
 
     @PutMapping("{id}/releasefunds")
-    public ResponseEntity<AccountDto> releaseReservedFunds(@PathVariable long id, @RequestBody ReserveFundsDto reserveFundsDto) {
+    public ResponseEntity<AccountDto> releaseReservedFunds(@PathVariable long id, @RequestBody ReleaseFundsDto releaseFundsDto) {
         log.info("Releasing reserved funds");
-        Account account = accountFinder.findAccountById(id).orElseThrow();
+        Account account ;
         try {
-            account = fundsHandler.releaseReservedFunds(account, reserveFundsDto.getAmount());
+            account = fundsHandler.releaseReservedFunds(releaseFundsDto);
         } catch (Exception e) {
             return ResponseEntity.status(400).build();
         }
@@ -193,4 +198,35 @@ public class CostumerController {
         }
 
     }
+
+    @PutMapping("{id}/deduceweeklylimit")
+    public ResponseEntity<AccountDto> deduceWeeklyLimit(@PathVariable long id, @RequestBody UpdateWeeklyLimitDto updateWeeklyLimitDto) {
+        log.info("Deducing from weekly limit");
+        Account account = accountFinder.findAccountById(id).orElseThrow();
+        try {
+            account = fundsHandler.deduceFromWeeklyLimit(account, updateWeeklyLimitDto.getAmount());
+        } catch (Exception e) {
+            System.out.printf("Error: %s", e.getMessage());
+            return ResponseEntity.status(400).build();
+        }
+        AccountDto accountDto = AccountDto.accountDtoFactory(account);
+        return ResponseEntity.status(200).body(accountDto);
+
+    }
+    @PostMapping("/batchReleaseFunds")
+    public ResponseEntity<Object> batchReleaseFunds(@RequestBody List<ReleaseFundsDto> releaseFundsDtos) {
+        log.info("Releasing reserved funds");
+        for(ReleaseFundsDto releaseFundsDto : releaseFundsDtos) {
+            Account account;
+            try {
+                account = fundsHandler.releaseReservedFunds(releaseFundsDto);
+            } catch (Exception e) {
+                return ResponseEntity.status(400).build();
+            }
+        }
+        return ResponseEntity.status(200).build();
+
+
+    }
+
 }

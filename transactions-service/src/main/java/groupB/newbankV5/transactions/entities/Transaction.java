@@ -1,20 +1,33 @@
 package groupB.newbankV5.transactions.entities;
 
-import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.cassandra.core.mapping.Table;
 
+
+
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.UUID;
 
-@Table
+@Entity
 public class Transaction {
 
-    @PrimaryKey
-
+    @Id
     private String id;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "BIC", column = @Column(name = "recipient_BIC")),
+            @AttributeOverride(
+                    name = "IBAN", column = @Column(name = "recipient_IBAN"))
+    })
     private BankAccount recipient;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "BIC", column = @Column(name = "sender_BIC")),
+            @AttributeOverride(
+                    name = "IBAN", column = @Column(name = "sender_IBAN"))
+    })
     private BankAccount sender;
     private Boolean isExternal;
 
@@ -24,15 +37,29 @@ public class Transaction {
     private BigDecimal amount;
     private BigDecimal fees;
     private TransactionStatus status;
+    private CardType creditCardType;
+
+
 
     public TransactionStatus getStatus() {
         return status;
     }
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "BIC", column = @Column(name = "recipient_BIC")),
+            @AttributeOverride(
+                    name = "IBAN", column = @Column(name = "recipient_IBAN"))
+    })
     public BankAccount getRecipient() {
         return recipient;
     }
-
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "BIC", column = @Column(name = "sender_BIC")),
+            @AttributeOverride(
+                    name = "IBAN", column = @Column(name = "sender_IBAN"))
+    })
     public BankAccount getSender() {
         return sender;
     }
@@ -92,6 +119,7 @@ public class Transaction {
                 ", amount=" + amount +
                 ", fees=" + fees +
                 ", status=" + status +
+                ", time=" + time +
                 '}';
     }
 
@@ -131,5 +159,13 @@ public class Transaction {
 
     public void setTime(LocalDateTime time) {
         this.time = time;
+    }
+
+    public CardType getCreditCardType() {
+        return creditCardType;
+    }
+
+    public void setCreditCardType(CardType creditCardType) {
+        this.creditCardType = creditCardType;
     }
 }

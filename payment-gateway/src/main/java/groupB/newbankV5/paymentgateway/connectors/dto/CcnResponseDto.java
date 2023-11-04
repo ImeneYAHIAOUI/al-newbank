@@ -1,5 +1,7 @@
 package groupB.newbankV5.paymentgateway.connectors.dto;
 
+import groupB.newbankV5.paymentgateway.entities.CardType;
+
 public class CcnResponseDto {
 
     boolean response;
@@ -8,13 +10,13 @@ public class CcnResponseDto {
 
     String AccountIBAN;
     String AccountBIC;
-    String cardType;
+    CardType cardType;
 
-    public String getCardType() {
+    public CardType getCardType() {
         return cardType;
     }
 
-    public void setCardType(String cardType) {
+    public void setCardType(CardType cardType) {
         this.cardType = cardType;
     }
 

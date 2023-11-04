@@ -2,7 +2,6 @@ package groupB.newbankV5.transactions.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import groupB.newbankV5.transactions.entities.BankAccount;
 
 import groupB.newbankV5.transactions.entities.Transaction;
 import groupB.newbankV5.transactions.entities.TransactionStatus;
@@ -11,7 +10,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -73,12 +71,11 @@ public class TransactionController {
 
     @GetMapping("/weekly")
     public List<Transaction> get(@RequestParam("iban") String iban) {
-        LocalDateTime time = LocalDate.now().minusDays(6).atStartOfDay();
+        LocalDateTime localDateTime = LocalDateTime.now().minus(7, java.time.temporal.ChronoUnit.DAYS);
         return transactionRepository.findAll().stream()
                 .filter(transaction -> transaction.getSender().getIBAN().equals(iban))
-                .filter(transaction -> transaction.getTime() != null)
                 .filter(transaction -> !transaction.getStatus().equals(TransactionStatus.FAILED))
-                .filter(transaction -> transaction.getTime().isAfter(time))
+                .filter(transaction -> transaction.getTime().isAfter(localDateTime))
                 .collect(Collectors.toList());
     }
 

@@ -1,10 +1,14 @@
 package groupB.newbankV5.paymentprocessor.entities;
 
+import org.springframework.data.cassandra.core.mapping.UserDefinedType;
+import org.springframework.web.bind.annotation.Mapping;
+
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import java.util.Objects;
 
-@Embeddable
+@UserDefinedType("bank_account")
 public class BankAccount  {
 
     private String IBAN;
@@ -46,5 +50,13 @@ public class BankAccount  {
 
     public void setBIC(String BIC) {
         this.BIC = BIC;
+    }
+
+    @Override
+    public String toString() {
+        return "BankAccount{" +
+                "IBAN='" + IBAN + '\'' +
+                ", BIC='" + BIC + '\'' +
+                '}';
     }
 }

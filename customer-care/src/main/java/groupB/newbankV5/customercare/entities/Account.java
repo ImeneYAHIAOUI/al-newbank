@@ -25,14 +25,14 @@ public class Account {
 
     private BigDecimal weekly_payment_limit ;
 
+    private BigDecimal restOfTheWeekLimit;
+
     private BigDecimal reservedBalance;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="SavingsAccount_id")
-    protected SavingsAccount savingsAccount;
+    private SavingsAccount savingsAccount;
 
-
-    protected CreditCard creditCard;
     @OneToMany(targetEntity = CreditCard.class, mappedBy = "account", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<CreditCard> creditCards = new ArrayList<>();
 
@@ -59,6 +59,8 @@ public class Account {
         this.savingsAccount = new SavingsAccount();
     }
 
+
+
     public Account(CustomerProfile customerProfile, String IBAN, String BIC,
             BigDecimal weekly_payment_limit) {
         this.customerProfile = customerProfile;
@@ -68,7 +70,11 @@ public class Account {
         this.reservedBalance = BigDecimal.valueOf(0);
         this.savingsAccount = new SavingsAccount();
         this.weekly_payment_limit = weekly_payment_limit;
+        this.restOfTheWeekLimit = weekly_payment_limit;
+        this.type = AccountType.PERSONAL;
     }
+
+
     public Long getId() {
         return id;
     }
@@ -146,5 +152,13 @@ public class Account {
 
     public void setReservedBalance(BigDecimal reservedBalance) {
         this.reservedBalance = reservedBalance;
+    }
+
+    public BigDecimal getRestOfTheWeekLimit() {
+        return restOfTheWeekLimit;
+    }
+
+    public void setRestOfTheWeekLimit(BigDecimal restOfTheWeekLimit) {
+        this.restOfTheWeekLimit = restOfTheWeekLimit;
     }
 }

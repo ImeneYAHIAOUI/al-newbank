@@ -1,18 +1,16 @@
 package groupB.newbankV5.paymentprocessor.entities;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import java.io.Serializable;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
+
+;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.UUID;
 
 
-@Entity
+@Table
 public class Transaction  {
 
 
@@ -25,20 +23,20 @@ public class Transaction  {
         this.id = id;
     }
 
-    @Id
-    @GeneratedValue
+    @PrimaryKey
     private UUID id;
 
     private LocalDateTime time;
+    private CardType creditCardType;
 
-    @Embedded
     private BankAccount recipient;
-    @Embedded
+
     private BankAccount sender;
     private Boolean isExternal;
     private String authorizationToken;
     private BigDecimal amount;
     private TransactionStatus status;
+    private BigDecimal fees;
 
 
     public Transaction(  BankAccount recipient, BankAccount sender, Boolean isExternal, String authorizationToken, BigDecimal amount, TransactionStatus status) {
@@ -130,5 +128,31 @@ public class Transaction  {
         this.amount = amount;
     }
 
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id='" + id + '\'' +
+                ", recipient=" + recipient.toString() +
+                ", sender=" + sender.toString() +
+                ", isExternal=" + isExternal +
+                ", authorizationToken='" + authorizationToken + '\'' +
+                ", amount=" + amount +
+                ", fees=" + fees +
+                ", status=" + status +
+                ", time=" + time +
+                '}';
+    }
 
+
+    public void setFees(BigDecimal fees) {
+        this.fees = fees;
+    }
+
+    public CardType getCreditCardType() {
+        return creditCardType;
+    }
+
+    public void setCreditCardType(CardType creditCardType) {
+        this.creditCardType = creditCardType;
+    }
 }

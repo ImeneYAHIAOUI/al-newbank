@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -86,8 +87,10 @@ public class Transactioner implements ITransactionProcessor {
         Transaction transaction = new Transaction(merchant.getBankAccount(), ccnResponseDto.getAuthToken(), amount);
         transaction.setId(UUID.randomUUID());
         transaction.setExternal(true);
+        transaction.setCreditCardType(ccnResponseDto.getCardType());
         transaction.setSender(new BankAccount(ccnResponseDto.getAccountIBAN(),ccnResponseDto.getAccountBIC()));
         transaction.setRecipient(merchant.getBankAccount());
+        transaction.setStatus(TransactionStatus.PENDING);
 
         kafkaProducerService.sendMessage(transaction);
     }

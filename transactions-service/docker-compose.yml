@@ -1,12 +1,5 @@
 version: '3.1'
 services:
-  cassandra:
-    image: cassandra
-    container_name: cassandra
-    ports:
-      - "9042:9042"
-    networks:
-      - spring-newbank-network
 
   transactions-service:
     image: "newbank/transactions-service"
@@ -14,12 +7,24 @@ services:
     ports:
       - "4999:8080"
     depends_on:
-      - cassandra
-    environment:
-      - CASSANDRA_HOST=cassandra
+      - transaction-rationale-db
     restart: on-failure
+
     networks:
       - spring-newbank-network
+    environment:
+      - POSTGRES_HOST=transaction-rationale-db:5432
+
+  transaction-rationale-db:
+      image: postgres:15.2
+      container_name: "transaction-rationale-db"
+      environment:
+        - POSTGRES_PASSWORD=postgrespass
+        - POSTGRES_USER=postgresuser
+        - POSTGRES_DB=transaction-db
+      networks:
+        - spring-newbank-network
+
 
 networks:
   spring-newbank-network:

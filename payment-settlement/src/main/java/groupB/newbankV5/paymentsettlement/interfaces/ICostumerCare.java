@@ -1,15 +1,10 @@
 package groupB.newbankV5.paymentsettlement.interfaces;
 
-import groupB.newbankV5.paymentsettlement.connectors.dto.AccountDto;
+import groupB.newbankV5.paymentsettlement.connectors.dto.ReleaseFundsDto;
+import groupB.newbankV5.paymentsettlement.entities.Transaction;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 public interface ICostumerCare {
-
-    AccountDto getAccountByIBAN(String accountNumber);
-
-
-    void updateBalance(long accountId, BigDecimal amount, String operation);
-
-    void releaseFunds(long accountId, BigDecimal amount);
+    void releaseFunds(List<ReleaseFundsDto> accounts);
 }

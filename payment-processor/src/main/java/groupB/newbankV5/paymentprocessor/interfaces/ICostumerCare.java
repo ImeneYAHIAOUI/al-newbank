@@ -15,4 +15,6 @@ public interface ICostumerCare {
     void updateBalance(long accountId, BigDecimal amount, String operation);
 
      void reserveFunds(long accountId, BigDecimal amount, String cardNumber, String expirationDate, String cvv);
+
+    void deduceWeeklyLimit(long accountId, BigDecimal amount);
 }

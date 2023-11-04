@@ -9,6 +9,12 @@ public class ReserveFundsDto {
     private String expirationDate;
     private String cvv;
 
+    public ReserveFundsDto() {
+
+    }
+
+
+
     public String getCardNumber() {
         return cardNumber;
     }
@@ -40,4 +46,6 @@ public class ReserveFundsDto {
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
+
+
 }

@@ -16,6 +16,7 @@ public class Transaction {
 
     private LocalDateTime time;
     private TransactionStatus status;
+    private CardType creditCardType;
 
     public TransactionStatus getStatus() {
         return status;
@@ -117,5 +118,13 @@ public class Transaction {
     @Override
     public String toString() {
         return "Transaction{" + "id='" + id + '\'' + ", recipient=" + recipient + ", sender=" + sender + ", isExternal=" + isExternal + ", authorizationToken='" + authorizationToken + '\'' + ", amount=" + amount + ", fees=" + fees + ", status=" + status + '}';
+    }
+
+    public CardType getCreditCardType() {
+        return creditCardType;
+    }
+
+    public void setCreditCardType(CardType creditCardType) {
+        this.creditCardType = creditCardType;
     }
 }

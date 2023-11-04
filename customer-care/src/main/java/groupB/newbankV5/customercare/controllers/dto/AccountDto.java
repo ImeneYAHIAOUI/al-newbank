@@ -21,22 +21,23 @@ public class AccountDto {
     private SavingsAccountDto savingsAccount;
 
     private BigDecimal limit;
+    private BigDecimal restOfTheWeekLimit;
+
 
     private AccountType type;
 
-    private CreditCardDto creditCard;
 
     private List<CreditCardDto> creditCards;
 
-    public AccountDto(Long id, CustomerProfileDto customerProfileDto, String iban, String bic, BigDecimal balance, SavingsAccountDto savingsAccountDto, AccountType type, BigDecimal weeklyPaymentLimit, BigDecimal reservedBalance, List<CreditCardDto> creditCardDto, SavingsAccountDto savingsAccountDto1) {
+    public AccountDto(Long id, CustomerProfileDto customerProfileDto, String iban, String bic, BigDecimal balance, AccountType type, BigDecimal weeklyPaymentLimit,BigDecimal restOfTheWeekLimit, BigDecimal reservedBalance, List<CreditCardDto> creditCardDto, SavingsAccountDto savingsAccountDto1) {
         this.id = id;
         this.customerProfile = customerProfileDto;
         this.IBAN = iban;
         this.BIC = bic;
         this.balance = balance;
-        this.savingsAccount = savingsAccountDto;
         this.type = type;
         this.limit = weeklyPaymentLimit;
+        this.restOfTheWeekLimit = restOfTheWeekLimit;
         this.reservedBalance = reservedBalance;
         this.creditCards = creditCardDto;
         this.savingsAccount = savingsAccountDto1;
@@ -92,6 +93,7 @@ public class AccountDto {
         this.savingsAccount = savingsAccount;
         this.type = type;
         this.limit = limit;
+
     }
 
     public Long getId() {
@@ -135,9 +137,9 @@ public class AccountDto {
                 account.getIBAN(),
                 account.getBIC(),
                 account.getBalance(),
-                SavingsAccountDto.savingsAccountFactory(account.getSavingsAccount()),
                 account.getType(),
                 account.getWeekly_payment_limit(),
+                account.getRestOfTheWeekLimit(),
                 account.getReservedBalance()
                 , creditCardDto,
                 SavingsAccountDto.savingsAccountFactory(account.getSavingsAccount())
@@ -158,5 +160,13 @@ public class AccountDto {
 
     public void setReservedBalance(BigDecimal reservedBalance) {
         this.reservedBalance = reservedBalance;
+    }
+
+    public BigDecimal getRestOfTheWeekLimit() {
+        return restOfTheWeekLimit;
+    }
+
+    public void setRestOfTheWeekLimit(BigDecimal restOfTheWeekLimit) {
+        this.restOfTheWeekLimit = restOfTheWeekLimit;
     }
 }

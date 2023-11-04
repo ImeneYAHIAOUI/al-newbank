@@ -27,6 +27,7 @@ public class Transaction {
     private BigDecimal amount;
     private BigDecimal fees;
     private TransactionStatus status;
+    private CardType creditCardType;
 
     public TransactionStatus getStatus() {
         return status;
@@ -121,5 +122,13 @@ public class Transaction {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public CardType getCreditCardType() {
+        return creditCardType;
+    }
+
+    public void setCreditCardType(CardType creditCardType) {
+        this.creditCardType = creditCardType;
     }
 }

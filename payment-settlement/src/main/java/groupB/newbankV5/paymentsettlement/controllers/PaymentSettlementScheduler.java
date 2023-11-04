@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -33,10 +35,7 @@ public class PaymentSettlementScheduler {
     public ResponseEntity<String> process() {
         log.info("PROCESS SETTLEMENT - START");
         Transaction[] transactions = transactionProxy.getTransactionsToSettle();
-        for(Transaction transaction : transactions){
-            settlePayment.settlePayment(transaction);
-        }
-        transactionProxy.putTransactionsToSettle(transactions);
+        settlePayment.settlePayments();
         log.info("PROCESS SETTLEMENT - END");
 
         return ResponseEntity.status(HttpStatus.OK).body("DONE");

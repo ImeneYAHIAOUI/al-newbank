@@ -1,24 +1,38 @@
 package groupB.newbankV5.feescalculator.entities;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 import java.util.UUID;
 
-@Entity
 public class Transaction {
 
-    @Id
-    @GeneratedValue
-    @Column(name = "Transaction_id", nullable = false)
+
     private UUID id;
+
     private BankAccount recipient;
+
     private BankAccount sender;
     private Boolean isExternal;
     private String authorizationToken;
     private BigDecimal amount;
     private BigDecimal fees;
     private TransactionStatus status;
+    private LocalDateTime time;
+
+    public CardType getCreditCardType() {
+        return creditCardType;
+    }
+
+    public void setCreditCardType(CardType creditCardType) {
+        this.creditCardType = creditCardType;
+    }
+
+    private CardType creditCardType;
 
     public TransactionStatus getStatus() {
         return status;
@@ -104,5 +118,13 @@ public class Transaction {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalDateTime time) {
+        this.time = time;
     }
 }

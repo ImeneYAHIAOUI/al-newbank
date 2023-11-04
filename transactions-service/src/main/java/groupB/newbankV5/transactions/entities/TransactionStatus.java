@@ -5,6 +5,8 @@ public enum TransactionStatus {
     FEES_CALCULATED("FEES_CALCULATED"),
     SETTLED("SETTLED"),
 
+    PENDING("PENDING"),
+
     FAILED("FAILED")
     ;
 

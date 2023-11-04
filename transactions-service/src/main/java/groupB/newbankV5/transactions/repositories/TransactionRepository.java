@@ -1,11 +1,11 @@
 package groupB.newbankV5.transactions.repositories;
 
+
 import groupB.newbankV5.transactions.entities.Transaction;
-import org.springframework.data.cassandra.repository.CassandraRepository;
-import org.springframework.data.cassandra.repository.Query;
+import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.UUID;
 
-import java.util.List;
-
-public interface TransactionRepository extends CassandraRepository<Transaction, Long> {
-
+@Repository
+public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 }

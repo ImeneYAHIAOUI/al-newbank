@@ -11,6 +11,8 @@ public class AccountDto {
     private BigDecimal balance;
 
     private BigDecimal limit;
+    private BigDecimal restOfTheWeekLimit;
+
     private List<CreditCardDto> creditCards;
 
     public AccountDto() {
@@ -70,5 +72,13 @@ public class AccountDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public BigDecimal getRestOfTheWeekLimit() {
+        return restOfTheWeekLimit;
+    }
+
+    public void setRestOfTheWeekLimit(BigDecimal restOfTheWeekLimit) {
+        this.restOfTheWeekLimit = restOfTheWeekLimit;
     }
 }

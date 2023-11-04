@@ -11,8 +11,13 @@ public interface FundsHandler {
     Account updateFunds(Account account, BigDecimal amount, String operation);
     Account addReservedFunds(Account account, BigDecimal amount, String cardNumber, String expirationDate, String cvv);
 
-    Account releaseReservedFunds(Account account, BigDecimal amount);
+    Account deduceFromWeeklyLimit(Account account, BigDecimal amount);
+
+    Account releaseReservedFunds(ReleaseFundsDto amount);
 
     @Scheduled(cron = "0 0 1 * *")
     void resetCreditCardLimit();
+
+    @Scheduled(cron = "0 0 0 * * MON")
+    void resetWeeklyPaymentLimit();
 }

@@ -26,6 +26,6 @@ public class KafkaProducerService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        kafkaTemplate.send("topic-fees-calculator", jsonMessage);
+        kafkaTemplate.send("topic-transactions", jsonMessage);
     }
 }

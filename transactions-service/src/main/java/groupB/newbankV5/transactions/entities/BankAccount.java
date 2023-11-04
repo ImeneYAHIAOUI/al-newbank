@@ -1,11 +1,10 @@
 package groupB.newbankV5.transactions.entities;
 
-import org.springframework.data.cassandra.core.mapping.UserDefinedType;
 
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
-@UserDefinedType("bank_account")
+@Embeddable
 public class BankAccount {
     private String IBAN;
     private String BIC;

@@ -1,6 +1,7 @@
 package groupB.newbankV5.customercare.components;
 
 import groupB.newbankV5.customercare.components.dto.AccountCreationDto;
+import groupB.newbankV5.customercare.controllers.dto.ReleaseFundsDto;
 import groupB.newbankV5.customercare.entities.*;
 import groupB.newbankV5.customercare.exceptions.InsufficientFundsException;
 import groupB.newbankV5.customercare.interfaces.*;
@@ -27,8 +28,6 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
 
     private final AccountSavingsRepository savingsAccountRepository;
 
-    public static final BigDecimal WEEKLY_PAYMENT_LIMIT = BigDecimal.valueOf(1000);
-    public static final BigDecimal WEEKLY_PAYMENT_LIMIT_BUSINESS = BigDecimal.valueOf(5000);
 
     private static final Logger log = Logger.getLogger(CustomerCare.class.getName());
 
@@ -55,6 +54,11 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
     }
 
     @Override
+    public Optional<Account> findByType(AccountType accountType) {
+        return accountRepository.findByType(accountType);
+    }
+
+    @Override
     public List<Account> findAll() {
         return accountRepository.findAll();
     }
@@ -72,7 +76,7 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
         customerProfile.setAddress(accountCreationDto.getAddress());
         customerProfileRepository.save(customerProfile);
         Account account = new Account(customerProfile, generateRandomIBAN(), generateRandomBIC(),
-                WEEKLY_PAYMENT_LIMIT);
+                Constants.WEEKLY_PAYMENT_LIMIT);
         return accountRepository.save(account);
     }
 
@@ -100,11 +104,27 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
         return accountRepository.save(account);
     }
 
+    @Override
+    public Account deduceFromWeeklyLimit(Account account, BigDecimal amount) {
+        account.setWeekly_payment_limit(account.getWeekly_payment_limit().subtract(amount));
+        return accountRepository.save(account);
+    }
 
 
     @Override
-    public Account releaseReservedFunds(Account account, BigDecimal amount) {
-        account.setReservedBalance(account.getReservedBalance().subtract(amount));
+    public Account releaseReservedFunds(ReleaseFundsDto amount) {
+        if(amount.getIBAN() == null) {
+            addFeesToBankAccount(amount.getFees());
+            return accountRepository.findByType(AccountType.NEWBANK_VIRTUAL_ACCOUNT).orElseThrow();
+        }
+
+        Account account = accountRepository.findByIBAN(amount.getIBAN()).orElseThrow();
+        account.setReservedBalance(account.getReservedBalance().subtract(amount.getAmount()));
+        if (amount.getReceiverIban() != null) {
+            Account recipient = accountRepository.findByIBAN(amount.getReceiverIban()).orElseThrow();
+            recipient.setBalance(account.getBalance().add(amount.getAmount()).subtract(amount.getFees()));
+        }
+        addFeesToBankAccount(amount.getFees());
         return accountRepository.save(account);
     }
 
@@ -113,7 +133,12 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
         accountRepository.delete(account);
     }
 
-
+    private void addFeesToBankAccount( BigDecimal amount) {
+        accountRepository.findByType(AccountType.NEWBANK_VIRTUAL_ACCOUNT).ifPresent(account -> {
+            account.setBalance(account.getBalance().add(amount));
+            accountRepository.save(account);
+        });
+    }
 
     private String generateRandomIBAN() {
         Random random = new Random();
@@ -177,7 +202,7 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
     @Override
     public Account upgradeToBusinessAccount(Account account) {
         account.setType(AccountType.BUSINESS);
-        account.setWeekly_payment_limit(WEEKLY_PAYMENT_LIMIT_BUSINESS);
+        account.setWeekly_payment_limit(Constants.WEEKLY_PAYMENT_LIMIT_BUSINESS);
         return accountRepository.save(account);
     }
     @Scheduled(cron = "0 0 0 1 * *")
@@ -186,9 +211,18 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
         List<Account> accounts = accountRepository.findAll();
         for(Account account: accounts){
             account.getCreditCards().forEach(creditCard -> {
-                creditCard.setLimit(Constants.DEFAULT_CARD_LIMIT);
-                creditCard.setRestOfLimit(Constants.DEFAULT_CARD_LIMIT);
+                creditCard.setRestOfLimit(account.getType() == AccountType.PERSONAL? Constants.DEFAULT_CARD_LIMIT: Constants.DEFAULT_CARD_LIMIT_BUSINESS);
             });
+            accountRepository.save(account);
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 * * MON")
+    @Override
+    public void resetWeeklyPaymentLimit(){
+        List<Account> accounts = accountRepository.findAll();
+        for(Account account: accounts){
+            account.setWeekly_payment_limit(account.getType() == AccountType.PERSONAL? Constants.WEEKLY_PAYMENT_LIMIT: Constants.WEEKLY_PAYMENT_LIMIT_BUSINESS);
             accountRepository.save(account);
         }
     }
