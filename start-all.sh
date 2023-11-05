@@ -39,5 +39,7 @@ for service in "${services[@]}"; do
 
     start_service "$service_name" "$compose_file"
 done
-
+docker compose --env-file ./transactions-service/.env -f transactions-service/docker-compose.yml \
+               --env-file ./analytics-service/.env -f analytics-service/docker-compose.yml up -d
+               
 echo "All services started."
