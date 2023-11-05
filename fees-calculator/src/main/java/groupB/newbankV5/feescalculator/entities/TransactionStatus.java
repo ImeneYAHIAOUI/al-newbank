@@ -4,7 +4,7 @@ public enum TransactionStatus {
     AUTHORIZED("AUTHORIZED"),
     FEES_CALCULATED("FEES_CALCULATED"),
     SETTLED("SETTLED"),
-    PENDING("PENDING"),
+    PENDING_SETTLEMENT("PENDING_SETTLEMENT"),
     ;
 
     private String authorized;

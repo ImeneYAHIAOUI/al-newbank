@@ -1,31 +1,21 @@
 package groupB.newbankV5.paymentgateway.controllers.dto;
 
-import groupB.newbankV5.paymentgateway.entities.CreditCard;
-
 import java.math.BigDecimal;
 
 public class PaymentDto {
-    private String token;
     private BigDecimal amount;
-    private String cryptedCreditCard;
+    private String encryptedCard;
 
     public PaymentDto() {
         // Default constructor
     }
 
-    public PaymentDto(String token, BigDecimal amount, String cryptedCreditCard) {
-        this.token = token;
+    public PaymentDto(String token, BigDecimal amount, String encryptedCard) {
         this.amount = amount;
-        this.cryptedCreditCard = cryptedCreditCard;
+        this.encryptedCard = encryptedCard;
     }
 
-    public String getToken() {
-        return token;
-    }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
 
     public BigDecimal getAmount() {
         return amount;
@@ -35,11 +25,11 @@ public class PaymentDto {
         this.amount = amount;
     }
 
-    public String getCryptedCreditCard() {
-        return cryptedCreditCard;
+    public String getEncryptedCard() {
+        return encryptedCard;
     }
 
-    public void setCryptedCreditCard(String cryptedCreditCard) {
-        this.cryptedCreditCard = cryptedCreditCard;
+    public void setEncryptedCard(String encryptedCard) {
+        this.encryptedCard = encryptedCard;
     }
 }

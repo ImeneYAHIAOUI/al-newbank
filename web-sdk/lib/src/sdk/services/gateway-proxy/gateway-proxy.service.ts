@@ -4,17 +4,22 @@ import { MerchantDTO } from '../../dto/merchant.dto';
 import { ApplicationDto } from '../../dto/application.dto';
 import { MerchantAlreadyExists } from '../../exceptions/merchant-already-exists.exception';
 import { ApplicationNotFound } from '../../exceptions/application-not-found.exception';
+import {AuthorizeDto} from "../../dto/authorise.dto";
 export class GatewayProxyService {
   private readonly _gatewayBaseUrl: string;
   private readonly _gatewayPath = '/api/gateway/';
-  private _apiKey: string | undefined;
   constructor(load_balancer_host: string) {
     this._gatewayBaseUrl = `http://${load_balancer_host}`;
   }
-   async getPublicKey(applicationId: string): Promise<string> {
+   async getPublicKey( token: string): Promise<string> {
       try {
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+
         const response = await axios.get(
-          `${this._gatewayBaseUrl}${this._gatewayPath}/applications/${applicationId}/publickey`,
+          `${this._gatewayBaseUrl}${this._gatewayPath}/applications/public-key`,
+            { headers },
         );
         return response.data;
       } catch (error: any) {
@@ -28,14 +33,15 @@ export class GatewayProxyService {
         }
       }
     }
-  async processPayment(encryptedCardInfo: string): Promise<string> {
+  async processPayment(encryptedCardInfo: object, token: string): Promise<AuthorizeDto> {
     try {
       const httpOptions: AxiosRequestConfig = {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
       };
-      const response = await axios.post<string>(
+      const response = await axios.post<AuthorizeDto>(
         `${this._gatewayBaseUrl}${this._gatewayPath}authorize`,
         encryptedCardInfo,
         httpOptions,
@@ -53,4 +59,29 @@ export class GatewayProxyService {
       }
     }
   }
+  async confirmPayment(transactionId: string, token: string): Promise<String> {
+    try {
+      const httpOptions: AxiosRequestConfig = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const response = await axios.post<String>(
+          `${this._gatewayBaseUrl}${this._gatewayPath}confirmPayment/${transactionId}`,
+          httpOptions,
+      );
+      return response.data;
+    } catch (error: any) {
+      if (error.response && error.response.status === HttpStatus.NOT_FOUND) {
+        console.error(`Application not found`);
+        throw new ApplicationNotFound();
+      } else {
+        const errorMessage = `Error while processing payment: ${error.message}`;
+        console.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+    }
+  }
+
 }

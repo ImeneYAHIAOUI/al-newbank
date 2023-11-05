@@ -11,6 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface ApplicationKeyPairRepository extends JpaRepository<ApplicationKeyPair, Long> {
-    Optional<ApplicationKeyPair> findByApplicationId(long applicationId);
+    Optional<ApplicationKeyPair> findByApplicationName(String applicationName);
     Optional<ApplicationKeyPair> findByPublicKey(PublicKey publicKey);
 }

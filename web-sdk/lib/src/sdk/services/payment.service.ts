@@ -2,6 +2,9 @@ import { GatewayProxyService } from './gateway-proxy/gateway-proxy.service';
 import { PaymentInfoDTO } from '../dto/payment-info.dto';
 import axios from 'axios';
 import * as crypto from 'crypto';
+import {PaymentDto} from "../dto/payment.dto";
+import {AuthorizeDto} from "../dto/authorise.dto";
+
 
 export class PaymentService {
   private readonly gatewayProxyService;
@@ -38,64 +41,65 @@ export class PaymentService {
     }
   }
 
-  async retrieveLocation(): Promise<string> {
-    try {
-      const ipInfoResponse = await axios.get('https://ipinfo.io');
-      const location = ipInfoResponse.data.loc;
-      if (!location) {
-        throw new Error('No location information available');
-      }
-      console.debug('Location:', location);
-      return location;
-    } catch (error: any) {
-      throw new Error(
-        'Error retrieving location information: ' + error.message,
-      );
-    }
+
+  async getPublicKey(token: string): Promise<string> {
+    return await this.gatewayProxyService.getPublicKey(token);
   }
 
-  async processCardInfo(
-    paymentInfo: PaymentInfoDTO,
-    applicationId: string,
-    token: string,
-  ): Promise<Buffer> {
+
+
+  async processPayment(encryptedCardInfo: string, token: string,
+     amount: string
+  )   {
     try {
-      this.validateCardInfo(paymentInfo);
 
-      const publicKey =
-        await this.gatewayProxyService.getPublicKey(applicationId);
-      console.debug('Public key:', publicKey);
-
-      const cardInfo = {
-        cardNumber: paymentInfo.cardNumber,
-        expirationDate: paymentInfo.expirationDate,
-        cvv: paymentInfo.cvv,
-      };
-      console.debug('Card info:', Buffer.from(JSON.stringify(cardInfo)));
-
-      const plaintext = `${paymentInfo.cardNumber.toString()},${paymentInfo.expirationDate.toString()},${paymentInfo.cvv.toString()}`;
-      console.debug('Plaintext:', plaintext);
-
-      const buffer = Buffer.from(plaintext, 'utf8');
-      const encryptedCardInfo = crypto.publicEncrypt(
-        '-----BEGIN PUBLIC KEY-----\n' +
-          publicKey +
-          '\n-----END PUBLIC KEY-----',
-        buffer,
-      );
-
-      const payment = {
-        cryptedCreditCard: encryptedCardInfo.toString('base64'),
-        amount: paymentInfo.amount,
-        token: token,
+      const payment : PaymentDto = {
+        encryptedCard: encryptedCardInfo,
+        amount: amount,
       };
       console.debug('Payment:', payment);
 
-      await this.gatewayProxyService.processPayment(JSON.stringify(payment));
+      const auth : AuthorizeDto = await this.gatewayProxyService.processPayment(payment, token);
       console.debug('payment request sent');
-      return encryptedCardInfo;
+      return auth;
+
+
     } catch (error: any) {
       throw new Error('Error processing card information: ' + error.message);
     }
   }
+
+  private encrypteCreditCard(paymentInfo: PaymentInfoDTO, publicKey: string) {
+    this.validateCardInfo(paymentInfo);
+
+
+    const cardInfo = {
+      cardNumber: paymentInfo.cardNumber,
+      expirationDate: paymentInfo.expirationDate,
+      cvv: paymentInfo.cvv,
+    };
+    console.debug('Card info:', Buffer.from(JSON.stringify(cardInfo)));
+
+    const plaintext = `${paymentInfo.cardNumber.toString()},${paymentInfo.expirationDate.toString()},${paymentInfo.cvv.toString()}`;
+    console.debug('Plaintext:', plaintext);
+
+    const buffer = Buffer.from(plaintext, 'utf8');
+    const encryptedCardInfo = crypto.publicEncrypt(
+        '-----BEGIN PUBLIC KEY-----\n' +
+        publicKey +
+        '\n-----END PUBLIC KEY-----',
+        buffer,
+    );
+    return encryptedCardInfo.toString('base64');
+  }
+
+  async authorize(paymentInfo: PaymentInfoDTO,token: string) {
+    const publicKey = await this.getPublicKey(token);
+    const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
+    return await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
+  }
+  async confirmPayment(transactionId: string, token: string){
+    return await this.gatewayProxyService.confirmPayment(transactionId, token);
+  }
+
 }

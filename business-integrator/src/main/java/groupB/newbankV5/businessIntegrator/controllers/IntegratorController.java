@@ -43,10 +43,10 @@ public class IntegratorController {
         this.applicationFinder = applicationFinder;
     }
 
-    @GetMapping("/applications/{id}")
-    public ResponseEntity<Application> getApplication(@PathVariable("id") Long id) throws ApplicationNotFoundException {
-        log.info("Getting application " + id);
-        Application application = applicationFinder.findApplicationById(id);
+    @GetMapping("/applications")
+    public ResponseEntity<Application> getApplication(@RequestParam("name") String name) throws ApplicationNotFoundException {
+        log.info("Getting application " + name);
+        Application application = applicationFinder.findApplicationByName(name);
         return ResponseEntity.ok().body(application);
     }
 

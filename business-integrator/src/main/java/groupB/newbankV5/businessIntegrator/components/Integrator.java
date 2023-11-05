@@ -41,6 +41,14 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
     }
 
     @Override
+    public Application findApplicationByName(String name) throws ApplicationNotFoundException {
+        Optional<Application> optApplication = applicationRepository.findByName(name);
+        if(optApplication.isEmpty())
+            throw new ApplicationNotFoundException("Application with name " + name + " not found");
+        return optApplication.get();
+    }
+
+    @Override
     public Merchant findMerchantById(Long id) throws MerchantNotFoundException {
         Optional<Merchant> optMerchant = merchantRepository.findById(id);
         if(optMerchant.isEmpty())

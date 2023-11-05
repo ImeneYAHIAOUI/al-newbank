@@ -12,9 +12,8 @@ import groupB.newbankV5.paymentgateway.exceptions.CCNException;
 import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;
 import groupB.newbankV5.paymentgateway.interfaces.IRSA;
 import groupB.newbankV5.paymentgateway.interfaces.ITransactionProcessor;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
+
+import groupB.newbankV5.paymentgateway.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,17 +24,16 @@ import java.math.BigDecimal;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 @Service
 public class Transactioner implements ITransactionProcessor {
-    private final Integer FEE_RATE = 10;
-    private final double FLAT_FEE = 0.03;
+
     private static final Logger log = Logger.getLogger(Transactioner.class.getName());
     private CreditCardNetworkProxy creditCardNetworkProxy;
     private BusinessIntegratorProxy businessIntegratorProxy;
+    private TransactionRepository transactionRepository;
     private IRSA rsa;
 
     @Autowired
@@ -43,15 +41,16 @@ public class Transactioner implements ITransactionProcessor {
 
     @Autowired
     public Transactioner(
-                         CreditCardNetworkProxy creditCardNetworkProxy, IRSA rsa,BusinessIntegratorProxy businessIntegratorProxy) {
+                         CreditCardNetworkProxy creditCardNetworkProxy, IRSA rsa,BusinessIntegratorProxy businessIntegratorProxy, TransactionRepository transactionRepository) {
         this.creditCardNetworkProxy = creditCardNetworkProxy;
         this.businessIntegratorProxy=businessIntegratorProxy;
         this.rsa = rsa;
+        this.transactionRepository = transactionRepository;
     }
 
 
     @Override
-    public void processPayment(String token, BigDecimal amount, String cryptedCreditCard) throws InvalidTokenException,
+    public Transaction processPayment(String token, BigDecimal amount, String cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
             BadPaddingException, InvalidKeyException, InvalidKeySpecException {
         ApplicationDto application = businessIntegratorProxy.validateToken(token);
@@ -74,8 +73,20 @@ public class Transactioner implements ITransactionProcessor {
         transaction.setCreditCardType(ccnResponseDto.getCardType());
         transaction.setSender(new BankAccount(ccnResponseDto.getAccountIBAN(),ccnResponseDto.getAccountBIC()));
         transaction.setRecipient(merchant.getBankAccount());
-        transaction.setStatus(TransactionStatus.PENDING);
+        transaction.setStatus(TransactionStatus.AUTHORIZED);
+        transactionRepository.save(transaction);
+        return transaction;
+    }
 
-        kafkaProducerService.sendMessage(transaction);
+    @Override
+    public String confirmPayment(UUID transactionId) {
+        Transaction transaction = transactionRepository.findById(transactionId).orElse(null);
+        if (transaction != null) {
+            transaction.setStatus(TransactionStatus.PENDING_SETTLEMENT);
+            transactionRepository.save(transaction);
+            kafkaProducerService.sendMessage(transaction);
+            return "Payment confirmed";
+        }
+        return "Transaction not found, try again";
     }
 }

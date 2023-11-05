@@ -3,7 +3,7 @@ package groupB.newbankV5.paymentsettlement.entities;
 public enum TransactionStatus {
     AUTHORIZED("AUTHORIZED"),
     FEES_CALCULATED("FEES_CALCULATED"),
-    PENDING("PENDING"),
+    PENDING_SETTLEMENT("PENDING_SETTLEMENT"),
     SETTLED("SETTLED"),
 
     FAILED("FAILED")

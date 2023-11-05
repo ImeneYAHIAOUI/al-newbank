@@ -3,12 +3,11 @@ package groupB.newbankV5.paymentgateway.components;
 import groupB.newbankV5.paymentgateway.connectors.BusinessIntegratorProxy;
 import groupB.newbankV5.paymentgateway.connectors.dto.ApplicationDto;
 import groupB.newbankV5.paymentgateway.entities.Application;
-import groupB.newbankV5.paymentgateway.entities.ApplicationAESKey;
 import groupB.newbankV5.paymentgateway.entities.ApplicationKeyPair;
 import groupB.newbankV5.paymentgateway.entities.CreditCard;
 import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
+import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;
 import groupB.newbankV5.paymentgateway.interfaces.IRSA;
-import groupB.newbankV5.paymentgateway.repositories.ApplicationAESKeyRepository;
 import groupB.newbankV5.paymentgateway.repositories.ApplicationKeyPairRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,14 +36,19 @@ public class Crypto implements IRSA {
     }
 
     @Override
-    public PublicKey getOrGenerateRSAPublicKey(Long id) throws NoSuchAlgorithmException,ApplicationNotFoundException {
-        ApplicationDto app= businessIntegratorProxy.getApplication(id);
+    public PublicKey getOrGenerateRSAPublicKey(String token) throws NoSuchAlgorithmException,ApplicationNotFoundException {
+        ApplicationDto app;
+        try {
+            app = businessIntegratorProxy.validateToken(token);
+        } catch (InvalidTokenException e) {
+            throw new ApplicationNotFoundException("Application not found");
+        }
         Application application = new Application(app.getName(),app.getEmail(),app.getUrl(),app.getDescription());
         application.setApiKey(app.getApiKey());
-        application.setId(id);
+        application.setId(app.getId());
         app.setMerchant(app.getMerchant());
         Optional<ApplicationKeyPair> optApplicationKeyPair =
-                applicationKeyPairRepository.findByApplicationId(id);
+                applicationKeyPairRepository.findByApplicationName(app.getName());
         if(optApplicationKeyPair.isEmpty()) {
             KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
             generator.initialize(1024);
@@ -67,7 +71,7 @@ public class Crypto implements IRSA {
             NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException,
             BadPaddingException, ApplicationNotFoundException, InvalidKeySpecException {
         Optional<ApplicationKeyPair> optApplicationKeyPair =
-                applicationKeyPairRepository.findByApplicationId(application.getId());
+                applicationKeyPairRepository.findByApplicationName(application.getName());
         if(optApplicationKeyPair.isEmpty()) {
             throw new ApplicationNotFoundException("Application not found");
         }

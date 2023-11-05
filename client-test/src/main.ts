@@ -1,4 +1,3 @@
-import { IntegrationService } from '@teamb/newbank-sdk';
 import { PaymentService } from '@teamb/newbank-sdk';
 
 async function main() {

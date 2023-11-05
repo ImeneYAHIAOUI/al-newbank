@@ -6,7 +6,7 @@ public enum TransactionStatus {
     SETTLED("SETTLED"),
 
     FAILED("FAILED"),
-    PENDING("PENDING")
+    PENDING_SETTLEMENT("PENDING_SETTLEMENT")
     ;
 
     private String authorized;

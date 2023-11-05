@@ -1,22 +1,20 @@
 package groupB.newbankV5.paymentgateway.entities;
 
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
-//@Entity
+@Table
 public class Transaction {
 
-//    @Id
-//    @GeneratedValue
-//    @Column(name = "Transaction_id", nullable = false)
+    @PrimaryKey
     private UUID id;
 
 
-
-    //    @ManyToOne
-//    @JoinColumn(name = "merchant_merchant_id")
     private BankAccount recipient;
     private BankAccount sender;
 
