@@ -3,20 +3,20 @@ package groupB.newbankV5.anaytics.entities;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class AmountReceivedPerDay {
+public class MerchantAnalytics {
     private LocalDate date;
     private BigDecimal totalAmountReceived;
     private BigDecimal totalFees;
     private BigDecimal percentageProfitVariation;
 
 
-    public AmountReceivedPerDay(LocalDate date, BigDecimal totalAmountReceived, BigDecimal totalFees) {
+    public MerchantAnalytics(LocalDate date, BigDecimal totalAmountReceived, BigDecimal totalFees) {
         this.date = date;
         this.totalAmountReceived = totalAmountReceived;
         this.totalFees = totalFees;
     }
 
-    public AmountReceivedPerDay(){
+    public MerchantAnalytics(){
 
     }
 

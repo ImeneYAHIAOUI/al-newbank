@@ -1,10 +1,9 @@
 package groupB.newbankV5.anaytics.controllers;
 
 import groupB.newbankV5.anaytics.components.AnayticsService;
-import groupB.newbankV5.anaytics.entities.AmountReceivedPerDay;
+import groupB.newbankV5.anaytics.entities.ClientAnalytics;
+import groupB.newbankV5.anaytics.entities.MerchantAnalytics;
 import groupB.newbankV5.anaytics.entities.BankAccount;
-import groupB.newbankV5.anaytics.entities.Transaction;
-import groupB.newbankV5.anaytics.repositories.TransactionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +30,13 @@ public class TransactionController {
     }
 
     @GetMapping("/merchant")
-    public List<AmountReceivedPerDay> getForCustomer(@RequestBody BankAccount bankAccount) {
+    public List<MerchantAnalytics> getForMerchant(@RequestBody BankAccount bankAccount) {
         return anayticsService.analyseMerchantBenifitsPerDay(bankAccount.getIBAN(), bankAccount.getBIC());
     }
-    
 
+    @GetMapping("/customer")
+    public ClientAnalytics getForCustomer(@RequestBody BankAccount bankAccount, @RequestParam int year,
+            @RequestParam int month){
+        return anayticsService.clientAnalytics(bankAccount, year, month);
+    }
 }

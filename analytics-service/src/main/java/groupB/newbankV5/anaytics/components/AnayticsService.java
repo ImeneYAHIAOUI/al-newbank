@@ -1,6 +1,10 @@
 package groupB.newbankV5.anaytics.components;
 
-import groupB.newbankV5.anaytics.entities.AmountReceivedPerDay;
+import groupB.newbankV5.anaytics.entities.BankAccount;
+import groupB.newbankV5.anaytics.entities.ClientAnalytics;
+import groupB.newbankV5.anaytics.entities.Expense;
+import groupB.newbankV5.anaytics.entities.Income;
+import groupB.newbankV5.anaytics.entities.MerchantAnalytics;
 import groupB.newbankV5.anaytics.entities.Transaction;
 import groupB.newbankV5.anaytics.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -22,7 +27,7 @@ public class AnayticsService {
     @Autowired
     private TransactionRepository transactionRepository;
 
-    public List<AmountReceivedPerDay> analyseMerchantBenifitsPerDay(
+    public List<MerchantAnalytics> analyseMerchantBenifitsPerDay(
             String recipientIBAN, String recipientBIC) {
         List<Transaction> transactionList = transactionRepository.findAll();
         Map<LocalDate, List<Transaction>> transactionsByDay = transactionList.stream()
@@ -37,9 +42,9 @@ public class AnayticsService {
                 ));
 
         BigDecimal amountPreviousDay = BigDecimal.ZERO;
-        List<AmountReceivedPerDay> amountReceivedPerDays = new ArrayList<>();
+        List<MerchantAnalytics> amountReceivedPerDays = new ArrayList<>();
         for (Map.Entry<LocalDate, List<Transaction>> entry : transactionsByDay.entrySet()) {
-            AmountReceivedPerDay amountReceivedPerDay = new AmountReceivedPerDay();
+            MerchantAnalytics amountReceivedPerDay = new MerchantAnalytics();
             amountReceivedPerDay.setDate(entry.getKey());
             BigDecimal fees = BigDecimal.ZERO;
             BigDecimal amount = BigDecimal.ZERO;
@@ -62,5 +67,73 @@ public class AnayticsService {
             amountReceivedPerDays.add(amountReceivedPerDay);
         }
         return amountReceivedPerDays;
+    }
+
+    public ClientAnalytics clientAnalytics( BankAccount bankAccount , int year, int month){
+        ClientAnalytics clientAnalytics = new ClientAnalytics();
+        String BIC = bankAccount.getBIC();
+        String IBAN = bankAccount.getIBAN();
+        YearMonth targetMonth = YearMonth.of(year, month);
+
+        List<Transaction> transactions = transactionRepository.findAll();
+
+        List<Income> incomeList = transactions.stream()
+                .filter(transaction -> IBAN.equals(transaction.getRecipient().getIBAN()))
+                .filter(transaction -> BIC.equals(transaction.getRecipient().getBIC()))
+                .filter(transaction -> YearMonth.from(transaction.getTime()).equals(targetMonth))
+                .sorted(Comparator.comparing(Transaction::getTime))
+                .collect(Collectors.groupingBy(
+                        transaction -> transaction.getTime().toLocalDate(),
+                        TreeMap::new,
+                        Collectors.toList()
+                ))
+                .entrySet()
+                .stream()
+                .map(entry -> {
+                    LocalDate date = entry.getKey();
+                    List<Transaction> dailyTransactions = entry.getValue();
+                    BigDecimal totalAmount = dailyTransactions.stream()
+                            .map(Transaction::getAmount)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    return new Income(totalAmount, date);
+                })
+                .collect(Collectors.toList());
+
+        List<Expense> expenseList = transactions.stream()
+                .filter(transaction -> IBAN.equals(transaction.getSender().getIBAN()))
+                .filter(transaction -> BIC.equals(transaction.getSender().getBIC()))
+                .filter(transaction -> YearMonth.from(transaction.getTime()).equals(targetMonth))
+                .sorted(Comparator.comparing(Transaction::getTime))
+                .collect(Collectors.groupingBy(
+                        transaction -> transaction.getTime().toLocalDate(),
+                        TreeMap::new,
+                        Collectors.toList()
+                ))
+                .entrySet()
+                .stream()
+                .map(entry -> {
+                    LocalDate date = entry.getKey();
+                    List<Transaction> dailyTransactions = entry.getValue();
+                    BigDecimal totalAmount = dailyTransactions.stream()
+                            .map(Transaction::getAmount)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    return new Expense(totalAmount, date);
+                })
+                .collect(Collectors.toList());
+
+        BigDecimal totalAmountIncome = incomeList.stream()
+                .map(Income::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalAmountExpense = expenseList.stream()
+                .map(Expense::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        clientAnalytics.setExpense(expenseList);
+        clientAnalytics.setIncome(incomeList);
+        clientAnalytics.setMonthlyBalance(totalAmountIncome.subtract(totalAmountExpense));
+
+        return clientAnalytics;
+
     }
 }

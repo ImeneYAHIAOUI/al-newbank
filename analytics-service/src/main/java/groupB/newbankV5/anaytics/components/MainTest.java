@@ -1,6 +1,5 @@
 package groupB.newbankV5.anaytics.components;
 
-import groupB.newbankV5.anaytics.entities.AmountReceivedPerDay;
 import groupB.newbankV5.anaytics.entities.BankAccount;
 import groupB.newbankV5.anaytics.entities.Transaction;
 import org.springframework.stereotype.Component;
