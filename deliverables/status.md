@@ -9,5 +9,5 @@
     
     - simulate a large number of payment requests to evaluate how the system handles high traffic scenarios.
 * Issues : No issues for this week
-* Risk :
+* Risk : Have we overly focused on the gateway issue ? 
 * RYG flag : green 
