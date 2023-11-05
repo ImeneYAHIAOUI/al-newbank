@@ -26,4 +26,6 @@ compile_dir "payment-settlement"
 
 compile_dir "external-bank"
 
+compile_dir "analytics-service"
+
 echo "** Done all"
