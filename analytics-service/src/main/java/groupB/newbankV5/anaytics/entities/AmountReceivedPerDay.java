@@ -7,11 +7,17 @@ public class AmountReceivedPerDay {
     private LocalDate date;
     private BigDecimal totalAmountReceived;
     private BigDecimal totalFees;
+    private BigDecimal percentageProfitVariation;
+
 
     public AmountReceivedPerDay(LocalDate date, BigDecimal totalAmountReceived, BigDecimal totalFees) {
         this.date = date;
         this.totalAmountReceived = totalAmountReceived;
         this.totalFees = totalFees;
+    }
+
+    public AmountReceivedPerDay(){
+
     }
 
     public LocalDate getDate() {
@@ -24,5 +30,30 @@ public class AmountReceivedPerDay {
 
     public BigDecimal getTotalFees() {
         return totalFees;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public void setTotalAmountReceived(BigDecimal totalAmountReceived) {
+        this.totalAmountReceived = totalAmountReceived;
+    }
+
+    public void setTotalFees(BigDecimal totalFees) {
+        this.totalFees = totalFees;
+    }
+
+    public BigDecimal getPercentageProfitVariation() {
+        return percentageProfitVariation;
+    }
+
+    public void setPercentageProfitVariation(BigDecimal percentageProfitVariation) {
+        this.percentageProfitVariation = percentageProfitVariation;
+    }
+
+    @Override
+    public String toString() {
+        return "AmountReceivedPerDay{" + "date=" + date + ", totalAmountReceived=" + totalAmountReceived + ", totalFees=" + totalFees + ", percentageProfitVariation=" + percentageProfitVariation + '}';
     }
 }

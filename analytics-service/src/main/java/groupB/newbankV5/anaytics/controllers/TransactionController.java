@@ -1,5 +1,8 @@
 package groupB.newbankV5.anaytics.controllers;
 
+import groupB.newbankV5.anaytics.components.AnayticsService;
+import groupB.newbankV5.anaytics.entities.AmountReceivedPerDay;
+import groupB.newbankV5.anaytics.entities.BankAccount;
 import groupB.newbankV5.anaytics.entities.Transaction;
 import groupB.newbankV5.anaytics.repositories.TransactionRepository;
 import org.slf4j.Logger;
@@ -15,11 +18,11 @@ public class TransactionController {
 
     private final Logger log = LoggerFactory.getLogger(TransactionController.class);
 
-    private final TransactionRepository transactionRepository;
+    private final AnayticsService anayticsService;
 
     @Autowired
-    public TransactionController(TransactionRepository transactionRepository) {
-        this.transactionRepository = transactionRepository;
+    public TransactionController(AnayticsService transactionRepository) {
+        this.anayticsService = transactionRepository;
     }
 
     @GetMapping("/health")
@@ -27,11 +30,10 @@ public class TransactionController {
         return "OK";
     }
 
-    @GetMapping
-    public List<Transaction> get() {
-        return transactionRepository.findAll();
+    @GetMapping("/merchant")
+    public List<AmountReceivedPerDay> getForCustomer(@RequestBody BankAccount bankAccount) {
+        return anayticsService.analyseMerchantBenifitsPerDay(bankAccount.getIBAN(), bankAccount.getBIC());
     }
-
-
+    
 
 }

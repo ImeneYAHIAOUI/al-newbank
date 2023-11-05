@@ -1,30 +1,58 @@
 package groupB.newbankV5.anaytics.components;
 
 import groupB.newbankV5.anaytics.entities.AmountReceivedPerDay;
+import groupB.newbankV5.anaytics.entities.BankAccount;
 import groupB.newbankV5.anaytics.entities.Transaction;
-import groupB.newbankV5.anaytics.repositories.TransactionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import java.util.TreeMap;
+
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @Component
-public class AnayticsService {
+public class MainTest {
+/*
+    public static void main(String[] args) {
 
-    @Autowired
-    private TransactionRepository transactionRepository;
+        Transaction t = new Transaction();
+        BankAccount b = new BankAccount("123","xxx");
+        t.setRecipient(b);
+        t.setExternal(true);
+        t.setFees(new BigDecimal(1));
+        t.setExternal(true);
+        t.setAmount(new BigDecimal(100));
+        t.setTime(LocalDateTime.now().minusDays(1));
 
-    public List<AmountReceivedPerDay> analyseMerchantBenifitsPerDay(
+        Transaction t2 = new Transaction();
+        BankAccount b2 = new BankAccount("123","xxx");
+        t2.setRecipient(b2);
+        t2.setFees(new BigDecimal(2));
+        t2.setExternal(true);
+        t2.setAmount(new BigDecimal(150));
+        t2.setTime(LocalDateTime.now().minusDays(2));
+        t2.setExternal(true);
+
+        Transaction t3 = new Transaction();
+        BankAccount b3 = new BankAccount("123","xxx");
+        t3.setRecipient(b3);
+        t3.setFees(new BigDecimal(2));
+        t3.setExternal(true);
+        t3.setAmount(new BigDecimal(200));
+        t3.setTime(LocalDateTime.now().minusDays(2));
+        System.out.println(groupTransactionsByDay(List.of(t,t2, t3),"123", "xxx"));
+    }
+
+    public static List<AmountReceivedPerDay> groupTransactionsByDay(List<Transaction> transactionList,
             String recipientIBAN, String recipientBIC) {
-        List<Transaction> transactionList = transactionRepository.findAll();
+
         Map<LocalDate, List<Transaction>> transactionsByDay = transactionList.stream()
                 .filter(transaction -> recipientIBAN.equals(transaction.getRecipient().getIBAN()))
                 .filter(transaction -> recipientBIC.equals(transaction.getRecipient().getBIC()))
@@ -44,7 +72,7 @@ public class AnayticsService {
             BigDecimal fees = BigDecimal.ZERO;
             BigDecimal amount = BigDecimal.ZERO;
             for (Transaction transaction : entry.getValue()) {
-                fees = fees.add(transaction.getFees());
+                 fees = fees.add(transaction.getFees());
                 amount = amount.add(transaction.getAmount());
             }
             amountReceivedPerDay.setTotalAmountReceived(amount);
@@ -63,4 +91,5 @@ public class AnayticsService {
         }
         return amountReceivedPerDays;
     }
+*/
 }
