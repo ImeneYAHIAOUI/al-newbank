@@ -104,6 +104,7 @@ class PaymentService {
                 };
                 console.debug('Payment:', payment);
                 yield this.gatewayProxyService.processPayment(JSON.stringify(payment));
+                console.debug('payment request sent');
                 return encryptedCardInfo;
             }
             catch (error) {

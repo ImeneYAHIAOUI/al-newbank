@@ -1,22 +1,21 @@
 package groupB.newbankV5.paymentgateway.components;
 
 import groupB.newbankV5.paymentgateway.config.KafkaProducerService;
+import groupB.newbankV5.paymentgateway.connectors.BusinessIntegratorProxy;
 import groupB.newbankV5.paymentgateway.connectors.CreditCardNetworkProxy;
+import groupB.newbankV5.paymentgateway.connectors.dto.ApplicationDto;
 import groupB.newbankV5.paymentgateway.connectors.dto.CcnResponseDto;
 import groupB.newbankV5.paymentgateway.connectors.dto.PaymentDetailsDTO;
-import groupB.newbankV5.paymentgateway.controllers.TransactionerController;
 import groupB.newbankV5.paymentgateway.entities.*;
 import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.exceptions.CCNException;
 import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;
 import groupB.newbankV5.paymentgateway.interfaces.IRSA;
 import groupB.newbankV5.paymentgateway.interfaces.ITransactionProcessor;
-import groupB.newbankV5.paymentgateway.repositories.ApplicationRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.BadPaddingException;
@@ -35,34 +34,19 @@ public class Transactioner implements ITransactionProcessor {
     private final Integer FEE_RATE = 10;
     private final double FLAT_FEE = 0.03;
     private static final Logger log = Logger.getLogger(Transactioner.class.getName());
-
-    private ApplicationRepository applicationRepository;
     private CreditCardNetworkProxy creditCardNetworkProxy;
+    private BusinessIntegratorProxy businessIntegratorProxy;
     private IRSA rsa;
 
     @Autowired
     private KafkaProducerService kafkaProducerService;
 
     @Autowired
-    public Transactioner(ApplicationRepository applicationRepository,
-                         CreditCardNetworkProxy creditCardNetworkProxy, IRSA rsa) {
-        this.applicationRepository = applicationRepository;
+    public Transactioner(
+                         CreditCardNetworkProxy creditCardNetworkProxy, IRSA rsa,BusinessIntegratorProxy businessIntegratorProxy) {
         this.creditCardNetworkProxy = creditCardNetworkProxy;
+        this.businessIntegratorProxy=businessIntegratorProxy;
         this.rsa = rsa;
-    }
-
-    @Override
-    public Application validateToken(String token) throws InvalidTokenException, ApplicationNotFoundException {
-        Jws<Claims> jws;
-        try {
-            jws = Jwts.parser().setSigningKey(Integrator.SECRET_KEY).parseClaimsJws(token);
-        } catch (Exception e) {
-            throw new InvalidTokenException("Invalid token");
-        }
-        Claims bodyClaims = jws.getBody();
-        Long applicationId = bodyClaims.get("id", Long.class);
-        return applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new ApplicationNotFoundException("Application with id " + applicationId + " not found"));
     }
 
 
@@ -70,7 +54,7 @@ public class Transactioner implements ITransactionProcessor {
     public void processPayment(String token, BigDecimal amount, String cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
             BadPaddingException, InvalidKeyException, InvalidKeySpecException {
-        Application application = validateToken(token);
+        ApplicationDto application = businessIntegratorProxy.validateToken(token);
         log.info("token validated");
         Merchant merchant = application.getMerchant();
         log.info("encrypted credit card: " + cryptedCreditCard);

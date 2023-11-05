@@ -14,8 +14,9 @@ compile_dir "customer-care"
 compile_dir "payment-processor"
 
 compile_dir "mock-credit-card-network"
-
 compile_dir "payment-gateway"
+compile_dir "business-integrator"
+
 
 compile_dir "fees-calculator"
 

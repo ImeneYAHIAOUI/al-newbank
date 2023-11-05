@@ -1,5 +1,6 @@
 package groupB.newbankV5.paymentgateway.interfaces;
 
+import groupB.newbankV5.paymentgateway.connectors.dto.ApplicationDto;
 import groupB.newbankV5.paymentgateway.controllers.dto.PaymentDto;
 import groupB.newbankV5.paymentgateway.entities.Application;
 import groupB.newbankV5.paymentgateway.entities.CreditCard;
@@ -15,11 +16,11 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 
 public interface IRSA {
-//     SecretKey getOrGenerateAESKey(Application application) throws NoSuchAlgorithmException;
+     //     SecretKey getOrGenerateAESKey(Application application) throws NoSuchAlgorithmException;
 //     String encryptCreditCard(CreditCard creditCard, SecretKey aesKey) throws NoSuchPaddingException,
 //             NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException;
-     CreditCard decryptPaymentRequestCreditCard(String encryptedData, Application application ) throws NoSuchPaddingException,
+     CreditCard decryptPaymentRequestCreditCard(String encryptedData, ApplicationDto application) throws NoSuchPaddingException,
              NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, ApplicationNotFoundException, InvalidKeySpecException;
 
-     PublicKey getOrGenerateRSAPublicKey(Application application) throws NoSuchAlgorithmException;
+     PublicKey getOrGenerateRSAPublicKey(Long id) throws NoSuchAlgorithmException, ApplicationNotFoundException;
 }

@@ -2,7 +2,6 @@ package groupB.newbankV5.paymentgateway.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import groupB.newbankV5.paymentgateway.components.Integrator;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -105,8 +104,9 @@ public class Application {
                 .claim("url", this.url)
                 .claim("description", this.description)
                 .claim("dateOfIssue", System.currentTimeMillis())
-                .signWith(SignatureAlgorithm.HS256, Integrator.SECRET_KEY)
                 .compact();
+                       // .signWith(SignatureAlgorithm.HS256, Integrator.SECRET_KEY)
+
         this.setApiKey(token);
         return token;
     }

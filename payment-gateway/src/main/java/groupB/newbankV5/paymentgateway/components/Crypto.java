@@ -1,5 +1,7 @@
 package groupB.newbankV5.paymentgateway.components;
 
+import groupB.newbankV5.paymentgateway.connectors.BusinessIntegratorProxy;
+import groupB.newbankV5.paymentgateway.connectors.dto.ApplicationDto;
 import groupB.newbankV5.paymentgateway.entities.Application;
 import groupB.newbankV5.paymentgateway.entities.ApplicationAESKey;
 import groupB.newbankV5.paymentgateway.entities.ApplicationKeyPair;
@@ -25,16 +27,24 @@ public class Crypto implements IRSA {
     private static final Logger log = Logger.getLogger(Crypto.class.getName());
 
     private ApplicationKeyPairRepository applicationKeyPairRepository;
+    private BusinessIntegratorProxy businessIntegratorProxy;
 
     @Autowired
-    public Crypto(ApplicationKeyPairRepository applicationKeyPairRepository) {
+    public Crypto(ApplicationKeyPairRepository applicationKeyPairRepository,BusinessIntegratorProxy businessIntegratorProxy) {
         this.applicationKeyPairRepository = applicationKeyPairRepository;
+        this.businessIntegratorProxy=businessIntegratorProxy;
+
     }
 
     @Override
-    public PublicKey getOrGenerateRSAPublicKey(Application application) throws NoSuchAlgorithmException {
+    public PublicKey getOrGenerateRSAPublicKey(Long id) throws NoSuchAlgorithmException,ApplicationNotFoundException {
+        ApplicationDto app= businessIntegratorProxy.getApplication(id);
+        Application application = new Application(app.getName(),app.getEmail(),app.getUrl(),app.getDescription());
+        application.setApiKey(app.getApiKey());
+        application.setId(id);
+        app.setMerchant(app.getMerchant());
         Optional<ApplicationKeyPair> optApplicationKeyPair =
-                applicationKeyPairRepository.findByApplication(application);
+                applicationKeyPairRepository.findByApplicationId(id);
         if(optApplicationKeyPair.isEmpty()) {
             KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
             generator.initialize(1024);
@@ -52,12 +62,12 @@ public class Crypto implements IRSA {
     }
 
     @Override
-    public CreditCard decryptPaymentRequestCreditCard(String encryptedData, Application application)
+    public CreditCard decryptPaymentRequestCreditCard(String encryptedData, ApplicationDto application)
             throws
             NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException,
             BadPaddingException, ApplicationNotFoundException, InvalidKeySpecException {
         Optional<ApplicationKeyPair> optApplicationKeyPair =
-                applicationKeyPairRepository.findByApplication(application);
+                applicationKeyPairRepository.findByApplicationId(application.getId());
         if(optApplicationKeyPair.isEmpty()) {
             throw new ApplicationNotFoundException("Application not found");
         }

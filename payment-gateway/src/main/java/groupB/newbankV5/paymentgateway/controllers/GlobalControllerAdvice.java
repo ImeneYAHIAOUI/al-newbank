@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import javax.validation.ConstraintViolationException;
 
 @RestControllerAdvice(assignableTypes = {
-        IntegratorController.class,
         TransactionerController.class
 })
 public class GlobalControllerAdvice {

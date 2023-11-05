@@ -36,36 +36,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var newbank_sdk_1 = require("@imeneyahiaoui/newbank-sdk");
-var newbank_sdk_2 = require("@imeneyahiaoui/newbank-sdk");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var loadBalancerHost, integrationService, applicationInfo, paymentInfo, result, paymentService;
+        var loadBalancerHost;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     loadBalancerHost = 'localhost';
-                    integrationService = new newbank_sdk_1.IntegrationService(loadBalancerHost);
-                    applicationInfo = {
-                        IBAN: 'FR7879719882953',
-                        BIC: 'KMKMHK06',
-                        name: 'app2',
-                        email: 'dskrezzerzazeoej@gsld.com',
-                        url: 'https://rtzer"yujzazeazer-rty.com',
-                        description: 'My App description',
-                    };
-                    paymentInfo = {
-                        cardNumber: '4101234567890123',
-                        cvv: '734',
-                        expirationDate: '11/2025',
-                        amount: '50',
-                    };
-                    return [4 /*yield*/, integrationService.integrateService(applicationInfo)];
+                    return [4 /*yield*/, paymentService.processCardInfo(paymentInfo, result.id)];
                 case 1:
-                    result = _a.sent();
-                    paymentService = new newbank_sdk_2.PaymentService(loadBalancerHost);
-                    return [4 /*yield*/, paymentService.processCardInfo(paymentInfo, result.id, result.apiKey)];
-                case 2:
                     _a.sent();
                     return [2 /*return*/];
             }

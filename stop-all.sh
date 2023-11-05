@@ -8,7 +8,9 @@ services=(
     "payment-gateway:payment-gateway/docker-compose.yml"
     "fees-calculator:fees-calculator/docker-compose.yml"
     "transactions-service:transactions-service/docker-compose.yml"
+    "business-integrator:businessIntegrator/docker-compose.yml"
     "newbank:docker-compose.yml"
+
 )
 
 container_ids=()

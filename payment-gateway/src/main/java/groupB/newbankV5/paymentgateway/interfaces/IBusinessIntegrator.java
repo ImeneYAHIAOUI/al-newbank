@@ -1,8 +1,14 @@
 package groupB.newbankV5.paymentgateway.interfaces;
 
-import groupB.newbankV5.paymentgateway.entities.Merchant;
-import groupB.newbankV5.paymentgateway.exceptions.MerchantAlreadyExistsException;
+import groupB.newbankV5.paymentgateway.connectors.dto.AccountDto;
+import groupB.newbankV5.paymentgateway.connectors.dto.ApplicationDto;
+import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
+import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;
+
+import java.math.BigDecimal;
 
 public interface IBusinessIntegrator {
-    Merchant integrateBusiness(Merchant merchant) throws MerchantAlreadyExistsException;
+
+    ApplicationDto validateToken(String token) throws ApplicationNotFoundException, InvalidTokenException;
+    ApplicationDto getApplication(Long id) throws ApplicationNotFoundException;
 }

@@ -11,6 +11,7 @@ services=(
       "external-bank:external-bank/docker-compose.yml"
     "fees-calculator:fees-calculator/docker-compose.yml"
     "payment-settlement:payment-settlement/docker-compose.yml"
+    "business-integrator:business-integrator/docker-compose.yml"
 
 )
 
