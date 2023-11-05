@@ -1,0 +1,20 @@
+version: '3.1'
+services:
+
+  anaylytics-service:
+    image: "newbank/analytics-service"
+    container_name: "analytics-service"
+    ports:
+      - "4990:8080"
+    depends_on:
+      - transaction-rationale-db
+    restart: on-failure
+    networks:
+      - spring-newbank-network
+    environment:
+      - POSTGRES_HOST=transaction-rationale-db:5432
+
+
+networks:
+  spring-newbank-network:
+    external: true
