@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.*;
 import javax.persistence.*;
 import java.util.Objects;
 @Entity
-@JsonIdentityInfo(generator= ObjectIdGenerators.UUIDGenerator.class, property="id" )
+@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="id" )
 public class Merchant {
     @Id
     @GeneratedValue

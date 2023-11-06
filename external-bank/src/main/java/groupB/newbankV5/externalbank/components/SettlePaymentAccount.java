@@ -1,5 +1,6 @@
 package groupB.newbankV5.externalbank.components;
 
+import groupB.newbankV5.externalbank.components.dtos.CreditCardInformationDto;
 import groupB.newbankV5.externalbank.controllers.dto.IbanAmountDto;
 import groupB.newbankV5.externalbank.controllers.dto.SettleDto;
 import org.springframework.stereotype.Component;
@@ -15,5 +16,8 @@ public class SettlePaymentAccount {
         SettleDto authorizeDto = new SettleDto();
         authorizeDto.setSettled(valid);
         return authorizeDto;
+    }
+
+    public void reserveFunds(CreditCardInformationDto creditCardInformationDto) {
     }
 }

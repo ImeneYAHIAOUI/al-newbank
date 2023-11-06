@@ -11,7 +11,7 @@ import java.sql.Date;
 import java.util.Objects;
 
 @Entity
-@JsonIdentityInfo(generator= ObjectIdGenerators.UUIDGenerator.class, property="id")
+@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="id")
 public class Application {
     @Id
     @GeneratedValue

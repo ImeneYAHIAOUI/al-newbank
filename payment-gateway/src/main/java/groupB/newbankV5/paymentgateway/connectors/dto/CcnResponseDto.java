@@ -11,6 +11,9 @@ public class CcnResponseDto {
     String AccountIBAN;
     String AccountBIC;
     CardType cardType;
+    String bankName;
+
+
 
     public CardType getCardType() {
         return cardType;
@@ -20,8 +23,17 @@ public class CcnResponseDto {
         this.cardType = cardType;
     }
 
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
     public CcnResponseDto() {
     }
+
     public CcnResponseDto(boolean response) {
         this.response = response;
     }
@@ -84,4 +96,5 @@ public class CcnResponseDto {
     public void setMessage(String message) {
         this.message = message;
     }
+
 }

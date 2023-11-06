@@ -1,60 +1,71 @@
 package groupB.newbankV5.paymentgateway.entities;
 
-import javax.persistence.*;
+import org.springframework.data.cassandra.core.mapping.CassandraType;
+import org.springframework.data.cassandra.core.mapping.Indexed;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
+
+import java.nio.ByteBuffer;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Objects;
+import java.util.UUID;
 
-@Entity
+@Table
 public class ApplicationKeyPair {
-    @Id
-    @GeneratedValue
-    @Column(name = "ApplicationKeyPair_id", nullable = false)
-    private Long id;
-    private PublicKey publicKey;
-    private PrivateKey privateKey;
-    @OneToOne
-    private Application application;
+
+    @PrimaryKey
+    private UUID id;
+
+
+    @CassandraType(type = CassandraType.Name.BLOB)
+    private ByteBuffer publicKey;
+    @CassandraType(type = CassandraType.Name.BLOB)
+    private ByteBuffer privateKey;
+
+
+    @Indexed
+    private String applicationName;
 
     public ApplicationKeyPair() {
     }
 
-    public ApplicationKeyPair(PublicKey publicKey, PrivateKey privateKey, Application application) {
+    public ApplicationKeyPair(ByteBuffer publicKey, ByteBuffer privateKey, String applicationName) {
         this.publicKey = publicKey;
         this.privateKey = privateKey;
-        this.application = application;
+        this.applicationName = applicationName;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public PublicKey getPublicKey() {
+    public ByteBuffer getPublicKey() {
         return publicKey;
     }
 
-    public void setPublicKey(PublicKey publicKey) {
+    public void setPublicKey(ByteBuffer publicKey) {
         this.publicKey = publicKey;
     }
 
-    public PrivateKey getPrivateKey() {
+    public ByteBuffer getPrivateKey() {
         return privateKey;
     }
 
-    public void setPrivateKey(PrivateKey privateKey) {
+    public void setPrivateKey(ByteBuffer privateKey) {
         this.privateKey = privateKey;
     }
 
-    public Application getApplication() {
-        return application;
+    public String getApplicationName() {
+        return applicationName;
     }
 
-    public void setApplication(Application application) {
-        this.application = application;
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
     }
 
     @Override
@@ -62,11 +73,11 @@ public class ApplicationKeyPair {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ApplicationKeyPair that = (ApplicationKeyPair) o;
-        return Objects.equals(publicKey, that.publicKey) && Objects.equals(privateKey, that.privateKey) && Objects.equals(application, that.application);
+        return Objects.equals(publicKey, that.publicKey) && Objects.equals(privateKey, that.privateKey) && Objects.equals(applicationName, that.applicationName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(publicKey, privateKey, application);
+        return Objects.hash(publicKey, privateKey, applicationName);
     }
 }

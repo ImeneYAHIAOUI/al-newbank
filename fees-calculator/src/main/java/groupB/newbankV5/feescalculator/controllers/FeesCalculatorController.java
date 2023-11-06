@@ -24,13 +24,13 @@ public class FeesCalculatorController {
         this.calculator = calculator;
     }
 
-    @GetMapping("/health")
+    @GetMapping("health")
     public ResponseEntity<String> health() {
         log.info("Health check");
         return ResponseEntity.ok().body("OK");
     }
 
-    @PostMapping("/calculate")
+    @PostMapping("calculate")
     public ResponseEntity<List<Transaction>> calculateFees(@RequestBody List<Transaction> transactions) {
         log.info("Received request to calculate fees for transactions: " + transactions.toString());
         transactions.forEach(calculator::applyFees);

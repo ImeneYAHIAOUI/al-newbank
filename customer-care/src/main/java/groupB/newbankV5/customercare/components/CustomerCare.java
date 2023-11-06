@@ -122,7 +122,7 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
         account.setReservedBalance(account.getReservedBalance().subtract(amount.getAmount()));
         if (amount.getReceiverIban() != null) {
             Account recipient = accountRepository.findByIBAN(amount.getReceiverIban()).orElseThrow();
-            recipient.setBalance(account.getBalance().add(amount.getAmount()).subtract(amount.getFees()));
+            recipient.setBalance(recipient.getBalance().add(amount.getAmount()).subtract(amount.getFees()));
         }
         addFeesToBankAccount(amount.getFees());
         return accountRepository.save(account);

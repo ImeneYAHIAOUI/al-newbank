@@ -32,7 +32,6 @@ public class CostumerCareProxy implements ICostumerCare {
 
     @Override
     public AccountDto getAccountByCreditCard(String cardNumber, String expiryDate, String cvv) {
-        log.info("Getting balance for credit card: " + "/api/costumer/search?number=" + cardNumber + "&date=" + expiryDate + "&cvv=" + cvv);
         try{
             return restTemplate.getForEntity(costumerHostandPort + "/api/costumer/search?number=" + cardNumber + "&date=" + expiryDate + "&cvv=" + cvv, AccountDto.class).getBody();
 
@@ -50,10 +49,10 @@ public class CostumerCareProxy implements ICostumerCare {
     }
 
     @Override
-    public void reserveFunds(long accountId, BigDecimal amount, String cardNumber, String expirationDate, String cvv) {
-        log.info("Reserving funds for account number: " + accountId);
+    public void reserveFunds(BigDecimal amount, String cardNumber, String expirationDate, String cvv) {
+        log.info("Reserving funds");
         ReserveFundsDto reserveFundsDto = new ReserveFundsDto(amount, cardNumber, expirationDate, cvv);
-        restTemplate.put(costumerHostandPort + "/api/costumer/"+accountId+"/reservedfunds" , reserveFundsDto);
+        restTemplate.put(costumerHostandPort + "/api/costumer/reservedfunds" , reserveFundsDto);
     }
 
     @Override

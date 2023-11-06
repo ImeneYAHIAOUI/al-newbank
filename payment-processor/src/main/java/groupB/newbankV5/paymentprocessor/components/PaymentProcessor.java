@@ -76,7 +76,7 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
         transactionRepository.save(transaction);
         transaction.setStatus(TransactionStatus.AUTHORIZED);
 
-        customerCare.reserveFunds(accountDto.getId(), paymentDetails.getAmount(), paymentDetails.getCardNumber(), paymentDetails.getExpirationDate(), paymentDetails.getCvv());
+        customerCare.reserveFunds(paymentDetails.getAmount(), paymentDetails.getCardNumber(), paymentDetails.getExpirationDate(), paymentDetails.getCvv());
         kafkaProducerService.sendMessage(transaction);
         return new PaymentResponseDto(true, "Payment authorized", authToken);
 
@@ -164,11 +164,21 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
         if(accountDto.getBalance().compareTo(paymentDetails.getAmount()) < 0){
             return new CreditCardResponseDto(false, "Insufficient funds", generateAuthToken());
         }
-        customerCare.reserveFunds(accountDto.getId(), paymentDetails.getAmount(), paymentDetails.getCardNumber(), paymentDetails.getExpirationDate(), paymentDetails.getCvv());
         return new CreditCardResponseDto(true, "Credit card is valid", generateAuthToken(), accountDto.getIBAN(), accountDto.getBIC(), creditCardDto.getCardType());
 
 
     }
+
+    @Override
+    public void reserveFunds(BigDecimal amount, String cardNumber, String expirationDate, String cvv) {
+        try {
+            customerCare.reserveFunds(amount, cardNumber, expirationDate, cvv);
+        }
+        catch (Exception e){
+            log.info("Error while reserving funds: " + e.getMessage());
+        }
+    }
+
 
     @Override
     public boolean hasSufficientFunds(AccountDto accountDto, BigDecimal amount) {

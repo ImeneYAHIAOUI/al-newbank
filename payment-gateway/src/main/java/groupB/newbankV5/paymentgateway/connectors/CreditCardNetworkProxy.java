@@ -3,11 +3,13 @@ package groupB.newbankV5.paymentgateway.connectors;
 import groupB.newbankV5.paymentgateway.connectors.dto.CcnResponseDto;
 import groupB.newbankV5.paymentgateway.connectors.dto.CreditCardInformationDto;
 import groupB.newbankV5.paymentgateway.connectors.dto.PaymentDetailsDTO;
+import groupB.newbankV5.paymentgateway.connectors.dto.ReserveFundsDto;
 import groupB.newbankV5.paymentgateway.interfaces.ICreditCardNetwork;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.util.logging.Logger;
 
 @Component
@@ -39,5 +41,6 @@ public class CreditCardNetworkProxy implements ICreditCardNetwork {
             return new CcnResponseDto(false, "Error: " + e.getMessage());
         }
     }
+
 
 }

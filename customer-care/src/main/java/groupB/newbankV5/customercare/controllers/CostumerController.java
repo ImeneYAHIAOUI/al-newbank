@@ -141,10 +141,10 @@ public class CostumerController {
 
     }
 
-    @PutMapping("{id}/reservedfunds")
-    public ResponseEntity<AccountDto> updateReservedFunds(@PathVariable long id, @RequestBody ReserveFundsDto reserveFundsDto) {
+    @PutMapping("reservedfunds")
+    public ResponseEntity<AccountDto> updateReservedFunds( @RequestBody ReserveFundsDto reserveFundsDto) {
         log.info("Updating reserved funds");
-        Account account = accountFinder.findAccountById(id).orElseThrow();
+        Account account = accountFinder.findByCreditCard(reserveFundsDto.getCardNumber(), reserveFundsDto.getExpirationDate(), reserveFundsDto.getCvv()).orElseThrow();
         try {
             account = fundsHandler.addReservedFunds(account, reserveFundsDto.getAmount(), reserveFundsDto.getCardNumber(), reserveFundsDto.getExpirationDate(), reserveFundsDto.getCvv());
         } catch (Exception e) {
@@ -155,8 +155,8 @@ public class CostumerController {
 
     }
 
-    @PutMapping("{id}/releasefunds")
-    public ResponseEntity<AccountDto> releaseReservedFunds(@PathVariable long id, @RequestBody ReleaseFundsDto releaseFundsDto) {
+    @PutMapping("releasefunds")
+    public ResponseEntity<AccountDto> releaseReservedFunds( @RequestBody ReleaseFundsDto releaseFundsDto) {
         log.info("Releasing reserved funds");
         Account account ;
         try {
@@ -213,13 +213,12 @@ public class CostumerController {
         return ResponseEntity.status(200).body(accountDto);
 
     }
-    @PostMapping("/batchReleaseFunds")
+    @PostMapping("batchReleaseFunds")
     public ResponseEntity<Object> batchReleaseFunds(@RequestBody List<ReleaseFundsDto> releaseFundsDtos) {
         log.info("Releasing reserved funds");
         for(ReleaseFundsDto releaseFundsDto : releaseFundsDtos) {
-            Account account;
             try {
-                account = fundsHandler.releaseReservedFunds(releaseFundsDto);
+                fundsHandler.releaseReservedFunds(releaseFundsDto);
             } catch (Exception e) {
                 return ResponseEntity.status(400).build();
             }

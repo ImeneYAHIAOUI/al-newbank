@@ -2,7 +2,6 @@ package groupB.newbankV5.paymentgateway.components;
 
 import groupB.newbankV5.paymentgateway.connectors.BusinessIntegratorProxy;
 import groupB.newbankV5.paymentgateway.connectors.dto.ApplicationDto;
-import groupB.newbankV5.paymentgateway.entities.Application;
 import groupB.newbankV5.paymentgateway.entities.ApplicationKeyPair;
 import groupB.newbankV5.paymentgateway.entities.CreditCard;
 import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
@@ -12,12 +11,15 @@ import groupB.newbankV5.paymentgateway.repositories.ApplicationKeyPairRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.crypto.*;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @Service
@@ -36,17 +38,14 @@ public class Crypto implements IRSA {
     }
 
     @Override
-    public PublicKey getOrGenerateRSAPublicKey(String token) throws NoSuchAlgorithmException,ApplicationNotFoundException {
+    public PublicKey getOrGenerateRSAPublicKey(String token) throws NoSuchAlgorithmException, ApplicationNotFoundException, InvalidKeySpecException {
         ApplicationDto app;
         try {
             app = businessIntegratorProxy.validateToken(token);
         } catch (InvalidTokenException e) {
             throw new ApplicationNotFoundException("Application not found");
         }
-        Application application = new Application(app.getName(),app.getEmail(),app.getUrl(),app.getDescription());
-        application.setApiKey(app.getApiKey());
-        application.setId(app.getId());
-        app.setMerchant(app.getMerchant());
+
         Optional<ApplicationKeyPair> optApplicationKeyPair =
                 applicationKeyPairRepository.findByApplicationName(app.getName());
         if(optApplicationKeyPair.isEmpty()) {
@@ -56,13 +55,23 @@ public class Crypto implements IRSA {
             ApplicationKeyPair applicationKeyPair = new ApplicationKeyPair();
             log.info("Generating RSA key pair for the application, the used key format is"
                     + pair.getPublic().getFormat());
-            applicationKeyPair.setApplication(application);
-            applicationKeyPair.setPublicKey(pair.getPublic());
-            applicationKeyPair.setPrivateKey(pair.getPrivate());
-            applicationKeyPairRepository.saveAndFlush(applicationKeyPair);
+            applicationKeyPair.setId(UUID.randomUUID());
+            applicationKeyPair.setApplicationName(app.getName());
+            ByteBuffer privateKeyByteBuffer = ByteBuffer.wrap(pair.getPrivate().getEncoded());
+            ByteBuffer publicKeyByteBuffer = ByteBuffer.wrap(pair.getPublic().getEncoded());
+            applicationKeyPair.setPublicKey(publicKeyByteBuffer);
+            applicationKeyPair.setPrivateKey(privateKeyByteBuffer);
+            applicationKeyPairRepository.save(applicationKeyPair);
             return pair.getPublic();
         }
-        return optApplicationKeyPair.get().getPublicKey();
+        ByteBuffer publicKeyByteBuffer = optApplicationKeyPair.get().getPublicKey();
+        byte[] publicKeyBytes = new byte[publicKeyByteBuffer.remaining()];
+        publicKeyByteBuffer.get(publicKeyBytes);
+
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+
+        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+        return keyFactory.generatePublic(publicKeySpec);
     }
 
     @Override
@@ -78,7 +87,7 @@ public class Crypto implements IRSA {
 
         KeyFactory kf = KeyFactory.getInstance("RSA");
         byte [] encoded = Base64.getDecoder().decode(Base64.getEncoder().encode(
-                optApplicationKeyPair.get().getPrivateKey().getEncoded()
+                optApplicationKeyPair.get().getPrivateKey().array()
         ));
         PKCS8EncodedKeySpec keySpec1 = new PKCS8EncodedKeySpec(encoded);
         PrivateKey privateKey = kf.generatePrivate(keySpec1);

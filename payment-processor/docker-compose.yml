@@ -17,11 +17,10 @@ services:
     restart: on-failure
     networks:
       - spring-newbank-network
+
   transaction-db:
     image: cassandra
     container_name: transaction-db
-    ports:
-      - "9043:9042"
     networks:
       - spring-newbank-network
 

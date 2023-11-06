@@ -28,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(path = IntegratorController.BASE_URI, produces = APPLICATION_JSON_VALUE)
 public class IntegratorController {
     private static final Logger log = Logger.getLogger(IntegratorController.class.getName());
-    public static final String BASE_URI = "/api/gateway/integration";
+    public static final String BASE_URI = "/api/integration";
     private final IBusinessIntegrator businessIntegrator;
     private final IBusinessFinder businessFinder;
     private final IApplicationIntegrator applicationIntegrator;

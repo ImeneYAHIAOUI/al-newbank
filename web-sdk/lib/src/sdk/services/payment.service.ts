@@ -57,10 +57,9 @@ export class PaymentService {
         encryptedCard: encryptedCardInfo,
         amount: amount,
       };
-      console.debug('Payment:', payment);
-
-      const auth : AuthorizeDto = await this.gatewayProxyService.processPayment(payment, token);
       console.debug('payment request sent');
+      const auth : AuthorizeDto = await this.gatewayProxyService.processPayment(payment, token);
+      console.debug('payment authorized');
       return auth;
 
 
@@ -78,10 +77,8 @@ export class PaymentService {
       expirationDate: paymentInfo.expirationDate,
       cvv: paymentInfo.cvv,
     };
-    console.debug('Card info:', Buffer.from(JSON.stringify(cardInfo)));
 
     const plaintext = `${paymentInfo.cardNumber.toString()},${paymentInfo.expirationDate.toString()},${paymentInfo.cvv.toString()}`;
-    console.debug('Plaintext:', plaintext);
 
     const buffer = Buffer.from(plaintext, 'utf8');
     const encryptedCardInfo = crypto.publicEncrypt(
@@ -99,7 +96,13 @@ export class PaymentService {
     return await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
   }
   async confirmPayment(transactionId: string, token: string){
+    console.debug('payment confirmation request sent');
     return await this.gatewayProxyService.confirmPayment(transactionId, token);
+  }
+
+  async pay(paymentInfo: PaymentInfoDTO, token: string) {
+    const auth = await this.authorize(paymentInfo, token);
+    return await this.confirmPayment(auth.transactionId, token);
   }
 
 }

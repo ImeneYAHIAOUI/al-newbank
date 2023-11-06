@@ -1,5 +1,6 @@
 package groupB.newbankV5.paymentprocessor.controllers;
 
+import groupB.newbankV5.paymentprocessor.connectors.dto.ReserveFundsDto;
 import groupB.newbankV5.paymentprocessor.controllers.dto.CreditCardInformationDto;
 import groupB.newbankV5.paymentprocessor.controllers.dto.CreditCardResponseDto;
 import groupB.newbankV5.paymentprocessor.controllers.dto.PaymentDetailsDTO;
@@ -62,6 +63,14 @@ public class PaymentProcessorController {
             log.info(transactionRepository.save(transaction).toString());
         }
         return ResponseEntity.status(HttpStatus.OK).body(transactions);
+
+    }
+
+    @PostMapping("/reserveFunds")
+    public ResponseEntity<String> reserveFunds(@RequestBody ReserveFundsDto reserveFundsDto ) {
+        log.info("Reserving funds");
+        transactionProcessor.reserveFunds(reserveFundsDto.getAmount(), reserveFundsDto.getCardNumber(), reserveFundsDto.getExpirationDate(), reserveFundsDto.getCvv());
+        return ResponseEntity.status(HttpStatus.OK).body("Funds reserved");
 
     }
 

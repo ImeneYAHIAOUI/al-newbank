@@ -1,7 +1,6 @@
 package groupB.newbankV5.paymentgateway.controllers.dto;
 
-import groupB.newbankV5.paymentgateway.entities.Application;
-import groupB.newbankV5.paymentgateway.entities.Merchant;
+
 
 import javax.persistence.Column;
 
@@ -73,16 +72,5 @@ public class ApplicationDto {
         this.merchant = merchant;
     }
 
-    public static ApplicationDto applicationDtoFactory(Application application) {
-        ApplicationDto applicationDto = new ApplicationDto();
-        applicationDto.setId(application.getId());
-        applicationDto.setName(application.getName());
-        applicationDto.setEmail(application.getEmail());
-        applicationDto.setUrl(application.getUrl());
-        applicationDto.setDescription(application.getDescription());
-        applicationDto.setApiKey(application.getApiKey());
-        applicationDto.setMerchant(MerchantDto.merchantDtoFactory(application.getMerchant()));
-        return applicationDto;
-    }
 
 }

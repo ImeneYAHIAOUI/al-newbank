@@ -36,16 +36,29 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var newbank_sdk_1 = require("@teamb/newbank-sdk");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var loadBalancerHost;
+        var loadBalancerHost, token, paymentService, paymentInfo, response, confirm;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     loadBalancerHost = 'localhost';
-                    return [4 /*yield*/, paymentService.processCardInfo(paymentInfo, result.id)];
+                    token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOZXdCYW5rIiwic3ViIjoiQVBJIEtleSIsImV4cCI6MTY5OTI3MDEyNSwiaWQiOjMsIm5hbWUiOiJhcHAxIiwiZW1haWwiOiJ5dXktZnXDqHl0dWdAamlvLmNvbSIsInVybCI6Imhwb3BwcHVldGloIiwiZGVzY3JpcHRpb24iOiJkeXJ0c3JmdWhrIiwiZGF0ZU9mSXNzdWUiOjE2OTkyNjY1MjU2MTZ9.f72xUXAngDyR7_dfqVcSnDfifAYwYVIA770Zl8pIt9Y";
+                    paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost);
+                    paymentInfo = {
+                        cardNumber: '6920522972946995',
+                        cvv: '127',
+                        expirationDate: '11/2025',
+                        amount: '50',
+                    };
+                    return [4 /*yield*/, paymentService.authorize(paymentInfo, token)];
                 case 1:
-                    _a.sent();
+                    response = _a.sent();
+                    return [4 /*yield*/, paymentService.confirmPayment(response.transactionId, token)];
+                case 2:
+                    confirm = _a.sent();
+                    console.log(confirm);
                     return [2 /*return*/];
             }
         });

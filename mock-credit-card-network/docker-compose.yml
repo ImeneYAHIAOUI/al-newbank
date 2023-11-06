@@ -9,6 +9,7 @@ services:
       - 5001:8080
     environment:
       - NEWBANK_WITH_PORT=${NEWBANK_PAYMENT_SERVICE}:8080
+      - MOCK_BANK_WITH_PORT=${MOCK_BANK_SERVICE}:8080
     networks:
       - spring-newbank-network
 

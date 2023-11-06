@@ -1,15 +1,20 @@
 package groupB.newbankV5.paymentgateway.components;
 
+import com.sun.tools.jconsole.JConsoleContext;
 import groupB.newbankV5.paymentgateway.config.KafkaProducerService;
 import groupB.newbankV5.paymentgateway.connectors.BusinessIntegratorProxy;
 import groupB.newbankV5.paymentgateway.connectors.CreditCardNetworkProxy;
+import groupB.newbankV5.paymentgateway.connectors.MockBankProxy;
 import groupB.newbankV5.paymentgateway.connectors.dto.ApplicationDto;
 import groupB.newbankV5.paymentgateway.connectors.dto.CcnResponseDto;
 import groupB.newbankV5.paymentgateway.connectors.dto.PaymentDetailsDTO;
+import groupB.newbankV5.paymentgateway.controllers.dto.MerchantDto;
 import groupB.newbankV5.paymentgateway.entities.*;
 import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.exceptions.CCNException;
 import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;
+import groupB.newbankV5.paymentgateway.interfaces.IMockBank;
+import groupB.newbankV5.paymentgateway.interfaces.IPaymentProcessor;
 import groupB.newbankV5.paymentgateway.interfaces.IRSA;
 import groupB.newbankV5.paymentgateway.interfaces.ITransactionProcessor;
 
@@ -31,21 +36,25 @@ import java.util.logging.Logger;
 public class Transactioner implements ITransactionProcessor {
 
     private static final Logger log = Logger.getLogger(Transactioner.class.getName());
-    private CreditCardNetworkProxy creditCardNetworkProxy;
-    private BusinessIntegratorProxy businessIntegratorProxy;
-    private TransactionRepository transactionRepository;
-    private IRSA rsa;
+    private final CreditCardNetworkProxy creditCardNetworkProxy;
+    private final BusinessIntegratorProxy businessIntegratorProxy;
+    private final IPaymentProcessor paymentProcessor;
+    private final TransactionRepository transactionRepository;
+    private final IMockBank mockBankProxy;
+    private final IRSA rsa;
 
-    @Autowired
-    private KafkaProducerService kafkaProducerService;
+    private final KafkaProducerService kafkaProducerService;
 
     @Autowired
     public Transactioner(
-                         CreditCardNetworkProxy creditCardNetworkProxy, IRSA rsa,BusinessIntegratorProxy businessIntegratorProxy, TransactionRepository transactionRepository) {
+            CreditCardNetworkProxy creditCardNetworkProxy, IRSA rsa, BusinessIntegratorProxy businessIntegratorProxy, TransactionRepository transactionRepository, IPaymentProcessor paymentProcessor, MockBankProxy mockBankProxy, KafkaProducerService kafkaProducerService) {
         this.creditCardNetworkProxy = creditCardNetworkProxy;
         this.businessIntegratorProxy=businessIntegratorProxy;
         this.rsa = rsa;
         this.transactionRepository = transactionRepository;
+        this.paymentProcessor = paymentProcessor;
+        this.mockBankProxy = mockBankProxy;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
 
@@ -55,7 +64,7 @@ public class Transactioner implements ITransactionProcessor {
             BadPaddingException, InvalidKeyException, InvalidKeySpecException {
         ApplicationDto application = businessIntegratorProxy.validateToken(token);
         log.info("token validated");
-        Merchant merchant = application.getMerchant();
+        MerchantDto merchant = application.getMerchant();
         log.info("encrypted credit card: " + cryptedCreditCard);
 
         CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
@@ -67,13 +76,18 @@ public class Transactioner implements ITransactionProcessor {
         if (!ccnResponseDto.isApproved()) {
             throw new CCNException("Payment not authorized");
         }
+        log.info(ccnResponseDto.getBankName());
         Transaction transaction = new Transaction(merchant.getBankAccount(), ccnResponseDto.getAuthToken(), amount);
         transaction.setId(UUID.randomUUID());
         transaction.setExternal(true);
         transaction.setCreditCardType(ccnResponseDto.getCardType());
+        CreditCard card = new CreditCard(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv());
+        transaction.setCreditCard(card);
         transaction.setSender(new BankAccount(ccnResponseDto.getAccountIBAN(),ccnResponseDto.getAccountBIC()));
         transaction.setRecipient(merchant.getBankAccount());
         transaction.setStatus(TransactionStatus.AUTHORIZED);
+        transaction.setBank(ccnResponseDto.getBankName());
+
         transactionRepository.save(transaction);
         return transaction;
     }
@@ -82,6 +96,12 @@ public class Transactioner implements ITransactionProcessor {
     public String confirmPayment(UUID transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId).orElse(null);
         if (transaction != null) {
+            CreditCard usedCreditCard = transaction.getCreditCard();
+            log.info("Confirming payment for transaction :"+transaction.getBank());
+            if(transaction.getBank().equals("NewBank"))
+                paymentProcessor.reserveFunds(transaction.getAmount(), usedCreditCard.getCardNumber(), usedCreditCard.getExpiryDate(), usedCreditCard.getCvv());
+            else
+                mockBankProxy.reserveFunds(transaction.getAmount(), usedCreditCard.getCardNumber(), usedCreditCard.getExpiryDate(), usedCreditCard.getCvv());
             transaction.setStatus(TransactionStatus.PENDING_SETTLEMENT);
             transactionRepository.save(transaction);
             kafkaProducerService.sendMessage(transaction);

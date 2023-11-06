@@ -40,10 +40,11 @@ public class ValidatorController {
         this.applicationIntegrator = applicationIntegrator;
     }
 
-    @GetMapping("/{token}")
-    public ResponseEntity<Application> validateToken(@PathVariable("token") String token) throws InvalidTokenException, ApplicationNotFoundException {
+    @GetMapping()
+    public ResponseEntity<ApplicationDto> validateToken(@RequestParam("token") String token) throws InvalidTokenException, ApplicationNotFoundException {
         Application application = applicationValidator.validateToken(token);
-        return ResponseEntity.ok().body(application);
+        ApplicationDto applicationDto =  ApplicationDto.applicationDtoFactory(application);
+        return ResponseEntity.ok().body(applicationDto);
     }
 
 

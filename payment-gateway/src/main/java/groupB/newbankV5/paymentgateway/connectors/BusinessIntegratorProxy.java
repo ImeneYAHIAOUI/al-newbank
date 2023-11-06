@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 @Component
 public class BusinessIntegratorProxy implements IBusinessIntegrator {
     private static final Logger log = Logger.getLogger(BusinessIntegratorProxy.class.getName());
-    @Value("integrator.host.baseurl")
+    @Value("${businessIntegrator.host.baseurl:}")
     private String integratorHostandPort;
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -33,17 +33,6 @@ public class BusinessIntegratorProxy implements IBusinessIntegrator {
         }
         return applicationDto;
     }
-    @Override
-    public ApplicationDto getApplication(String name) throws ApplicationNotFoundException{
-        ResponseEntity<ApplicationDto> responseEntity = restTemplate.getForEntity(integratorHostandPort + "/api/applications?name=" + name, ApplicationDto.class);
-        ApplicationDto applicationDto = responseEntity.getBody();
-        int statusCode = responseEntity.getStatusCodeValue();
-        if (statusCode == HttpStatus.NOT_FOUND.value()) {
-            throw new ApplicationNotFoundException("application not found");
-        }
-        return applicationDto;
-    }
-
 
 
 }

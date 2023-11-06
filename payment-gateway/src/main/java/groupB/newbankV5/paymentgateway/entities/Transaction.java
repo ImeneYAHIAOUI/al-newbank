@@ -26,6 +26,8 @@ public class Transaction {
     private BigDecimal fees;
     private TransactionStatus status;
     private CardType creditCardType;
+    private CreditCard creditCard;
+    private String bank;
 
     public TransactionStatus getStatus() {
         return status;
@@ -128,5 +130,21 @@ public class Transaction {
 
     public void setCreditCardType(CardType creditCardType) {
         this.creditCardType = creditCardType;
+    }
+
+    public CreditCard getCreditCard() {
+        return creditCard;
+    }
+
+    public void setCreditCard(CreditCard creditCard) {
+        this.creditCard = creditCard;
+    }
+
+    public String getBank() {
+        return bank;
+    }
+
+    public void setBank(String bank) {
+        this.bank = bank;
     }
 }

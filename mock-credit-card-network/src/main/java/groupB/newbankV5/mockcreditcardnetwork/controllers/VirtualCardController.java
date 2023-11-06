@@ -26,7 +26,7 @@ public class VirtualCardController {
             this.virtualCardGenerator = virtualCardGenerator;
         }
 
-        @PostMapping("/generate")
+        @PostMapping("generate")
         public ResponseEntity<CardGenerationResponseDto> generateNewBankVirtualCard(@RequestBody CardGenerationRequestDto cardGenerationRequestDto) {
             return ResponseEntity.status(HttpStatus.CREATED).body(virtualCardGenerator.generateVirtualCard(cardGenerationRequestDto));
         }

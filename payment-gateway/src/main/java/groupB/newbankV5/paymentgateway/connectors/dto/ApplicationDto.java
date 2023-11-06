@@ -2,7 +2,7 @@ package groupB.newbankV5.paymentgateway.connectors.dto;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import groupB.newbankV5.paymentgateway.entities.Merchant;
+import groupB.newbankV5.paymentgateway.controllers.dto.MerchantDto;
 import io.jsonwebtoken.Jwts;
 
 import javax.persistence.*;
@@ -20,7 +20,7 @@ public class ApplicationDto {
 
      String apiKey;
 
-    private Merchant merchant;
+    private MerchantDto merchant;
 
     public ApplicationDto() {
     }
@@ -80,11 +80,11 @@ public class ApplicationDto {
         this.description = description;
     }
 
-    public Merchant getMerchant() {
+    public MerchantDto getMerchant() {
         return merchant;
     }
 
-    public void setMerchant(Merchant merchant) {
+    public void setMerchant(MerchantDto merchant) {
         this.merchant = merchant;
     }
 

@@ -19,5 +19,5 @@ public interface IRSA {
      CreditCard decryptPaymentRequestCreditCard(String encryptedData, ApplicationDto application) throws NoSuchPaddingException,
              NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, ApplicationNotFoundException, InvalidKeySpecException;
 
-     PublicKey getOrGenerateRSAPublicKey(String name) throws NoSuchAlgorithmException, ApplicationNotFoundException;
+     PublicKey getOrGenerateRSAPublicKey(String name) throws NoSuchAlgorithmException, ApplicationNotFoundException, InvalidKeySpecException;
 }

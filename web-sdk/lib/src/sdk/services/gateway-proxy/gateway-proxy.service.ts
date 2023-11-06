@@ -18,7 +18,7 @@ export class GatewayProxyService {
         };
 
         const response = await axios.get(
-          `${this._gatewayBaseUrl}${this._gatewayPath}/applications/public-key`,
+          `${this._gatewayBaseUrl}${this._gatewayPath}applications/public-key`,
             { headers },
         );
         return response.data;
@@ -41,7 +41,7 @@ export class GatewayProxyService {
           Authorization: `Bearer ${token}`,
         },
       };
-      const response = await axios.post<AuthorizeDto>(
+      const response = await axios.post(
         `${this._gatewayBaseUrl}${this._gatewayPath}authorize`,
         encryptedCardInfo,
         httpOptions,
@@ -50,6 +50,7 @@ export class GatewayProxyService {
       return response.data;
     } catch (error: any) {
       if (error.response && error.response.status === HttpStatus.NOT_FOUND) {
+        console.error(error.response.data)
         console.error(`Application not found`);
         throw new ApplicationNotFound();
       } else {
@@ -67,13 +68,14 @@ export class GatewayProxyService {
           Authorization: `Bearer ${token}`,
         },
       };
-      const response = await axios.post<String>(
+      const response = await axios.post(
           `${this._gatewayBaseUrl}${this._gatewayPath}confirmPayment/${transactionId}`,
           httpOptions,
       );
       return response.data;
     } catch (error: any) {
       if (error.response && error.response.status === HttpStatus.NOT_FOUND) {
+        console.error(error.response.data)
         console.error(`Application not found`);
         throw new ApplicationNotFound();
       } else {

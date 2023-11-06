@@ -54,3 +54,4 @@ HELP.md
 /web-sdk/lib/node_modules/
 /client-test/node_modules/
 /web-sdk/node_modules/
+/web-sdk/lib/dist/

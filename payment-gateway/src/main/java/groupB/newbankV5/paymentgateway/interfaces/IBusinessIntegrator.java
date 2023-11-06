@@ -10,5 +10,4 @@ import java.math.BigDecimal;
 public interface IBusinessIntegrator {
 
     ApplicationDto validateToken(String token) throws ApplicationNotFoundException, InvalidTokenException;
-    ApplicationDto getApplication(String name) throws ApplicationNotFoundException;
 }

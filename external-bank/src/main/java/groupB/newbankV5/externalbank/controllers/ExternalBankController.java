@@ -2,6 +2,7 @@ package groupB.newbankV5.externalbank.controllers;
 
 import groupB.newbankV5.externalbank.components.DepositAuthorizer;
 import groupB.newbankV5.externalbank.components.SettlePaymentAccount;
+import groupB.newbankV5.externalbank.components.dtos.CreditCardInformationDto;
 import groupB.newbankV5.externalbank.controllers.dto.AuthorizeDto;
 import groupB.newbankV5.externalbank.controllers.dto.IbanAmountDto;
 import groupB.newbankV5.externalbank.controllers.dto.SettleDto;
@@ -32,22 +33,33 @@ public class ExternalBankController {
 
     public static final String BASE_URI = "/api/externalbank";
 
-    @PostMapping("/authorize")
+    @PostMapping("authorize")
     public ResponseEntity<AuthorizeDto> authorizeDeposit(@RequestBody TransferDto transferDto) {
         return ResponseEntity.ok(depositAuthorizer.authorize(transferDto));
     }
 
-    @PostMapping("/add")
+    @PostMapping("validateCreditCard")
+    public ResponseEntity<AuthorizeDto> validateCreditCard(@RequestBody CreditCardInformationDto creditCardInformationDto) {
+        return ResponseEntity.ok(depositAuthorizer.validateCard(creditCardInformationDto));
+    }
+
+    @PostMapping("add")
     public ResponseEntity<SettleDto> add(@RequestBody IbanAmountDto ibanAmountDto){
         log.info("iban info" + ibanAmountDto);
         return ResponseEntity.ok(settlePaymentAccount.settle(ibanAmountDto));
     }
 
-    @PostMapping("/deduct")
+    @PostMapping("deduct")
     public ResponseEntity<SettleDto> deduct(@RequestBody IbanAmountDto ibanAmountDto){
         log.info("iban info" + ibanAmountDto);
 
         return ResponseEntity.ok(settlePaymentAccount.settle(ibanAmountDto));
+    }
+
+    @PostMapping("reserveFunds")
+    public ResponseEntity<String> reserveFunds(@RequestBody CreditCardInformationDto creditCardInformationDto){
+        settlePaymentAccount.reserveFunds(creditCardInformationDto);
+        return ResponseEntity.ok("Funds reserved");
     }
 
 

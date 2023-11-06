@@ -1,33 +1,27 @@
 package groupB.newbankV5.paymentgateway.entities;
 
+import org.springframework.data.cassandra.core.mapping.UserDefinedType;
+
 import javax.persistence.*;
 import java.util.Objects;
 
-@Embeddable
+@UserDefinedType("used_credit_card")
 public class CreditCard {
 
     private String cardNumber;
-    private String cardHolderName;
     private String expiryDate;
+    private String cvv;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CreditCard that = (CreditCard) o;
-        return Objects.equals(cardNumber, that.cardNumber) && Objects.equals(cardHolderName, that.cardHolderName) && Objects.equals(expiryDate, that.expiryDate) && Objects.equals(cvv, that.cvv);
-    }
+
 
     @Override
     public int hashCode() {
-        return Objects.hash(cardNumber, cardHolderName, expiryDate, cvv);
+        return Objects.hash(cardNumber, expiryDate, cvv);
     }
 
-    private String cvv;
 
-    public CreditCard(String cardNumber, String cardHolderName, String expiryDate, String cvv) {
+    public CreditCard(String cardNumber, String expiryDate, String cvv) {
         this.cardNumber = cardNumber;
-        this.cardHolderName = cardHolderName;
         this.expiryDate = expiryDate;
         this.cvv = cvv;
     }
@@ -44,13 +38,7 @@ public class CreditCard {
         this.cardNumber = cardNumber;
     }
 
-    public String getCardHolderName() {
-        return cardHolderName;
-    }
 
-    public void setCardHolderName(String cardHolderName) {
-        this.cardHolderName = cardHolderName;
-    }
 
     public String getExpiryDate() {
         return expiryDate;

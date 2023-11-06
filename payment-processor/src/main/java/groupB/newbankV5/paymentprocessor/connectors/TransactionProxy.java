@@ -21,7 +21,7 @@ public class TransactionProxy {
 
     public Transaction[] getWeekTransaction(String iban) {
 
-        log.info("getting weekly trnasaction");
+        log.info("getting weekly transaction");
         try {
             return restTemplate.getForEntity(transactionHostandPort + "/api/transactions/weekly?iban="+ iban,
                     Transaction[].class).getBody();

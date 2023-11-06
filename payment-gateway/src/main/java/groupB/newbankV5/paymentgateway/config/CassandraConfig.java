@@ -31,14 +31,14 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
 
     @Override
     public String[] getEntityBasePackages() {
-        return new String[]{"groupB.newbankV5.paymentprocessor.entities"};
+        return new String[]{"groupB.newbankV5.paymentgateway.entities"};
     }
 
 
     @Override
     public String getContactPoints() {
         try {
-            InetAddress address = InetAddress.getByName("transaction-db");
+            InetAddress address = InetAddress.getByName("gateway-db");
             return address.getHostAddress();
         } catch (UnknownHostException e) {
             // Handle the exception
