@@ -96,6 +96,9 @@ public class Transactioner implements ITransactionProcessor {
     public String confirmPayment(UUID transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId).orElse(null);
         if (transaction != null) {
+            transaction.setStatus(TransactionStatus.CONFIRMED);
+            transactionRepository.save(transaction);
+
             CreditCard usedCreditCard = transaction.getCreditCard();
             log.info("Confirming payment for transaction :"+transaction.getBank());
             if(transaction.getBank().equals("NewBank"))
