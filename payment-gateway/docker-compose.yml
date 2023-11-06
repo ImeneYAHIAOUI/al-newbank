@@ -21,12 +21,32 @@ services:
     networks:
       - spring-newbank-network
 
+#  redundant active node
+  payment-gateway-service-2:
+    restart: always
+    image: "newbank/payment-gateway"
+    container_name: "payment-gateway-service-2"
+    env_file:
+      - .env
+    ports:
+      - "5061:8080"
+    depends_on:
+      - gateway-db
+
+    environment:
+      - CCN_WITH_PORT=${CCN_SERVICE}:8080
+      - PAYMENT_WITH_PORT=${PAYMENTPROCESSOR_SERVICE}:8080
+      - BUSINESSINTEGRATOR_WITH_PORT=${BUSINESSINTEGRATOR_SERVICE}:8080
+      - EXTERNALBANK_WITH_PORT=${EXTERNAL_BANK_SERVICE}:8080
+      - CASSANDRA_HOST=gateway-db
+    networks:
+      - spring-newbank-network
+
   gateway-db:
     image: cassandra
     container_name: gateway-db
     networks:
       - spring-newbank-network
-
 
   nginx:
     image: nginx:latest
