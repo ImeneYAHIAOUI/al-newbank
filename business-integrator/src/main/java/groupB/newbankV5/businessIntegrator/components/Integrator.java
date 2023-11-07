@@ -79,9 +79,9 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
 
     @Override
     public String createOrRegenerateToken(Application application) throws ApplicationNotFoundException {
-        Optional<Application> optApplication = applicationRepository.findById(application.getId());
+        Optional<Application> optApplication = applicationRepository.findByName(application.getName());
         if(optApplication.isEmpty())
-            throw new ApplicationNotFoundException("Application with Id " + application.getId() + " not found");
+            throw new ApplicationNotFoundException("Application with name " + application.getName() + " not found");
         Application applicationFound = optApplication.get();
         String token = applicationFound.generateToken();
         applicationRepository.saveAndFlush(applicationFound);
@@ -89,9 +89,9 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
     }
     @Override
     public String getToken(Application application) throws ApplicationNotFoundException {
-        Optional<Application> optApplication = applicationRepository.findById(application.getId());
+        Optional<Application> optApplication = applicationRepository.findByName(application.getName());
         if(optApplication.isEmpty())
-            throw new ApplicationNotFoundException("Application with Id " + application.getId() + " not found");
+            throw new ApplicationNotFoundException("Application with name " + application.getName() + " not found");
         Application applicationFound = optApplication.get();
         return applicationFound.getApiKey();
     }

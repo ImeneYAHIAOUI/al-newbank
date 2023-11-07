@@ -78,19 +78,19 @@ public class IntegratorController {
         return ResponseEntity.ok().body(ApplicationDto.applicationDtoFactory(applicationIntegrator.integrateApplication(application, merchant)));
     }
 
-    @PostMapping("/applications/{id}/token")
-    public ResponseEntity<String> generateToken(@PathVariable("id") Long id) throws ApplicationNotFoundException {
-        log.info("Generating token for application " + id);
+    @PostMapping("/applications/token")
+    public ResponseEntity<String> generateToken(@RequestParam("name") String name) throws ApplicationNotFoundException {
+        log.info("Generating token for application " + name);
         Application application = new Application();
-        application.setId(id);
+        application.setName(name);
         return ResponseEntity.ok().body(applicationIntegrator.createOrRegenerateToken(application));
     }
 
-    @GetMapping("/applications/{id}/token")
-    public ResponseEntity<String> getToken(@PathVariable("id") Long id) throws ApplicationNotFoundException {
-        log.info("Getting token for application " + id);
+    @GetMapping("/applications/token")
+    public ResponseEntity<String> getToken(@RequestParam("name") String name) throws ApplicationNotFoundException {
+        log.info("Getting token for application " + name);
         Application application = new Application();
-        application.setId(id);
+        application.setName(name);
         return ResponseEntity.ok().body(applicationIntegrator.getToken(application));
     }
 }
