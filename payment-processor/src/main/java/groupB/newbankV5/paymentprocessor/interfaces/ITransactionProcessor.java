@@ -10,5 +10,5 @@ public interface ITransactionProcessor {
 
     CreditCardResponseDto validateCreditCard(CreditCardInformationDto paymentDetails);
 
-    void reserveFunds(BigDecimal amount, String cardNumber, String expirationDate, String cvv);
+    String reserveFunds(BigDecimal amount, String cardNumber, String expirationDate, String cvv, String authToken);
 }

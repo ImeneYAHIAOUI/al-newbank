@@ -1,6 +1,5 @@
 package groupB.newbankV5.paymentgateway.components;
 
-import com.sun.tools.jconsole.JConsoleContext;
 import groupB.newbankV5.paymentgateway.config.KafkaProducerService;
 import groupB.newbankV5.paymentgateway.connectors.BusinessIntegratorProxy;
 import groupB.newbankV5.paymentgateway.connectors.CreditCardNetworkProxy;
@@ -65,7 +64,7 @@ public class Transactioner implements ITransactionProcessor {
         ApplicationDto application = businessIntegratorProxy.validateToken(token);
         log.info("token validated");
         MerchantDto merchant = application.getMerchant();
-        log.info("encrypted credit card: " + cryptedCreditCard);
+        log.info("encrypted credit card");
 
         CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
         log.info("successfully decrypted credit card");
@@ -95,14 +94,14 @@ public class Transactioner implements ITransactionProcessor {
     @Override
     public String confirmPayment(UUID transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId).orElse(null);
-        if (transaction != null) {
+        if (transaction != null && transaction.getStatus().equals(TransactionStatus.AUTHORIZED)) {
             transaction.setStatus(TransactionStatus.CONFIRMED);
             transactionRepository.save(transaction);
 
             CreditCard usedCreditCard = transaction.getCreditCard();
             log.info("Confirming payment for transaction :"+transaction.getBank());
             if(transaction.getBank().equals("NewBank"))
-                paymentProcessor.reserveFunds(transaction.getAmount(), usedCreditCard.getCardNumber(), usedCreditCard.getExpiryDate(), usedCreditCard.getCvv());
+                paymentProcessor.reserveFunds(transaction.getAmount(), usedCreditCard.getCardNumber(), usedCreditCard.getExpiryDate(), usedCreditCard.getCvv(), transaction.getAuthorizationToken());
             else
                 mockBankProxy.reserveFunds(transaction.getAmount(), usedCreditCard.getCardNumber(), usedCreditCard.getExpiryDate(), usedCreditCard.getCvv());
             transaction.setStatus(TransactionStatus.PENDING_SETTLEMENT);
@@ -110,6 +109,9 @@ public class Transactioner implements ITransactionProcessor {
             kafkaProducerService.sendMessage(transaction);
             return "Payment confirmed";
         }
-        return "Transaction not found, try again";
+        if (transaction == null)
+            return "Transaction not found, try again";
+        return "Payment already confirmed";
+
     }
 }

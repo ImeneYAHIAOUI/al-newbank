@@ -9,19 +9,22 @@ import groupB.newbankV5.paymentgateway.interfaces.IRSA;
 import groupB.newbankV5.paymentgateway.interfaces.ITransactionProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.servlet.http.HttpServletRequest;
-import javax.websocket.server.PathParam;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -51,16 +54,12 @@ public class TransactionerController {
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException,
             NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, InvalidKeySpecException {
         log.info("Processing payment request in the Gateway");
-        log.info("Payment details: " + paymentDetails.getEncryptedCard());
-        log.info("Payment details: " + paymentDetails.getAmount());
-        log.info("Payment details: " + authorizationHeader);
         // Remove the "Bearer " prefix
         String token = authorizationHeader.substring(7);
         UUID transactionId = transactionProcessor.processPayment(token,
                 paymentDetails.getAmount(),
                 paymentDetails.getEncryptedCard()).getId();
         AuthorizeDto authorizeDto = new AuthorizeDto(transactionId);
-        log.info("Payment processed "+ authorizeDto.getTransactionId());
         return ResponseEntity.status(200).body(authorizeDto);
     }
     @GetMapping("applications/public-key")
@@ -77,10 +76,15 @@ public class TransactionerController {
         return ResponseEntity.ok().body(Base64.getEncoder().encodeToString(publicKey.getEncoded()));
     }
 
+    @Async
     @PostMapping("confirmPayment/{transactionId}")
-    public ResponseEntity<String> confirmPayment( @PathVariable UUID transactionId) {
+    public CompletableFuture<ResponseEntity<String>> confirmPayment(@PathVariable UUID transactionId) {
         log.info("Confirming payment");
-        return ResponseEntity.status(202).body(transactionProcessor.confirmPayment(transactionId));
+        return CompletableFuture.supplyAsync(() -> {
+            String resp = transactionProcessor.confirmPayment(transactionId);
+            log.info("Payment confirmed " + resp);
+            return ResponseEntity.status(202).body(resp);
+        });
     }
 
 

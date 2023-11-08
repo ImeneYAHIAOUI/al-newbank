@@ -13,13 +13,9 @@ public class Transaction {
 
     @PrimaryKey
     private UUID id;
-
-
     private BankAccount recipient;
     private BankAccount sender;
-
     private LocalDateTime time;
-
     private Boolean isExternal;
     private String authorizationToken;
     private BigDecimal amount;

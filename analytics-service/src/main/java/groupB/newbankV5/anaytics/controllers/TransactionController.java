@@ -24,19 +24,25 @@ public class TransactionController {
         this.anayticsService = transactionRepository;
     }
 
+    @GetMapping("")
+    public void getForMerchant() {
+
+    }
     @GetMapping("/health")
     public String health() {
         return "OK";
     }
 
     @GetMapping("/merchant")
-    public List<MerchantAnalytics> getForMerchant(@RequestBody BankAccount bankAccount) {
+    public List<MerchantAnalytics> getForMerchant(@RequestParam("bic") String bic, @RequestParam("iban") String iban) {
+        BankAccount bankAccount = new BankAccount(iban, bic);
         return anayticsService.analyseMerchantBenifitsPerDay(bankAccount.getIBAN(), bankAccount.getBIC());
     }
 
     @GetMapping("/customer")
-    public ClientAnalytics getForCustomer(@RequestBody BankAccount bankAccount, @RequestParam int year,
+    public ClientAnalytics getForCustomer(@RequestParam("bic") String bic, @RequestParam("iban") String iban, @RequestParam int year,
             @RequestParam int month){
+        BankAccount bankAccount = new BankAccount(iban, bic);
         return anayticsService.clientAnalytics(bankAccount, year, month);
     }
 }

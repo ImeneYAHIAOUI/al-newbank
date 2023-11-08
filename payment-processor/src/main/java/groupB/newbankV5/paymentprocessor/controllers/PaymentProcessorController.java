@@ -69,8 +69,8 @@ public class PaymentProcessorController {
     @PostMapping("/reserveFunds")
     public ResponseEntity<String> reserveFunds(@RequestBody ReserveFundsDto reserveFundsDto ) {
         log.info("Reserving funds");
-        transactionProcessor.reserveFunds(reserveFundsDto.getAmount(), reserveFundsDto.getCardNumber(), reserveFundsDto.getExpirationDate(), reserveFundsDto.getCvv());
-        return ResponseEntity.status(HttpStatus.OK).body("Funds reserved");
+        String response = transactionProcessor.reserveFunds(reserveFundsDto.getAmount(), reserveFundsDto.getCardNumber(), reserveFundsDto.getExpirationDate(), reserveFundsDto.getCvv(), reserveFundsDto.getAuthToken());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }
 
