@@ -1,11 +1,13 @@
 package groupB.newbankV5.anaytics.components;
 
+import groupB.newbankV5.anaytics.connectors.BusinessIntegratorProxy;
 import groupB.newbankV5.anaytics.entities.BankAccount;
 import groupB.newbankV5.anaytics.entities.ClientAnalytics;
 import groupB.newbankV5.anaytics.entities.Expense;
 import groupB.newbankV5.anaytics.entities.Income;
 import groupB.newbankV5.anaytics.entities.MerchantAnalytics;
 import groupB.newbankV5.anaytics.entities.Transaction;
+import groupB.newbankV5.anaytics.exceptions.MerchantNotFoundException;
 import groupB.newbankV5.anaytics.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,9 +28,14 @@ public class AnayticsService {
 
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private BusinessIntegratorProxy businessIntegratorProxy;
 
     public List<MerchantAnalytics> analyseMerchantBenifitsPerDay(
-            String recipientIBAN, String recipientBIC) {
+            String name    ) throws MerchantNotFoundException {
+       BankAccount bankAccount = businessIntegratorProxy.get(name);
+        String recipientIBAN= bankAccount.getIBAN();
+        String recipientBIC= bankAccount.getBIC();
         List<Transaction> transactionList = transactionRepository.findAll();
         Map<LocalDate, List<Transaction>> transactionsByDay = transactionList.stream()
                 .filter(transaction -> recipientIBAN.equals(transaction.getRecipient().getIBAN()))
@@ -63,7 +70,7 @@ public class AnayticsService {
                                 RoundingMode.HALF_UP)).multiply(new BigDecimal(100));
             }
             amountPreviousDay = amount.subtract(fees);
-            amountReceivedPerDay.setPercentageProfitVariation(dailyProfitVariation);
+            amountReceivedPerDay.setGrowth(dailyProfitVariation);
             amountReceivedPerDays.add(amountReceivedPerDay);
         }
         return amountReceivedPerDays;
