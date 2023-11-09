@@ -7,7 +7,7 @@ public class MerchantAnalytics {
     private LocalDate date;
     private BigDecimal totalAmountReceived;
     private BigDecimal totalFees;
-    private BigDecimal percentageProfitVariation;
+    private BigDecimal growth;
 
 
     public MerchantAnalytics(LocalDate date, BigDecimal totalAmountReceived, BigDecimal totalFees) {
@@ -44,16 +44,16 @@ public class MerchantAnalytics {
         this.totalFees = totalFees;
     }
 
-    public BigDecimal getPercentageProfitVariation() {
-        return percentageProfitVariation;
+    public BigDecimal getGrowth() {
+        return growth;
     }
 
-    public void setPercentageProfitVariation(BigDecimal percentageProfitVariation) {
-        this.percentageProfitVariation = percentageProfitVariation;
+    public void setGrowth(BigDecimal growth) {
+        this.growth = growth;
     }
 
     @Override
     public String toString() {
-        return "AmountReceivedPerDay{" + "date=" + date + ", totalAmountReceived=" + totalAmountReceived + ", totalFees=" + totalFees + ", percentageProfitVariation=" + percentageProfitVariation + '}';
+        return "AmountReceivedPerDay{" + "date=" + date + ", totalAmountReceived=" + totalAmountReceived + ", totalFees=" + totalFees + ", percentageProfitVariation=" + growth + '}';
     }
 }

@@ -13,6 +13,7 @@ services:
       - spring-newbank-network
     environment:
       - POSTGRES_HOST=transaction-rationale-db:5432
+      - BUSINESSINTEGRATOR_WITH_PORT=${BUSINESSINTEGRATOR_SERVICE}:8080
 
 
 networks:
