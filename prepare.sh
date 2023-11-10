@@ -19,5 +19,6 @@ compile_dir "payment-settlement"
 compile_dir "transactions-service"
 compile_dir "external-bank"
 compile_dir "mock-credit-card-network"
+
 echo "** Done all"
 
