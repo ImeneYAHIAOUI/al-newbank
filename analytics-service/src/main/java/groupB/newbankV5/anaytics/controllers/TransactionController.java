@@ -24,14 +24,9 @@ public class TransactionController {
     public TransactionController(AnayticsService transactionRepository) {
         this.anayticsService = transactionRepository;
     }
-
     @GetMapping("/health")
     public String health() {
         return "OK";
-    }
-
-    @GetMapping()
-    public void get(){
     }
 
     @GetMapping("/merchant")
