@@ -1,12 +1,4 @@
 scrape_configs:
-  - job_name: 'paymentGatewayMetrics'
-    metrics_path: '/actuator/prometheus'
-    scrape_interval: 3s
-    static_configs:
-      - targets: ['host.docker.internal:80']
-        labels:
-          application: 'PaymentGateway Application'
-
   - job_name: 'customerCareMetrics'
     metrics_path: '/actuator/prometheus'
     scrape_interval: 3s
@@ -14,6 +6,7 @@ scrape_configs:
       - targets: ['host.docker.internal:5003']
         labels:
           application: 'CustomerCare Application'
+
   - job_name: "paymentGatewayMetrics1"
     metrics_path: '/actuator/prometheus'
     scrape_interval: 3s
@@ -21,6 +14,7 @@ scrape_configs:
       - targets: ['host.docker.internal:5060']
         labels:
           application: 'PaymentGateway Application'
+
   - job_name: "paymentGatewayMetrics2"
     metrics_path: '/actuator/prometheus'
     scrape_interval: 3s
@@ -36,6 +30,7 @@ scrape_configs:
       - targets: ['host.docker.internal:5004']
         labels:
           application: 'PaymentProcessor Application'
+
   - job_name: "paymentSettlementMetrics"
     metrics_path: '/actuator/prometheus'
     scrape_interval: 3s
@@ -43,6 +38,7 @@ scrape_configs:
       - targets: ['host.docker.internal:5008']
         labels:
           application: 'PaymentSettlement Application'
+
   - job_name: "feeCalculatorMetrics"
     metrics_path: '/actuator/prometheus'
     scrape_interval: 3s
@@ -50,6 +46,7 @@ scrape_configs:
       - targets: ['host.docker.internal:5005']
         labels:
           application: 'FeeCalculator Application'
+
   - job_name: "transactionServiceMetrics"
     metrics_path: '/actuator/prometheus'
     scrape_interval: 3s
