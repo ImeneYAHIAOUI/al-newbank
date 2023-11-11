@@ -5,13 +5,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.UUID;
 
 @RedisHash("ApplicationKeyPair")
-public class ApplicationKeyPair {
+public class ApplicationKeyPair  implements Serializable {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
