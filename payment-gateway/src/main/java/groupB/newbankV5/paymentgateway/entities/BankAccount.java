@@ -1,9 +1,10 @@
 package groupB.newbankV5.paymentgateway.entities;
 
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class BankAccount {
+public class BankAccount implements Serializable {
     private String IBAN;
     private String BIC;
 

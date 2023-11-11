@@ -55,6 +55,7 @@ public class CostumerController {
     public ResponseEntity<List<AccountDto>> getAllAccounts() {
         log.info("Getting all accounts");
         List<Account> accountRegistration = accountFinder.findAll();
+        accountRegistration.removeIf(account -> account.getType().equals(AccountType.NEWBANK_VIRTUAL_ACCOUNT));
         List<AccountDto> accountDto = accountRegistration.stream().map(AccountDto::accountDtoFactory).toList();
         return ResponseEntity.status(200).body(accountDto);
     }

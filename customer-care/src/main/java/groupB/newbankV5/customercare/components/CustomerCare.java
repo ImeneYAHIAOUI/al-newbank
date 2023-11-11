@@ -117,9 +117,15 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
             addFeesToBankAccount(amount.getFees());
             return accountRepository.findByType(AccountType.NEWBANK_VIRTUAL_ACCOUNT).orElseThrow();
         }
-
         Account account = accountRepository.findByIBAN(amount.getIBAN()).orElseThrow();
-        account.setReservedBalance(account.getReservedBalance().subtract(amount.getAmount()));
+        if(amount.getAmount().compareTo(account.getReservedBalance()) > 0){
+
+            BigDecimal difference = amount.getAmount().subtract(account.getReservedBalance());
+            account.setBalance(account.getBalance().subtract(difference));
+            account.setReservedBalance(BigDecimal.ZERO);
+        }
+        else
+            account.setReservedBalance(account.getReservedBalance().subtract(amount.getAmount()));
         if (amount.getReceiverIban() != null) {
             Account recipient = accountRepository.findByIBAN(amount.getReceiverIban()).orElseThrow();
             recipient.setBalance(recipient.getBalance().add(amount.getAmount()).subtract(amount.getFees()));
@@ -203,6 +209,10 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
     public Account upgradeToBusinessAccount(Account account) {
         account.setType(AccountType.BUSINESS);
         account.setWeekly_payment_limit(Constants.WEEKLY_PAYMENT_LIMIT_BUSINESS);
+        account.setReservedBalance(Constants.WEEKLY_PAYMENT_LIMIT_BUSINESS);
+        account.getCreditCards().forEach(creditCard -> {
+            creditCard.setRestOfLimit(Constants.DEFAULT_CARD_LIMIT_BUSINESS);
+        });
         return accountRepository.save(account);
     }
     @Scheduled(cron = "0 0 0 1 * *")

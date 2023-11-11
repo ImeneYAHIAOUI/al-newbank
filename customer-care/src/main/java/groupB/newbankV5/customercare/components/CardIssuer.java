@@ -37,7 +37,7 @@ public class CardIssuer implements VirtualCardRequester {
         cardGenerationRequestDto.setCardHolderName(account.getCustomerProfile().getFirstName() + " " + account.getCustomerProfile().getLastName());
         CreditCardDto creditCardDto = creditCardNetworkProxy.getCreditCardDetails(cardGenerationRequestDto);
         BigDecimal cardLimit = account.getType() == AccountType.PERSONAL ? Constants.DEFAULT_CARD_LIMIT : Constants.DEFAULT_CARD_LIMIT_BUSINESS;
-        CreditCard creditCard = new CreditCard(creditCardDto.getCardNumber(), creditCardDto.getCardHolderName(), creditCardDto.getExpirationDate(), creditCardDto.getCvv(), account,  Constants.DEFAULT_CARD_LIMIT, cardType);
+        CreditCard creditCard = new CreditCard(creditCardDto.getCardNumber(), creditCardDto.getCardHolderName(), creditCardDto.getExpirationDate(), creditCardDto.getCvv(), account,  cardLimit, cardType);
         CreditCard savedCreditCard = creditCardRepository.saveAndFlush(creditCard);
         account.addCreditCard(savedCreditCard);
         return accountRepository.saveAndFlush(account);
