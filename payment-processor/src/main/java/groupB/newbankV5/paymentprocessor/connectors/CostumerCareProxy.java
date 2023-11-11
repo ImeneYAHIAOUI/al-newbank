@@ -22,7 +22,6 @@ public class CostumerCareProxy implements ICostumerCare {
     public AccountDto getAccountByIBAN(String accountNumber) {
         log.info("Getting balance for account number: " + accountNumber);
         try{
-            log.info("port and host "+ costumerHostandPort);
             return restTemplate.getForEntity(costumerHostandPort + "/api/costumer/search?iban=" + accountNumber, AccountDto.class).getBody();
         } catch (Exception e) {
             log.warning("Error getting balance for account number: " + e.getMessage());

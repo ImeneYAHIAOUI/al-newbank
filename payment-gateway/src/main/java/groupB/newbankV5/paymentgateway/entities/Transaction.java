@@ -1,17 +1,18 @@
 package groupB.newbankV5.paymentgateway.entities;
 
-import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.cassandra.core.mapping.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
-@Table
-public class Transaction {
+@RedisHash("Transaction")
+public class Transaction implements Serializable {
 
-    @PrimaryKey
+    @Id
     private UUID id;
     private BankAccount recipient;
     private BankAccount sender;

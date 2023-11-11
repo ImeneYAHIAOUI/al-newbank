@@ -18,6 +18,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -82,7 +83,9 @@ public class Crypto implements IRSA {
         Optional<ApplicationKeyPair> optApplicationKeyPair =
                 applicationKeyPairRepository.findByApplicationName(application.getName());
         if(optApplicationKeyPair.isEmpty()) {
+
             throw new ApplicationNotFoundException("Application not found");
+
         }
 
         KeyFactory kf = KeyFactory.getInstance("RSA");
@@ -99,11 +102,6 @@ public class Crypto implements IRSA {
         byte[] decryptedMessageBytes = decryptCipher.doFinal(encryptedMessageBytes);
         String decryptedMessage = new String(decryptedMessageBytes, StandardCharsets.UTF_8);
 
-//        Cipher cipher = Cipher.getInstance("RSA");
-//        cipher.init(Cipher.DECRYPT_MODE, optApplicationKeyPair.get().getPrivateKey());
-//        byte[] encryptedDataBytes = Base64.getDecoder().decode(encryptedData);
-//        byte[] decryptedData = cipher.doFinal(encryptedDataBytes);
-//        String decryptedMessage = new String(decryptedData, StandardCharsets.UTF_8);
         log.info("Decrypted message: " + decryptedMessage);
 
         String[] decryptedMessageArray = decryptedMessage.split(",");

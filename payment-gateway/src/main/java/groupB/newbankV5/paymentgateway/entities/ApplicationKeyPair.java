@@ -1,28 +1,25 @@
 package groupB.newbankV5.paymentgateway.entities;
 
-import org.springframework.data.cassandra.core.mapping.CassandraType;
-import org.springframework.data.cassandra.core.mapping.Indexed;
-import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.cassandra.core.mapping.Table;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 import java.nio.ByteBuffer;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.UUID;
 
-@Table
+@RedisHash("ApplicationKeyPair")
 public class ApplicationKeyPair {
 
-    @PrimaryKey
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Id
     private UUID id;
 
-
-    @CassandraType(type = CassandraType.Name.BLOB)
-    private ByteBuffer publicKey;
-    @CassandraType(type = CassandraType.Name.BLOB)
-    private ByteBuffer privateKey;
-
+    private String publicKey; // Serialized as a String
+    private String privateKey; // Serialized as a String
 
     @Indexed
     private String applicationName;
@@ -31,8 +28,8 @@ public class ApplicationKeyPair {
     }
 
     public ApplicationKeyPair(ByteBuffer publicKey, ByteBuffer privateKey, String applicationName) {
-        this.publicKey = publicKey;
-        this.privateKey = privateKey;
+        this.publicKey = serializeByteBuffer(publicKey);
+        this.privateKey = serializeByteBuffer(privateKey);
         this.applicationName = applicationName;
     }
 
@@ -45,19 +42,19 @@ public class ApplicationKeyPair {
     }
 
     public ByteBuffer getPublicKey() {
-        return publicKey;
+        return deserializeByteBuffer(publicKey);
     }
 
     public void setPublicKey(ByteBuffer publicKey) {
-        this.publicKey = publicKey;
+        this.publicKey = serializeByteBuffer(publicKey);
     }
 
     public ByteBuffer getPrivateKey() {
-        return privateKey;
+        return deserializeByteBuffer(privateKey);
     }
 
     public void setPrivateKey(ByteBuffer privateKey) {
-        this.privateKey = privateKey;
+        this.privateKey = serializeByteBuffer(privateKey);
     }
 
     public String getApplicationName() {
@@ -79,5 +76,16 @@ public class ApplicationKeyPair {
     @Override
     public int hashCode() {
         return Objects.hash(publicKey, privateKey, applicationName);
+    }
+
+    // Helper methods for serialization and deserialization
+
+    private static String serializeByteBuffer(ByteBuffer buffer) {
+        return Base64.getEncoder().encodeToString(buffer.array());
+    }
+
+    private static ByteBuffer deserializeByteBuffer(String serialized) {
+        byte[] byteArray = Base64.getDecoder().decode(serialized);
+        return ByteBuffer.wrap(byteArray);
     }
 }

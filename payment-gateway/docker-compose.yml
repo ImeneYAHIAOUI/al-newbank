@@ -17,11 +17,10 @@ services:
       - PAYMENT_WITH_PORT=${PAYMENTPROCESSOR_SERVICE}:8080
       - BUSINESSINTEGRATOR_WITH_PORT=${BUSINESSINTEGRATOR_SERVICE}:8080
       - EXTERNALBANK_WITH_PORT=${EXTERNAL_BANK_SERVICE}:8080
-      - CASSANDRA_HOST=gateway-db
+      - REDIS_HOST=gateway-db
     networks:
       - spring-newbank-network
 
-#  redundant active node
   payment-gateway-service-2:
     restart: always
     image: "newbank/payment-gateway"
@@ -38,15 +37,18 @@ services:
       - PAYMENT_WITH_PORT=${PAYMENTPROCESSOR_SERVICE}:8080
       - BUSINESSINTEGRATOR_WITH_PORT=${BUSINESSINTEGRATOR_SERVICE}:8080
       - EXTERNALBANK_WITH_PORT=${EXTERNAL_BANK_SERVICE}:8080
-      - CASSANDRA_HOST=gateway-db
+      - REDIS_HOST=gateway-db
     networks:
       - spring-newbank-network
 
   gateway-db:
-    image: cassandra
-    container_name: gateway-db
+    image: redis
+    container_name: "gateway-db"
     networks:
       - spring-newbank-network
+
+
+
 
   nginx:
     image: nginx:latest
@@ -63,4 +65,6 @@ services:
 networks:
   spring-newbank-network:
     external: true
+
+
 

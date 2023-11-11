@@ -44,11 +44,11 @@ function main() {
             switch (_a.label) {
                 case 0:
                     loadBalancerHost = 'localhost:80';
-                    token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOZXdCYW5rIiwic3ViIjoiQVBJIEtleSIsImV4cCI6MTY5OTQ3Mjk5OCwiaWQiOjIsIm5hbWUiOiJhcHAxIiwiZW1haWwiOiJ5dXktZnXDqHl0dWdAamlvLmNvbSIsInVybCI6Imhwb3BwcHVldGloIiwiZGVzY3JpcHRpb24iOiJkeXJ0c3JmdWhrIiwiZGF0ZU9mSXNzdWUiOjE2OTk0NjkzOTgzMDR9.1BKNjS09JNDdCUmnff-vfUjncY4pB3WqAIlPzbFNALc";
+                    token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOZXdCYW5rIiwic3ViIjoiQVBJIEtleSIsImV4cCI6MTY5OTcwMTUyNCwiaWQiOjIsIm5hbWUiOiJhcHAxIiwiZW1haWwiOiJ5dXktZnXDqHl0dWdAamlvLmNvbSIsInVybCI6Imhwb3BwcHVldGloIiwiZGVzY3JpcHRpb24iOiJkeXJ0c3JmdWhrIiwiZGF0ZU9mSXNzdWUiOjE2OTk2OTc5MjQ4MTR9.r3mVK9KofUoaYsgd3ZxJdSbBMLdz5WQ0eljzKCgYLEg";
                     paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost);
                     paymentInfo = {
-                        cardNumber: '6026623757780935',
-                        cvv: '430',
+                        cardNumber: '6745178464580114',
+                        cvv: '252',
                         expirationDate: '11/2025',
                         amount: '50',
                     };

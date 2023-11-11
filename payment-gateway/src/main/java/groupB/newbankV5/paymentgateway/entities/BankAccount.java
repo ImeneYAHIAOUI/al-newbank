@@ -1,10 +1,8 @@
 package groupB.newbankV5.paymentgateway.entities;
 
-import org.springframework.data.cassandra.core.mapping.UserDefinedType;
 
 import java.util.Objects;
 
-@UserDefinedType("bank_account")
 public class BankAccount {
     private String IBAN;
     private String BIC;

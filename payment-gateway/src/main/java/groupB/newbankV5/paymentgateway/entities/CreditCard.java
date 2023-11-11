@@ -1,11 +1,8 @@
 package groupB.newbankV5.paymentgateway.entities;
 
-import org.springframework.data.cassandra.core.mapping.UserDefinedType;
 
-import javax.persistence.*;
 import java.util.Objects;
 
-@UserDefinedType("used_credit_card")
 public class CreditCard {
 
     private String cardNumber;

@@ -18,7 +18,6 @@ public class TransactionProxy {
     public Transaction[] getTransactionsToSettle() {
         log.info("Getting transactions to settle " );
         try{
-            log.info("port and host "+ transactionHostandPort);
             return restTemplate.getForEntity(transactionHostandPort + "/api/transactions/toSettle",
                     Transaction[].class).getBody();
         } catch (Exception e) {
@@ -30,7 +29,6 @@ public class TransactionProxy {
     public void putTransactionsToSettle(Transaction[] transactions) {
         log.info("editing transactions " );
         try{
-            log.info("port and host "+ transactionHostandPort);
               restTemplate.put(transactionHostandPort + "/api/transactions/settle", transactions,
                      String.class);
             log.info("saved successfullt");

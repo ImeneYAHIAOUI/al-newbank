@@ -13,9 +13,7 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 
 public interface IRSA {
-     //     SecretKey getOrGenerateAESKey(Application application) throws NoSuchAlgorithmException;
-//     String encryptCreditCard(CreditCard creditCard, SecretKey aesKey) throws NoSuchPaddingException,
-//             NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException;
+
      CreditCard decryptPaymentRequestCreditCard(String encryptedData, ApplicationDto application) throws NoSuchPaddingException,
              NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, ApplicationNotFoundException, InvalidKeySpecException;
 
