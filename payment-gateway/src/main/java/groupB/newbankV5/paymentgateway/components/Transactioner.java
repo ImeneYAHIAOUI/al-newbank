@@ -93,7 +93,7 @@ public class Transactioner implements ITransactionProcessor {
 
     @Override
     public String confirmPayment(UUID transactionId) {
-        Transaction transaction = transactionRepository.findById(transactionId).orElse(null);
+        Transaction transaction = transactionRepository.findById(transactionId);
         if (transaction != null && transaction.getStatus().equals(TransactionStatus.AUTHORIZED)) {
             transaction.setStatus(TransactionStatus.CONFIRMED);
             transactionRepository.save(transaction);
@@ -114,4 +114,5 @@ public class Transactioner implements ITransactionProcessor {
         return "Payment already confirmed";
 
     }
+
 }
