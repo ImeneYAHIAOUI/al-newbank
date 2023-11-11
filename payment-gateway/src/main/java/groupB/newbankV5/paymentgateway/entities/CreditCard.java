@@ -1,9 +1,10 @@
 package groupB.newbankV5.paymentgateway.entities;
 
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class CreditCard {
+public class CreditCard implements Serializable {
 
     private String cardNumber;
     private String expiryDate;
