@@ -55,6 +55,10 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
             throw new MerchantNotFoundException("Merchant with Id " + id + " not found");
         return optMerchant.get();
     }
+    @Override
+    public void deleteMerchants(){
+        this.merchantRepository.deleteAll();
+    }
 
     @Override
     public Application integrateApplication(Application application, Merchant merchant) throws MerchantNotFoundException, ApplicationAlreadyExists,ApplicationNotFoundException {

@@ -64,6 +64,12 @@ public class IntegratorController {
         Merchant merchant = new Merchant(merchantDto.getName(), merchantDto.getEmail(), merchantDto.getBankAccount());
         return ResponseEntity.ok().body(businessIntegrator.integrateBusiness(merchant));
     }
+    @DeleteMapping("/merchants")
+    public ResponseEntity<Void> deleteMerchants() {
+        businessIntegrator.deleteMerchants();
+        return ResponseEntity.noContent().build();
+    }
+
 
     @PostMapping("/applications")
     public ResponseEntity<ApplicationDto> integrateApplication(@RequestBody ApplicationIntegrationDto applicationIntegrationDto) throws ApplicationAlreadyExists,
