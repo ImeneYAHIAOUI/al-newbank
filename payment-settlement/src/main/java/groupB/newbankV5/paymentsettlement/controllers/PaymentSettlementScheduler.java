@@ -35,6 +35,10 @@ public class PaymentSettlementScheduler {
     public ResponseEntity<String> process() {
         log.info("PROCESS SETTLEMENT - START");
         Transaction[] transactions = transactionProxy.getTransactionsToSettle();
+        if(transactions.length == 0) {
+            log.info("PROCESS SETTLEMENT - NO TRANSACTIONS TO SETTLE");
+            return ResponseEntity.status(HttpStatus.OK).body("NO TRANSACTIONS TO SETTLE");
+        }
         settlePayment.settlePayments();
         log.info("PROCESS SETTLEMENT - END");
 
