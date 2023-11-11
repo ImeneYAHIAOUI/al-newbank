@@ -109,5 +109,9 @@ ApplicationId=$(echo "$response" | grep -o '"id":[0-9]*' | cut -d: -f2 | head -1
 echo -e "\033[0;34mID Application:\033[0m \033[0;32m$ApplicationId\033[0m"
 
 apiKey=$(echo "$response" | grep -o '"apiKey":"[^"]*' | cut -d'"' -f4)
-
 echo -e "\033[0;34mAPI Key:\033[0m \033[0;32m$apiKey\033[0m"
+echo ""
+tokenUrl="http://localhost:5012/api/integration/applications/token?name=${appName}"
+tokenReponse=$(curl -s -X POST "$tokenUrl")
+echo -e "\033[0;34mtoken:\033[0m \033[0;32m$tokenReponse\033[0m"
+
