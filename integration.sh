@@ -14,11 +14,18 @@ response=$(curl -s -o /dev/null -w "%{http_code}" -X POST -H "Content-Type: appl
 
 if [ "$response" -eq 201 ]; then
     id=$(curl -s -X POST -H "Content-Type: application/json" -d "$data" "$url" | grep -o '"id":[0-9]*' | cut -d: -f2 | head -1)
+    echo -e "\033[0;34mID client:\033[0m \033[0;32m$id\033[0m"
     debitCardUrl="http://localhost:5003/api/costumer/$id/virtualCard/credit"
     debitCardResponse=$(curl -s -X POST "$debitCardUrl")
     cardNumber=$(echo "$debitCardResponse" | grep -oi '"cardNumber":"[^"]*' | cut -d'"' -f4)
     cvv=$(echo "$debitCardResponse" | grep -oi '"cvv":"[^"]*' | cut -d'"' -f4)
     expiryDate=$(echo "$debitCardResponse" | grep -oi '"expiryDate":"[^"]*' | cut -d'"' -f4)
+ operation='{
+   "amount": 1000,
+   "operation": "deposit"
+ }'
+ fundsUrl="http://localhost:5003/api/costumer/${id}/funds"
+ response=$(curl -s -o /dev/null -w "%{http_code}" -X PUT -H "Content-Type: application/json" -d "$operation" "$fundsUrl")
 
     # Couleurs ANSI
     RED='\033[0;31m'
