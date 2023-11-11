@@ -76,15 +76,12 @@ public class TransactionerController {
         return ResponseEntity.ok().body(Base64.getEncoder().encodeToString(publicKey.getEncoded()));
     }
 
-    @Async
     @PostMapping("confirmPayment/{transactionId}")
-    public CompletableFuture<ResponseEntity<String>> confirmPayment(@PathVariable UUID transactionId) {
+    public ResponseEntity<String> confirmPayment(@PathVariable UUID transactionId) {
         log.info("Confirming payment");
-        return CompletableFuture.supplyAsync(() -> {
-            String resp = transactionProcessor.confirmPayment(transactionId);
-            log.info("Payment confirmed " + resp);
-            return ResponseEntity.status(202).body(resp);
-        });
+        String resp = transactionProcessor.confirmPayment(transactionId);
+        log.info("Payment confirmed " + resp);
+        return ResponseEntity.status(202).body(resp);
     }
 
 
