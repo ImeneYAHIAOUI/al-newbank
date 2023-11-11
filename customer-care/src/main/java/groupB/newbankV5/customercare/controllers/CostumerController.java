@@ -216,7 +216,7 @@ public class CostumerController {
     }
     @PostMapping("batchReleaseFunds")
     public ResponseEntity<Object> batchReleaseFunds(@RequestBody List<ReleaseFundsDto> releaseFundsDtos) {
-        log.info("Releasing reserved funds");
+        //log.info("Releasing reserved funds");
         for(ReleaseFundsDto releaseFundsDto : releaseFundsDtos) {
             try {
                 fundsHandler.releaseReservedFunds(releaseFundsDto);

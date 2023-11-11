@@ -5,4 +5,5 @@ import groupB.newbankV5.businessIntegrator.exceptions.MerchantAlreadyExistsExcep
 
 public interface IBusinessIntegrator {
     Merchant integrateBusiness(Merchant merchant) throws MerchantAlreadyExistsException;
+    void deleteMerchants();
 }
