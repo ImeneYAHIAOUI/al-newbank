@@ -37,18 +37,26 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var newbank_sdk_1 = require("@teamb/newbank-sdk");
-function main(cardNumber, cvv, expirationDate, token) {
+function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var loadBalancerHost, paymentService, paymentInfo, response, confirm;
+        var loadBalancerHost, token, cardNumber, cvv, date, paymentService, paymentInfo, response, confirm;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     loadBalancerHost = 'localhost:80';
+                    token = process.env.TOKEN;
+                    cardNumber = process.env.CARDNUMBER;
+                    cvv = process.env.CVV;
+                    date = process.env.DATE;
+                    console.log(token);
+                    console.log(cardNumber);
+                    console.log(cvv);
+                    console.log(date);
                     paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost);
                     paymentInfo = {
-                        cardNumber: cardNumber,
+                        cardNumber: '6745178464580114',
                         cvv: cvv,
-                        expirationDate: expirationDate,
+                        expirationDate: date,
                         amount: '50',
                     };
                     return [4 /*yield*/, paymentService.authorize(paymentInfo, token)];
@@ -63,6 +71,4 @@ function main(cardNumber, cvv, expirationDate, token) {
         });
     });
 }
-module.exports = {
-    main: main
-};
+main();
