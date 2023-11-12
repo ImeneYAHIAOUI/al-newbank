@@ -4,9 +4,9 @@ import {PaymentInfoDTO} from "@teamb/newbank-sdk/dist/sdk/dto/payment-info.dto";
 
 async function main() {
     const loadBalancerHost = 'localhost:80';
-    const token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOZXdCYW5rIiwic3ViIjoiQVBJIEtleSIsImV4cCI6MTY5OTgxNTUxNSwiaWQiOjIsIm5hbWUiOiJhcHAxIiwiZW1haWwiOiJ5dXktZnXDqHl0dWdAamlvLmNvbSIsInVybCI6Imhwb3BwcHVldGloIiwiZGVzY3JpcHRpb24iOiJkeXJ0c3JmdWhrIiwiZGF0ZU9mSXNzdWUiOjE2OTk4MTE5MTU0MDN9.8gEO86S1pR3qg7mBkw0XLHJ4dcN131nzcuZfszU8Mx8"
-    const cardNumber = "6593365913421268";
-    const cvv = "841"
+    const token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOZXdCYW5rIiwic3ViIjoiQVBJIEtleSIsImV4cCI6MTY5OTgxNzU5NywiaWQiOjIsIm5hbWUiOiJhcHAxIiwiZW1haWwiOiJ5dXktZnXDqHl0dWdAamlvLmNvbSIsInVybCI6Imhwb3BwcHVldGloIiwiZGVzY3JpcHRpb24iOiJkeXJ0c3JmdWhrIiwiZGF0ZU9mSXNzdWUiOjE2OTk4MTM5OTc4NjB9.8yDxyBWwf-4a8Wg0ogRgcx90GdiN3aI9-YjKH1P0KV4"
+    const cardNumber = "6669818518142682";
+    const cvv = "250"
     const date = "11/2025";
 
     if (token && cardNumber && cvv && date) {

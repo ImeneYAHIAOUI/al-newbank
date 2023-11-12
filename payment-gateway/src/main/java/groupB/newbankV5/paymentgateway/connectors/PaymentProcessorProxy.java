@@ -23,7 +23,6 @@ public class PaymentProcessorProxy implements IPaymentProcessor {
             return restTemplate.postForEntity(paymentProcessorHostandPort + "/api/payment/reserveFunds",
                     transaction, String.class).getBody();
         } catch (Exception e) {
-            log.info("\u001B[31mError: \u001B[30m" + e.getMessage());
             return "Error: " + e.getMessage();
         }
     }
