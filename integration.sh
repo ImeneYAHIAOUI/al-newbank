@@ -80,8 +80,8 @@ merchant='{
   "name": "'"$merchantName"'",
   "email": "'"$merchantEmail"'",
   "bankAccount": {
-   "IBAN": "'"$iban"'",
-      "BIC": "'"$bic"'"
+   "iban": "'"$iban"'",
+      "bic": "'"$bic"'"
   }
 }'
 echo -e "\033[0;34mMerchant:\033[0m \033[0;32m$merchant\033[0m"
