@@ -16,7 +16,6 @@ public class TransactionProxy {
     private RestTemplate restTemplate = new RestTemplate();
 
     public Transaction[] getTransactionsToSettle() {
-        log.info("\u001B[32mSending request to get transactions to settle\u001B[0m");
         try{
             return restTemplate.getForEntity(transactionHostandPort + "/api/transactions/toSettle",
                     Transaction[].class).getBody();
@@ -27,7 +26,6 @@ public class TransactionProxy {
     }
 
     public void putTransactionsToSettle(Transaction[] transactions) {
-        log.info("\u001B[32mSending request to save transactions\u001B[0m");
         try{
               restTemplate.put(transactionHostandPort + "/api/transactions/settle", transactions,
                      String.class);

@@ -1,48 +1,8 @@
 #!/bin/bash
 # création compte client
-url="http://localhost:5003/api/costumer"
-data='{
-  "firstName": "valentin",
-  "lastName": "doe",
-  "email": "valentin.doe@gmail.com",
-  "phoneNumber": "0667995895",
-  "BirthDate": "1990-01-01",
-  "FiscalCountry": "France",
-  "address": "123 Main Street"
-}'
-response=$(curl -s -H "Content-Type: application/json" -d "$data" "$url")
 
-    # Extract ID from the response
-    id=$(echo "$response" | grep -o '"id":[0-9]*' | cut -d: -f2 | head -1)
-
-    if [ "$?" -eq 0 ]; then
-    id=$(echo "$response" | grep -o '"id":[0-9]*' | cut -d: -f2 | head -1)
-    echo -e "\033[0;34mID client:\033[0m \033[0;32m$id\033[0m"
-    debitCardUrl="http://localhost:5003/api/costumer/$id/virtualCard/credit"
-    debitCardResponse=$(curl -s -X POST "$debitCardUrl")
-    cardNumber=$(echo "$debitCardResponse" | grep -oi '"cardNumber":"[^"]*' | cut -d'"' -f4)
-    cvv=$(echo "$debitCardResponse" | grep -oi '"cvv":"[^"]*' | cut -d'"' -f4)
-    expiryDate=$(echo "$debitCardResponse" | grep -oi '"expiryDate":"[^"]*' | cut -d'"' -f4)
- operation='{
-   "amount": 1000,
-   "operation": "deposit"
- }'
- fundsUrl="http://localhost:5003/api/costumer/${id}/funds"
- response=$(curl -s -o /dev/null -w "%{http_code}" -X PUT -H "Content-Type: application/json" -d "$operation" "$fundsUrl")
-
-    # Couleurs ANSI
-    RED='\033[0;31m'
-    GREEN='\033[0;32m'
-    BLUE='\033[0;34m'
-    NC='\033[0m' # No Color
-
-    echo -e "${BLUE}Card Number:${NC} ${GREEN}$cardNumber${NC}"
-    echo -e "${BLUE}CVV:${NC} ${GREEN}$cvv${NC}"
-    echo -e "${BLUE}Expiry Date:${NC} ${GREEN}$expiryDate${NC}"
-else
-    echo -e "\033[0;31mErreur lors de la création du compte client. Code de réponse HTTP : $response\033[0m"
-fi
-
+#!/bin/bash
+# création compte client
 
 # création compte marchand
 
@@ -122,6 +82,15 @@ apiKey=$(echo "$response" | grep -o '"apiKey":"[^"]*' | cut -d'"' -f4)
 echo -e "\033[0;34mAPI Key:\033[0m \033[0;32m$apiKey\033[0m"
 echo ""
 tokenUrl="http://localhost:5012/api/integration/applications/token?name=${appName}"
-tokenReponse=$(curl -s -X POST "$tokenUrl")
-echo -e "\033[0;34mtoken:\033[0m \033[0;32m$tokenReponse\033[0m"
+token=$(curl -s -X POST "$tokenUrl")
+echo -e "\033[0;34mtoken:\033[0m \033[0;32m$token\033[0m"
 
+
+# Payment loop
+while IFS=, read -r clientId cardNumber cvv expiryDate
+do
+    echo -e "\033[0;34mProcessing payment for client ID:\033[0m \033[0;32m$clientId\033[0m"
+
+    # Call TypeScript script for each client
+    ts-node main.ts "$clientId" "$cardNumber" "$cvv" "$expiryDate" "$token" &
+done < client_cards.csv
