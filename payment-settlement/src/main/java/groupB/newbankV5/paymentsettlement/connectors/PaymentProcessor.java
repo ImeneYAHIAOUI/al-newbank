@@ -20,12 +20,12 @@ public class PaymentProcessor implements IPaymentProcessor {
 
     @Override
     public void saveTransactions(Transaction[] transactions){
-        log.info("Saving transactions");
+        log.info("\u001B[32mSending transactions to payment processor\u001B[0m");
         try {
             restTemplate.postForEntity(paymentProcessorHostandPort + "/api/payment/batchSaveTransactions",transactions,
                     Transaction[].class).getBody();
         } catch (Exception e) {
-            log.warning("Error saving transactions: " + e.getMessage());
+            log.warning("\u001B[31mError saving transactions: \u001B[0m" + e.getMessage());
         }
     }
 }

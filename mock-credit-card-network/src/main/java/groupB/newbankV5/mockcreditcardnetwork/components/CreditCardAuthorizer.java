@@ -29,11 +29,12 @@ public class CreditCardAuthorizer {
     }
 
     public CreditCardCheckResponseDto ValidateCreditCard(CreditCardInformationDto creditCardInformationDto) throws InvalidCardInformation {
-        log.info("Authorizing payment");
         String ccnumber = creditCardInformationDto.getCardNumber();
         if(isValidNewBank(ccnumber)) {
             CreditCardCheckResponseDto resp = newBankProxy.checkNewBankCreditCard(creditCardInformationDto);
             resp.setBankName("NewBank");
+            String response = resp.getResponse() ? "Valid" : "Invalid";
+            log.info("\u001B[32m" + response + " credit card from NewBank\u001B[0m");
             return resp;
         }
         AuthorizeDto response = mockBankProxy.checkMockBankCreditCard(creditCardInformationDto);
@@ -49,7 +50,7 @@ public class CreditCardAuthorizer {
             responseDto.setAccountBIC("EXTERNAL");
             responseDto.setCardType(cardType);
             responseDto.setBankName("MockBank");
-            log.info(responseDto.toString());
+            log.info("\u001B[32mValid credit card from MockBank\u001B[0m");
             return responseDto;
         }
         else throw new InvalidCardInformation("Invalid credit card information");

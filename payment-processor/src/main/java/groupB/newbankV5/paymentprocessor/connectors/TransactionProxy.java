@@ -26,7 +26,7 @@ public class TransactionProxy {
             return restTemplate.getForEntity(transactionHostandPort + "/api/transactions/weekly?iban="+ iban,
                     Transaction[].class).getBody();
         } catch (Exception e) {
-            log.warning("Error authorizing transfer: " + e.getMessage());
+            log.warning("\u001B[31mError getting weekly transaction: \u001B[0m" + e.getMessage());
             return null;
         }
     }

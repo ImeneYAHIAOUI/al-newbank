@@ -45,14 +45,14 @@ public class IntegratorController {
 
     @GetMapping("/applications")
     public ResponseEntity<Application> getApplication(@RequestParam("name") String name) throws ApplicationNotFoundException {
-        log.info("Getting application " + name);
+        log.info("\u001B[32mGetting application " + name + "\u001B[0m");
         Application application = applicationFinder.findApplicationByName(name);
         return ResponseEntity.ok().body(application);
     }
 
     @GetMapping("/merchants/{id}")
     public ResponseEntity<Merchant> getMerchant(@PathVariable("id") Long id) throws MerchantNotFoundException {
-        log.info("Getting merchant " + id);
+        log.info("\u001B[32mGetting merchant " + id + "\u001B[0m");
         Merchant merchant = businessFinder.findMerchantById(id);
         return ResponseEntity.ok().body(merchant);
     }
@@ -60,8 +60,9 @@ public class IntegratorController {
 
     @PostMapping("/merchants")
     public ResponseEntity<Merchant> integrateMerchant(@RequestBody MerchantDto merchantDto) throws MerchantAlreadyExistsException {
-        log.info("Integrating merchant " + merchantDto.getName());
+        log.info("\u001B[32mIntegrating merchant " + merchantDto.getName() + "\u001B[0m");
         Merchant merchant = new Merchant(merchantDto.getName(), merchantDto.getEmail(), merchantDto.getBankAccount());
+        log.info("\u001B[32mMerchant " + merchantDto.getName() + " integrated\u001B[0m");
         return ResponseEntity.ok().body(businessIntegrator.integrateBusiness(merchant));
     }
     @DeleteMapping("/merchants")
@@ -74,19 +75,20 @@ public class IntegratorController {
     @PostMapping("/applications")
     public ResponseEntity<ApplicationDto> integrateApplication(@RequestBody ApplicationIntegrationDto applicationIntegrationDto) throws ApplicationAlreadyExists,
             MerchantNotFoundException, ApplicationNotFoundException {
-        log.info("Integrating application " + applicationIntegrationDto.getName());
+        log.info("\u001B[32mIntegrating application " + applicationIntegrationDto.getName() + "\u001B[0m");
         Application application = new Application(applicationIntegrationDto.getName(),
                 applicationIntegrationDto.getEmail(),
                 applicationIntegrationDto.getUrl(),
                 applicationIntegrationDto.getDescription());
         Merchant merchant = new Merchant();
         merchant.setId(applicationIntegrationDto.getMerchantId());
+
         return ResponseEntity.ok().body(ApplicationDto.applicationDtoFactory(applicationIntegrator.integrateApplication(application, merchant)));
     }
 
     @PostMapping("/applications/token")
     public ResponseEntity<String> generateToken(@RequestParam("name") String name) throws ApplicationNotFoundException {
-        log.info("Generating token for application " + name);
+        log.info("\u001B[32mGenerating token for application " + name + "\u001B[0m");
         Application application = new Application();
         application.setName(name);
         return ResponseEntity.ok().body(applicationIntegrator.createOrRegenerateToken(application));
@@ -94,7 +96,7 @@ public class IntegratorController {
 
     @GetMapping("/applications/token")
     public ResponseEntity<String> getToken(@RequestParam("name") String name) throws ApplicationNotFoundException {
-        log.info("Getting token for application " + name);
+        log.info("\u001B[32mGetting token for application " + name + "\u001B[0m");
         Application application = new Application();
         application.setName(name);
         return ResponseEntity.ok().body(applicationIntegrator.getToken(application));

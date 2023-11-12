@@ -1,6 +1,7 @@
 package groupB.newbankV5.paymentprocessor.interfaces;
 
 import groupB.newbankV5.paymentprocessor.controllers.dto.*;
+import groupB.newbankV5.paymentprocessor.entities.Transaction;
 
 import java.math.BigDecimal;
 
@@ -10,5 +11,5 @@ public interface ITransactionProcessor {
 
     CreditCardResponseDto validateCreditCard(CreditCardInformationDto paymentDetails);
 
-    String reserveFunds(BigDecimal amount, String cardNumber, String expirationDate, String cvv, String authToken);
+    String reserveFunds(Transaction transaction);
 }

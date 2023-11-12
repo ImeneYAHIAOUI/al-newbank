@@ -77,8 +77,8 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
 
         application.generateToken();
         Application applicationFound = applicationRepository.saveAndFlush(application);
-        log.info("Application " + applicationFound.toString() + " integrated");
-        return applicationRepository.saveAndFlush(application);
+        log.info("\u001B[32mApplication " + application.getName() + " integrated\u001B[0m");
+        return applicationFound;
     }
 
     @Override

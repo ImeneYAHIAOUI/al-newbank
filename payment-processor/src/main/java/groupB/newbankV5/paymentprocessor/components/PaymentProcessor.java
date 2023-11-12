@@ -99,7 +99,7 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
 
     @Override
     public TransferResponseDto authorizeTransfer(TransferDto transferDetails) {
-        log.info("Authorizing transfer");
+        log.info("\u001B[32mAuthorizing transfer\u001B[0m");
         Transaction transaction = new Transaction();
         AccountDto accountDto = customerCare.getAccountByIBAN(transferDetails.getFromAccountIBAN());
         String authToken = generateAuthToken();
@@ -179,9 +179,9 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
     }
 
     @Override
-    public String reserveFunds(BigDecimal amount, String cardNumber, String expirationDate, String cvv, String authToken) {
+    public String reserveFunds(Transaction transaction) {
         try {
-            Optional<PaymentToken> paymentToken = paymentTokenRepository.findById(authToken);
+            Optional<PaymentToken> paymentToken = paymentTokenRepository.findById(transaction.getAuthorizationToken());
             if (paymentToken.isEmpty()) {
                 return "Invalid token";
             }
@@ -193,7 +193,9 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
             }
             paymentToken.get().setUsed(true);
             paymentTokenRepository.save(paymentToken.get());
-            customerCare.reserveFunds(amount, cardNumber, expirationDate, cvv);
+            transaction.setStatus(TransactionStatus.PENDING_SETTLEMENT);
+            transactionRepository.save(transaction);
+            customerCare.reserveFunds(transaction.getAmount(), transaction.getCreditCard().getCardNumber(), transaction.getCreditCard().getExpiryDate(), transaction.getCreditCard().getCvv());
             return "Funds reserved";
         }
         catch (Exception e){

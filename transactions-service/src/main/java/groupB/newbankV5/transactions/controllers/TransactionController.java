@@ -57,7 +57,7 @@ public class TransactionController {
 
     @GetMapping("/toSettle")
     public List<Transaction> transactionToSettle(){
-        log.info("Received request to get transactions to settle");
+        log.info("\u001B[32mReceived request to get transactions to settle\u001B[0m");
         return transactionRepository.findAll().stream()
                     .filter(transaction -> !transaction.getStatus().equals(TransactionStatus.SETTLED))
                     .collect(Collectors.toList());

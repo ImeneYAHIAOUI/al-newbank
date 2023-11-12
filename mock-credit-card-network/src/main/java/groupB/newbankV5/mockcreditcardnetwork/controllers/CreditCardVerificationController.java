@@ -34,7 +34,7 @@ public class CreditCardVerificationController {
     @PostMapping("authorize")
     public ResponseEntity<CreditCardCheckResponseDto> authorizePayment(@RequestBody CreditCardInformationDto creditCardInformationDto) {
         try {
-            log.info("Credit card infos "+ creditCardInformationDto.getAmount() + " " +creditCardInformationDto.getCardNumber() + " " + creditCardInformationDto.getCvv() + " " + creditCardInformationDto.getExpirationDate());
+            log.info("\u001B[32mReceived credit card verification request\u001B[0m");
             return ResponseEntity.status(HttpStatus.OK).body(creditCardAuthorizer.ValidateCreditCard(creditCardInformationDto));
         } catch (InvalidCardInformation e) {
             CreditCardCheckResponseDto errorResponse = new CreditCardCheckResponseDto();

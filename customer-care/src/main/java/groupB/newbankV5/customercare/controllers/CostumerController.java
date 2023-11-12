@@ -53,7 +53,7 @@ public class CostumerController {
 
     @GetMapping()
     public ResponseEntity<List<AccountDto>> getAllAccounts() {
-        log.info("Getting all accounts");
+        log.info("\u001B[32mGetting all accounts\u001B[0m");
         List<Account> accountRegistration = accountFinder.findAll();
         accountRegistration.removeIf(account -> account.getType().equals(AccountType.NEWBANK_VIRTUAL_ACCOUNT));
         List<AccountDto> accountDto = accountRegistration.stream().map(AccountDto::accountDtoFactory).toList();
@@ -62,7 +62,7 @@ public class CostumerController {
 
     @GetMapping("bankAccount")
     public ResponseEntity<bankAccountDto> getAllBankAccounts() {
-        log.info("Getting bank virtual account");
+        log.info("\u001B[32mGetting bank account\u001B[0m");
         Account account = accountFinder.findByType(AccountType.NEWBANK_VIRTUAL_ACCOUNT).orElseThrow();
         bankAccountDto accountDto = new bankAccountDto(account.getBalance());
         return ResponseEntity.status(200).body(accountDto);
@@ -73,7 +73,7 @@ public class CostumerController {
                                                     @RequestParam(name = "number", required = false) String cardNumber,
                                                     @RequestParam(name = "date", required = false) String expiryDate,
                                                     @RequestParam(name = "cvv", required = false) String cvv) {
-        log.info("Searching account");
+        log.info("\u001B[32mReceived account search request\u001B[0m");
         if(iban != null) {
             Account account = accountFinder.findByIban(iban).orElseThrow();
             AccountDto accountDto = AccountDto.accountDtoFactory(account);
@@ -82,6 +82,7 @@ public class CostumerController {
         else if(cardNumber != null && expiryDate != null && cvv != null) {
             Account account = accountFinder.findByCreditCard(cardNumber, expiryDate, cvv).orElseThrow();
             AccountDto accountDto = AccountDto.accountDtoFactory(account);
+            log.info("\u001B[32mSending account information\u001B[0m");
             return ResponseEntity.status(200).body(accountDto);
         }
         else {
@@ -92,7 +93,7 @@ public class CostumerController {
 
     @GetMapping("{id}")
     public ResponseEntity<AccountDto> getAccountById(@PathVariable  long id) throws AccountNotFoundException {
-        log.info("Getting account by id");
+        log.info("\u001B[32mGetting account by id " + id + "\u001B[0m");
         Optional<Account> account = accountFinder.findAccountById(id);
         if(account.isEmpty()) {
             throw new AccountNotFoundException(String.valueOf(id));
@@ -105,32 +106,34 @@ public class CostumerController {
 
     @PostMapping()
     public ResponseEntity<AccountDto> createAccount(@RequestBody AccountCreationDto accountCreationDto) {
-        log.info("Creating account");
+        log.info("\u001B[32mReceived account creation request\u001B[0m");
         Account account = accountRegistration.createAccount(accountCreationDto);
         AccountDto accountDto = AccountDto.accountDtoFactory(account);
+        log.info("\u001B[32mAccount created\u001B[0m");
         return ResponseEntity.status(201).body(accountDto);
     }
 
     @PostMapping("{id}/virtualCard/debit")
     public ResponseEntity<AccountDto> createVirtualDebitCard(@PathVariable long id) {
-        log.info("Creating virtual card");
+        log.info("\u001B[32mReceived virtual debit card creation request\u001B[0m");
         Account account = accountFinder.findAccountById(id).orElseThrow();
         AccountDto accountDto = AccountDto.accountDtoFactory(virtualCardRequester.requestVirtualCard(account, CardType.DEBIT));
+        log.info("\u001B[32mVirtual debit card created\u001B[0m");
         return ResponseEntity.status(201).body(accountDto);
     }
 
     @PostMapping("{id}/virtualCard/credit")
     public ResponseEntity<AccountDto> createVirtualCreditCard(@PathVariable long id) {
-        log.info("Creating virtual card");
+        log.info("\u001B[32mReceived virtual credit card creation request\u001B[0m");
         Account account = accountFinder.findAccountById(id).orElseThrow();
         AccountDto accountDto = AccountDto.accountDtoFactory(virtualCardRequester.requestVirtualCard(account, CardType.CREDIT));
+        log.info("\u001B[32mVirtual credit card created\u001B[0m");
         return ResponseEntity.status(201).body(accountDto);
     }
 
     @PutMapping("{id}/funds")
     public ResponseEntity<AccountDto> updateFunds(@PathVariable long id, @RequestBody UpdateFundsDto updateFundsDto) {
-        log.info("Updating funds");
-        log.info("Updating funds");
+
         Account account = accountFinder.findAccountById(id).orElseThrow();
         try {
             account = fundsHandler.updateFunds(account, updateFundsDto.getAmount(), updateFundsDto.getOperation());
@@ -144,7 +147,6 @@ public class CostumerController {
 
     @PutMapping("reservedfunds")
     public ResponseEntity<AccountDto> updateReservedFunds( @RequestBody ReserveFundsDto reserveFundsDto) {
-        log.info("Updating reserved funds");
         Account account = accountFinder.findByCreditCard(reserveFundsDto.getCardNumber(), reserveFundsDto.getExpirationDate(), reserveFundsDto.getCvv()).orElseThrow();
         try {
             account = fundsHandler.addReservedFunds(account, reserveFundsDto.getAmount(), reserveFundsDto.getCardNumber(), reserveFundsDto.getExpirationDate(), reserveFundsDto.getCvv());
@@ -158,7 +160,6 @@ public class CostumerController {
 
     @PutMapping("releasefunds")
     public ResponseEntity<AccountDto> releaseReservedFunds( @RequestBody ReleaseFundsDto releaseFundsDto) {
-        log.info("Releasing reserved funds");
         Account account ;
         try {
             account = fundsHandler.releaseReservedFunds(releaseFundsDto);
@@ -172,7 +173,6 @@ public class CostumerController {
 
     @PutMapping("{id}/movetosavings")
     public ResponseEntity<AccountDto> moveToSavingsAccount(@PathVariable long id, @RequestBody UpdateFundsDto updateFundsDto) {
-        log.info("Moving funds to savings account");
         Account account = accountFinder.findAccountById(id).orElseThrow();
         try {
             account = savingsAccountHandler.moveToSavingsAccount(account, updateFundsDto.getAmount());
@@ -187,7 +187,6 @@ public class CostumerController {
 
     @PostMapping("{id}/upgrade")
     public ResponseEntity<AccountDto> upgrade(@PathVariable long id){
-        log.info("upgrading account to business");
         try{
             Account account = accountFinder.findAccountById(id).orElseThrow();
             businessAccount.upgradeToBusinessAccount(account);
@@ -202,7 +201,6 @@ public class CostumerController {
 
     @PutMapping("{id}/deduceweeklylimit")
     public ResponseEntity<AccountDto> deduceWeeklyLimit(@PathVariable long id, @RequestBody UpdateWeeklyLimitDto updateWeeklyLimitDto) {
-        log.info("Deducing from weekly limit");
         Account account = accountFinder.findAccountById(id).orElseThrow();
         try {
             account = fundsHandler.deduceFromWeeklyLimit(account, updateWeeklyLimitDto.getAmount());
@@ -216,7 +214,7 @@ public class CostumerController {
     }
     @PostMapping("batchReleaseFunds")
     public ResponseEntity<Object> batchReleaseFunds(@RequestBody List<ReleaseFundsDto> releaseFundsDtos) {
-        //log.info("Releasing reserved funds");
+        log.info("\u001B[32mReceived batch release funds request\u001B[0m");
         for(ReleaseFundsDto releaseFundsDto : releaseFundsDtos) {
             try {
                 fundsHandler.releaseReservedFunds(releaseFundsDto);
@@ -224,6 +222,7 @@ public class CostumerController {
                 return ResponseEntity.status(400).build();
             }
         }
+        log.info("\u001B[32mBatch release funds completed\u001B[0m");
         return ResponseEntity.status(200).build();
 
 
