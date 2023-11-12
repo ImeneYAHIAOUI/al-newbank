@@ -48,16 +48,32 @@ services:
   gateway-db1:
     image: redis
     container_name: "gateway-db1"
+    ports:
+      - "6378:6379"
     networks:
       - spring-newbank-network
+
   gateway-db2:
     image: redis
     container_name: "gateway-db2"
+    expose:
+      - "6379:6379"
     networks:
       - spring-newbank-network
 
+  redis-exporter-1:
+    image: oliver006/redis_exporter
+    ports:
+      - 9121:9121
+    environment:
+      REDIS_ADDR: "gateway-db1:6379"
 
-
+  redis-exporter-2:
+    image: oliver006/redis_exporter
+    ports:
+      - 9120:9121
+    environment:
+      REDIS_ADDR: "gateway-db2:6379"
 
   nginx:
     image: nginx:latest
