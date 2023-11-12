@@ -44,9 +44,9 @@ function main() {
             switch (_a.label) {
                 case 0:
                     loadBalancerHost = 'localhost:80';
-                    token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOZXdCYW5rIiwic3ViIjoiQVBJIEtleSIsImV4cCI6MTY5OTc5NjY3NSwiaWQiOjIsIm5hbWUiOiJhcHAxIiwiZW1haWwiOiJ5dXktZnXDqHl0dWdAamlvLmNvbSIsInVybCI6Imhwb3BwcHVldGloIiwiZGVzY3JpcHRpb24iOiJkeXJ0c3JmdWhrIiwiZGF0ZU9mSXNzdWUiOjE2OTk3OTMwNzU0NDF9.l3IkDrkcHZHPPq0M1rCYE0d_FZyl69VPJy0iJKRTss8";
-                    cardNumber = "6239981468286264";
-                    cvv = "321";
+                    token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOZXdCYW5rIiwic3ViIjoiQVBJIEtleSIsImV4cCI6MTY5OTgwMzk1MywiaWQiOjIsIm5hbWUiOiJhcHAiLCJlbWFpbCI6Inl1dHV5LWZnQGppby5jb20iLCJ1cmwiOiJocG9wXmxyZHJ0cHBwdXl0ZXRpaCIsImRlc2NyaXB0aW9uIjoiZHlydHNyZnVoayIsImRhdGVPZklzc3VlIjoxNjk5ODAwMzUzOTU1fQ.U1HQ3zm1FSp8RG_oznMOyigklN9R8rajGsg3OCNVvQc";
+                    cardNumber = "6593028794935084";
+                    cvv = "145";
                     date = "11/2025";
                     if (!(token && cardNumber && cvv && date)) return [3 /*break*/, 3];
                     paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost);

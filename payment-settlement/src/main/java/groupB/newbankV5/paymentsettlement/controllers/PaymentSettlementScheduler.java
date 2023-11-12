@@ -31,7 +31,7 @@ public class PaymentSettlementScheduler {
     private SettlePayment settlePayment;
 
     @PostMapping
-    @Scheduled(cron = " * * * * * *")
+    @Scheduled(cron = " */10 * * * * *")
     public ResponseEntity<String> process() {
         log.info("PROCESS SETTLEMENT - START");
         Transaction[] transactions = transactionProxy.getTransactionsToSettle();
