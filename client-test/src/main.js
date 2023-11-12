@@ -39,34 +39,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var newbank_sdk_1 = require("@teamb/newbank-sdk");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var loadBalancerHost, token, cardNumber, cvv, date, paymentService, paymentInfo, response, confirm;
+        var loadBalancerHost, token, cardNumber, cvv, date, paymentService, paymentInfo, response, confirm_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     loadBalancerHost = 'localhost:80';
-                    token = process.env.TOKEN;
-                    cardNumber = process.env.CARDNUMBER;
-                    cvv = process.env.CVV;
-                    date = process.env.DATE;
-                    console.log(token);
-                    console.log(cardNumber);
-                    console.log(cvv);
-                    console.log(date);
+                    token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOZXdCYW5rIiwic3ViIjoiQVBJIEtleSIsImV4cCI6MTY5OTc5NjY3NSwiaWQiOjIsIm5hbWUiOiJhcHAxIiwiZW1haWwiOiJ5dXktZnXDqHl0dWdAamlvLmNvbSIsInVybCI6Imhwb3BwcHVldGloIiwiZGVzY3JpcHRpb24iOiJkeXJ0c3JmdWhrIiwiZGF0ZU9mSXNzdWUiOjE2OTk3OTMwNzU0NDF9.l3IkDrkcHZHPPq0M1rCYE0d_FZyl69VPJy0iJKRTss8";
+                    cardNumber = "6239981468286264";
+                    cvv = "321";
+                    date = "11/2025";
+                    if (!(token && cardNumber && cvv && date)) return [3 /*break*/, 3];
                     paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost);
                     paymentInfo = {
-                        cardNumber: '6745178464580114',
+                        cardNumber: cardNumber,
                         cvv: cvv,
                         expirationDate: date,
-                        amount: '50',
+                        amount: '1',
                     };
+                    response = void 0;
                     return [4 /*yield*/, paymentService.authorize(paymentInfo, token)];
                 case 1:
                     response = _a.sent();
                     return [4 /*yield*/, paymentService.confirmPayment(response.transactionId, token)];
                 case 2:
-                    confirm = _a.sent();
-                    console.log(confirm);
-                    return [2 /*return*/];
+                    confirm_1 = _a.sent();
+                    console.log(confirm_1);
+                    return [3 /*break*/, 4];
+                case 3:
+                    console.error("Some required environment variables are not defined.");
+                    _a.label = 4;
+                case 4: return [2 /*return*/];
             }
         });
     });

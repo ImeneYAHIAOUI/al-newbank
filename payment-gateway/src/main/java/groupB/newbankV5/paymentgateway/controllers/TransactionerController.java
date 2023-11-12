@@ -53,7 +53,7 @@ public class TransactionerController {
     public ResponseEntity<AuthorizeDto> processPayment(@RequestBody PaymentDto paymentDetails, @RequestHeader("Authorization") String authorizationHeader ) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException,
             NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, InvalidKeySpecException {
-        log.info("Processing payment request in the Gateway");
+        log.info("\u001B[32mProcessing payment request\u001B[0m");
         // Remove the "Bearer " prefix
         String token = authorizationHeader.substring(7);
         UUID transactionId = transactionProcessor.processPayment(token,
@@ -65,12 +65,6 @@ public class TransactionerController {
     @GetMapping("applications/public-key")
     public ResponseEntity<String> getAesKey(HttpServletRequest request, @RequestHeader("Authorization") String authorizationHeader) throws NoSuchAlgorithmException, ApplicationNotFoundException, InvalidKeySpecException {
 
-        // Access the request URI
-        String requestURI = request.getRequestURI();
-
-        // Log the request URI
-        log.info("Request URI: "+ requestURI);
-        // Remove the "Bearer " prefix
         String token = authorizationHeader.substring(7);
         PublicKey publicKey = crypto.getOrGenerateRSAPublicKey(token);
         return ResponseEntity.ok().body(Base64.getEncoder().encodeToString(publicKey.getEncoded()));
@@ -78,9 +72,8 @@ public class TransactionerController {
 
     @PostMapping("confirmPayment/{transactionId}")
     public ResponseEntity<String> confirmPayment(@PathVariable UUID transactionId) {
-        log.info("Confirming payment");
         String resp = transactionProcessor.confirmPayment(transactionId);
-        log.info("Payment confirmed " + resp);
+        log.info("\u001B[32mPayment confirmed\u001B[0m");
         return ResponseEntity.status(202).body(resp);
     }
 

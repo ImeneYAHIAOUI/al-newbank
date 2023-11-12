@@ -62,20 +62,16 @@ public class Transactioner implements ITransactionProcessor {
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
             BadPaddingException, InvalidKeyException, InvalidKeySpecException {
         ApplicationDto application = businessIntegratorProxy.validateToken(token);
-        log.info("token validated");
         MerchantDto merchant = application.getMerchant();
-        log.info("encrypted credit card");
-
         CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
-        log.info("successfully decrypted credit card");
+        log.info("\u001B[32msuccessfully decrypted credit card\u001B[0m");
 
         CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
                 new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv(), amount)
         );
         if (!ccnResponseDto.isApproved()) {
-            throw new CCNException("Payment not authorized");
+            throw new CCNException("\u001B[31mPayment not authorized\u001B[0m");
         }
-        log.info(ccnResponseDto.getBankName());
         Transaction transaction = new Transaction(merchant.getBankAccount(), ccnResponseDto.getAuthToken(), amount);
         transaction.setId(UUID.randomUUID());
         transaction.setExternal(true);
@@ -99,7 +95,7 @@ public class Transactioner implements ITransactionProcessor {
             transactionRepository.save(transaction);
 
             CreditCard usedCreditCard = transaction.getCreditCard();
-            log.info("Confirming payment for transaction :"+transaction.getBank());
+            log.info("\u001B[32msend fund reservation request\u001B[0m");
             if(transaction.getBank().equals("NewBank"))
                 paymentProcessor.reserveFunds(transaction.getAmount(), usedCreditCard.getCardNumber(), usedCreditCard.getExpiryDate(), usedCreditCard.getCvv(), transaction.getAuthorizationToken());
             else

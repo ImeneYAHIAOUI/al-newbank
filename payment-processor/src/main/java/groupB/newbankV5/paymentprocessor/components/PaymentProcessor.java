@@ -197,7 +197,7 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
             return "Funds reserved";
         }
         catch (Exception e){
-            log.info("Error while reserving funds: " + e.getMessage());
+            log.info("\u001B[30mError while reserving funds: \u001B[0m" + e.getMessage());
             return "Error while reserving funds: " + e.getMessage();
         }
     }
@@ -225,7 +225,6 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
 
     @Override
     public boolean isFraudulent(PaymentDetailsDTO transaction) {
-        System.out.println(transaction);
         return checkAmount(transaction.getAmount());
     }
 

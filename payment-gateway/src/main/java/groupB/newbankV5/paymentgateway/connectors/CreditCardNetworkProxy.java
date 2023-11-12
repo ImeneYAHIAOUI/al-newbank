@@ -24,20 +24,18 @@ public class CreditCardNetworkProxy implements ICreditCardNetwork {
 
     @Override
     public CcnResponseDto authorizePayment(PaymentDetailsDTO paymentDetailsDTO) {
-        log.info("Authorizing payment");
 
         CreditCardInformationDto creditCardInformationDto = new CreditCardInformationDto();
         creditCardInformationDto.setCardNumber(paymentDetailsDTO.getCardNumber());
         creditCardInformationDto.setExpirationDate(paymentDetailsDTO.getExpirationDate());
         creditCardInformationDto.setCvv(paymentDetailsDTO.getCvv());
         creditCardInformationDto.setAmount(paymentDetailsDTO.getAmount());
-        log.info("Credit card infos "+ creditCardInformationDto.getAmount() + " " +creditCardInformationDto.getCardNumber() + " " + creditCardInformationDto.getCvv() + " " + creditCardInformationDto.getExpirationDate());
 
         try {
             return restTemplate.postForEntity(ccnHostandPort + "/api/payment/authorize",
                     creditCardInformationDto, CcnResponseDto.class).getBody();
         } catch (Exception e) {
-            log.info("Error: " + e.getMessage());
+            log.info("\u001B[31mError: \u001B[0m" + e.getMessage());
             return new CcnResponseDto(false, "Error: " + e.getMessage());
         }
     }

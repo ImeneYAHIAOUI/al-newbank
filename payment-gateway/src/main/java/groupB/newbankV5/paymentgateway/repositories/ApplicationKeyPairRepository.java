@@ -56,7 +56,6 @@ public class ApplicationKeyPairRepository {
 
     private Optional<ApplicationKeyPair> findApplicationName(RedisTemplate<String, ApplicationKeyPair> redisTemplate, String name) {
         Set<String> keys = redisTemplate.keys("*");
-        System.out.println(keys);
         for (String key : keys) {
             Object object = redisTemplate.opsForValue().get(key);
             if (object != null && object instanceof ApplicationKeyPair) {

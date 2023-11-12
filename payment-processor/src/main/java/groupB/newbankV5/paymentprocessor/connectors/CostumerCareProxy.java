@@ -49,7 +49,6 @@ public class CostumerCareProxy implements ICostumerCare {
 
     @Override
     public void reserveFunds(BigDecimal amount, String cardNumber, String expirationDate, String cvv) {
-        log.info("Reserving funds");
         ReserveFundsDto reserveFundsDto = new ReserveFundsDto(amount, cardNumber, expirationDate, cvv);
         restTemplate.put(costumerHostandPort + "/api/costumer/reservedfunds" , reserveFundsDto);
     }

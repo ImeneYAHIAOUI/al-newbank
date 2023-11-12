@@ -43,7 +43,7 @@ public class PaymentProcessorController {
 
     @PostMapping("/checkCreditCard")
     public ResponseEntity<CreditCardResponseDto> checkCreditCard(@RequestBody CreditCardInformationDto creditCardInformationDto) {
-        log.info("Checking credit card");
+        log.info("\u001B[32mChecking credit card\u001B[0m");
         return ResponseEntity.status(HttpStatus.OK).body(transactionProcessor.validateCreditCard(creditCardInformationDto));
 
     }
@@ -57,18 +57,14 @@ public class PaymentProcessorController {
 
     @PostMapping("/batchSaveTransactions")
     public ResponseEntity<List<Transaction>> batchSaveTransactions(@RequestBody List<Transaction> transactions) {
-        log.info("Saving transactions");
-        for (Transaction transaction: transactions){
-            log.info(transaction.toString());
-            log.info(transactionRepository.save(transaction).toString());
-        }
+        transactionRepository.saveAll(transactions);
         return ResponseEntity.status(HttpStatus.OK).body(transactions);
 
     }
 
     @PostMapping("/reserveFunds")
     public ResponseEntity<String> reserveFunds(@RequestBody ReserveFundsDto reserveFundsDto ) {
-        log.info("Reserving funds");
+        log.info("\u001B[32mReserving funds\u001B[0m");
         String response = transactionProcessor.reserveFunds(reserveFundsDto.getAmount(), reserveFundsDto.getCardNumber(), reserveFundsDto.getExpirationDate(), reserveFundsDto.getCvv(), reserveFundsDto.getAuthToken());
         return ResponseEntity.status(HttpStatus.OK).body(response);
 

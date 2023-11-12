@@ -53,8 +53,7 @@ public class Crypto implements IRSA {
             generator.initialize(1024);
             KeyPair pair = generator.generateKeyPair();
             ApplicationKeyPair applicationKeyPair = new ApplicationKeyPair();
-            log.info("Generating RSA key pair for the application, the used key format is"
-                    + pair.getPublic().getFormat());
+            log.info("\u001B[32mGenerating RSA key pair for the application\u001B[0m");
             applicationKeyPair.setId(UUID.randomUUID());
             applicationKeyPair.setApplicationName(app.getName());
             ByteBuffer privateKeyByteBuffer = ByteBuffer.wrap(pair.getPrivate().getEncoded());
@@ -101,7 +100,6 @@ public class Crypto implements IRSA {
         byte[] decryptedMessageBytes = decryptCipher.doFinal(encryptedMessageBytes);
         String decryptedMessage = new String(decryptedMessageBytes, StandardCharsets.UTF_8);
 
-        log.info("Decrypted message: " + decryptedMessage);
 
         String[] decryptedMessageArray = decryptedMessage.split(",");
         CreditCard creditCard = new CreditCard();
