@@ -49,7 +49,6 @@ public class PaymentProcessorController {
 
     @GetMapping("/transactions")
     public ResponseEntity<List<Transaction>> getTransactions() {
-        log.info("Getting transactions");
         return ResponseEntity.status(HttpStatus.OK).body(transactionRepository.findAll());
 
     }

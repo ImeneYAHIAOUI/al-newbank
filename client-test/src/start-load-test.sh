@@ -8,15 +8,17 @@
 
 url="http://localhost:5003/api/costumer"
 data='{
-  "firstName": "Christophe",
-  "lastName": "gazzeh",
-  "email": "Christophe.gazzeh@gmail.com",
+  "firstName": "Christodphe",
+  "lastName": "gazdzeh",
+  "email": "Christodqdphe.gazzeh@gmail.com",
   "phoneNumber": "0755877907",
   "BirthDate": "1980-01-01",
   "FiscalCountry": "France",
   "address": "123 boulevard wilson"
 }'
 response=$(curl -s -X POST -H "Content-Type: application/json" -d "$data" "$url")
+echo -e $response
+
 id=$(echo "$response" | grep -o '"id":[0-9]*' | cut -d: -f2 | head -1)
 upgradeUrl="http://localhost:5003/api/costumer/$id/upgrade"
 upgradeAccountResponse=$(curl -s -X POST "$upgradeUrl")
@@ -40,8 +42,8 @@ merchant='{
   "name": "'"$merchantName"'",
   "email": "'"$merchantEmail"'",
   "bankAccount": {
-   "IBAN": "'"$iban"'",
-      "BIC": "'"$bic"'"
+   "iban": "'"$iban"'",
+      "bic": "'"$bic"'"
   }
 }'
 echo -e "\033[0;34mMerchant:\033[0m \033[0;32m$merchant\033[0m"
@@ -71,7 +73,6 @@ applicationIntegrationDto='{
   "description": "'"$appDescription"'",
   "merchantId":  "'"$merchantId"'"
 }'
-echo -e "\033[0;34mApplication:\033[0m \033[0;32m$applicationIntegrationDto\033[0m"
 
 url="http://localhost:5012/api/integration/applications"
 response=$(curl -s -X POST -H "Content-Type: application/json" -d "$applicationIntegrationDto" "$url")

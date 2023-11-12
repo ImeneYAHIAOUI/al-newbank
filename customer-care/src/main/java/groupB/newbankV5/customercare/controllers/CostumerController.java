@@ -147,6 +147,7 @@ public class CostumerController {
 
     @PutMapping("reservedfunds")
     public ResponseEntity<AccountDto> updateReservedFunds( @RequestBody ReserveFundsDto reserveFundsDto) {
+        log.info("\u001B[32mReceived reserve amount "+reserveFundsDto.getAmount()+" request\u001B[0m");
         Account account = accountFinder.findByCreditCard(reserveFundsDto.getCardNumber(), reserveFundsDto.getExpirationDate(), reserveFundsDto.getCvv()).orElseThrow();
         try {
             account = fundsHandler.addReservedFunds(account, reserveFundsDto.getAmount(), reserveFundsDto.getCardNumber(), reserveFundsDto.getExpirationDate(), reserveFundsDto.getCvv());
@@ -154,6 +155,7 @@ public class CostumerController {
             return ResponseEntity.status(400).build();
         }
         AccountDto accountDto = AccountDto.accountDtoFactory(account);
+        log.info("\u001B[32mReserved funds\u001B[0m");
         return ResponseEntity.status(200).body(accountDto);
 
     }
