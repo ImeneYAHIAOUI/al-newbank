@@ -1,5 +1,6 @@
 package groupB.newbankV5.businessIntegrator.interfaces;
 
+import groupB.newbankV5.businessIntegrator.entities.BankAccount;
 import groupB.newbankV5.businessIntegrator.entities.Merchant;
 import groupB.newbankV5.businessIntegrator.exceptions.MerchantNotFoundException;
 

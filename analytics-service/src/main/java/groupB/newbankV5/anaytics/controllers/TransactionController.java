@@ -29,6 +29,7 @@ public class TransactionController {
     public void getForMerchant() {
 
     }
+
     @GetMapping("/health")
     public String health() {
         return "OK";

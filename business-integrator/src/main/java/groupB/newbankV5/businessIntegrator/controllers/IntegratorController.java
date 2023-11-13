@@ -4,6 +4,7 @@ import groupB.newbankV5.businessIntegrator.controllers.dto.ApplicationDto;
 import groupB.newbankV5.businessIntegrator.controllers.dto.ApplicationIntegrationDto;
 import groupB.newbankV5.businessIntegrator.controllers.dto.MerchantDto;
 import groupB.newbankV5.businessIntegrator.entities.Application;
+import groupB.newbankV5.businessIntegrator.entities.BankAccount;
 import groupB.newbankV5.businessIntegrator.entities.Merchant;
 import groupB.newbankV5.businessIntegrator.exceptions.ApplicationAlreadyExists;
 import groupB.newbankV5.businessIntegrator.exceptions.ApplicationNotFoundException;
@@ -62,7 +63,11 @@ public class IntegratorController {
         return ResponseEntity.ok().body(businessFinder.findMerchantAccountByName(name));
     }
 
-
+    @GetMapping("/merchants")
+    public ResponseEntity<BankAccount> getMerchantBankAccount(@RequestParam("name") String name) throws MerchantNotFoundException {
+        log.info("Getting merchant " + name);
+        return ResponseEntity.ok().body(businessFinder.findMerchantAccountByName(name));
+    }
     @PostMapping("/merchants")
     public ResponseEntity<Merchant> integrateMerchant(@RequestBody MerchantDto merchantDto) throws MerchantAlreadyExistsException {
         log.info("\u001B[32mIntegrating merchant " + merchantDto.getName() + "\u001B[0m");

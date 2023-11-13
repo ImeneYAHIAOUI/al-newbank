@@ -2,6 +2,7 @@ package groupB.newbankV5.anaytics.components;
 
 import groupB.newbankV5.anaytics.connectors.BusinessIntegratorProxy;
 import groupB.newbankV5.anaytics.connectors.TransactionProxy;
+
 import groupB.newbankV5.anaytics.entities.BankAccount;
 import groupB.newbankV5.anaytics.entities.ClientAnalytics;
 import groupB.newbankV5.anaytics.entities.Expense;
@@ -72,7 +73,7 @@ public class AnayticsService {
                                 RoundingMode.HALF_UP)).multiply(new BigDecimal(100));
             }
             amountPreviousDay = amount.subtract(fees);
-            amountReceivedPerDay.setPercentageProfitVariation(dailyProfitVariation);
+            amountReceivedPerDay.setGrowth(dailyProfitVariation);
             amountReceivedPerDays.add(amountReceivedPerDay);
         }
         return amountReceivedPerDays;

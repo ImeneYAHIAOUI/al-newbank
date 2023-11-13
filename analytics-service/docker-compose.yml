@@ -12,7 +12,6 @@ services:
     environment:
       - TRANSACTION_WITH_PORT=${TRANSACTION_SERVICE}:8080
       - BUSINESSINTEGRATOR_WITH_PORT=${BUSINESSINTEGRATOR_SERVICE}:8080
-
 networks:
   spring-newbank-network:
     external: true

@@ -1,6 +1,7 @@
 package groupB.newbankV5.businessIntegrator.components;
 
 import groupB.newbankV5.businessIntegrator.entities.Application;
+import groupB.newbankV5.businessIntegrator.entities.BankAccount;
 import groupB.newbankV5.businessIntegrator.entities.Merchant;
 import groupB.newbankV5.businessIntegrator.exceptions.ApplicationAlreadyExists;
 import groupB.newbankV5.businessIntegrator.exceptions.ApplicationNotFoundException;
@@ -32,7 +33,6 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
         this.applicationRepository = applicationRepository;
     }
 
-
     public BankAccount findMerchantAccountByName(String name) throws MerchantNotFoundException{
         Optional<Merchant> optMerchant = merchantRepository.findByName(name);
         if(optMerchant.isEmpty()){
@@ -42,7 +42,7 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
         return optMerchant.get().getBankAccount();
 
     }
-
+  
     @Override
     public Application findApplicationById(Long id) throws ApplicationNotFoundException {
         Optional<Application> optApplication = applicationRepository.findById(id);
