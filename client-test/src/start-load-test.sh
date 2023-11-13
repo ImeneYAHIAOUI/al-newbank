@@ -77,7 +77,6 @@ applicationIntegrationDto='{
 url="http://localhost:5012/api/integration/applications"
 response=$(curl -s -X POST -H "Content-Type: application/json" -d "$applicationIntegrationDto" "$url")
 ApplicationId=$(echo "$response" | grep -o '"id":[0-9]*' | cut -d: -f2 | head -1)
-echo -e "\033[0;34mID Application:\033[0m \033[0;32m$ApplicationId\033[0m"
 
 apiKey=$(echo "$response" | grep -o '"apiKey":"[^"]*' | cut -d'"' -f4)
 echo -e "\033[0;34mAPI Key:\033[0m \033[0;32m$apiKey\033[0m"
@@ -90,7 +89,6 @@ echo -e "\033[0;34mtoken:\033[0m \033[0;32m$token\033[0m"
 # Payment loop
 while IFS=, read -r clientId cardNumber cvv expiryDate
 do
-    echo -e "\033[0;34mProcessing payment for client ID:\033[0m \033[0;32m$clientId\033[0m"
 
     # Call TypeScript script for each client
     ts-node main.ts "$clientId" "$cardNumber" "$cvv" "$expiryDate" "$token" &

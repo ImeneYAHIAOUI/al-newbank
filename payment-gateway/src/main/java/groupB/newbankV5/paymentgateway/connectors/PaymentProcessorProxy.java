@@ -1,6 +1,7 @@
 package groupB.newbankV5.paymentgateway.connectors;
 
 import groupB.newbankV5.paymentgateway.connectors.dto.ReserveFundsDto;
+import groupB.newbankV5.paymentgateway.connectors.dto.TransactionDto;
 import groupB.newbankV5.paymentgateway.entities.Transaction;
 import groupB.newbankV5.paymentgateway.interfaces.IPaymentProcessor;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,9 +21,22 @@ public class PaymentProcessorProxy implements IPaymentProcessor {
     @Override
     public String reserveFunds(Transaction transaction) {
         try {
+            TransactionDto transactionDto = new TransactionDto();
+            transactionDto.setAmount(transaction.getAmount());
+            transactionDto.setAuthorizationToken(transaction.getAuthorizationToken());
+            transactionDto.setCreditCard(transaction.getCreditCard());
+            transactionDto.setCreditCardType(transaction.getCreditCardType());
+            transactionDto.setExternal(transaction.getExternal());
+            transactionDto.setFees(transaction.getFees());
+            transactionDto.setId(transaction.getId());
+            transactionDto.setTime(transaction.getTime());
+
+
+
             return restTemplate.postForEntity(paymentProcessorHostandPort + "/api/payment/reserveFunds",
-                    transaction, String.class).getBody();
+                    transactionDto, String.class).getBody();
         } catch (Exception e) {
+            log.severe("Error: " + e.getMessage());
             return "Error: " + e.getMessage();
         }
     }

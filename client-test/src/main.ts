@@ -25,8 +25,8 @@ async function main() {
     } else {
         const paymentService = new PaymentService(loadBalancerHost);
         const paymentInfo: PaymentInfoDTO = {
-            cardNumber: "6117640853262937",
-            cvv: "918",
+            cardNumber: "6256783866900738",
+            cvv: "256",
             expirationDate: "11/2025",
             amount: '1',
         };

@@ -95,9 +95,10 @@ public class Transactioner implements ITransactionProcessor {
             transactionRepository.save(transaction);
 
             CreditCard usedCreditCard = transaction.getCreditCard();
-            log.info("\u001B[32msend fund reservation request\u001B[0m");
-            if(transaction.getBank().equals("NewBank"))
+            if(transaction.getBank().equals("NewBank")) {
+                log.info("\u001B[32msend fund reservation request\u001B[0m");
                 paymentProcessor.reserveFunds(transaction);
+            }
             else
                 mockBankProxy.reserveFunds(transaction.getAmount(), usedCreditCard.getCardNumber(), usedCreditCard.getExpiryDate(), usedCreditCard.getCvv());
             transaction.setStatus(TransactionStatus.PENDING_SETTLEMENT);
