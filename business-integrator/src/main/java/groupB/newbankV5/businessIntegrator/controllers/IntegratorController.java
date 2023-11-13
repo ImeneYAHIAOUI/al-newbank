@@ -57,11 +57,6 @@ public class IntegratorController {
         Merchant merchant = businessFinder.findMerchantById(id);
         return ResponseEntity.ok().body(merchant);
     }
-    @GetMapping("/merchants")
-    public ResponseEntity<BankAccount> getMerchantBankAccount(@RequestParam("name") String name) throws MerchantNotFoundException {
-        log.info("Getting merchant " + name);
-        return ResponseEntity.ok().body(businessFinder.findMerchantAccountByName(name));
-    }
 
     @GetMapping("/merchants")
     public ResponseEntity<BankAccount> getMerchantBankAccount(@RequestParam("name") String name) throws MerchantNotFoundException {
