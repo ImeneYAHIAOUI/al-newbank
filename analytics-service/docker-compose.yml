@@ -6,14 +6,12 @@ services:
     container_name: "analytics-service"
     ports:
       - "4990:8080"
-    depends_on:
-      - transaction-rationale-db
     restart: on-failure
     networks:
       - spring-newbank-network
     environment:
-      - POSTGRES_HOST=transaction-rationale-db:5432
-
+      - TRANSACTION_WITH_PORT=${TRANSACTION_SERVICE}:8080
+      - BUSINESSINTEGRATOR_WITH_PORT=${BUSINESSINTEGRATOR_SERVICE}:8080
 
 networks:
   spring-newbank-network:

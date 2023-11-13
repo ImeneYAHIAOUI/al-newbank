@@ -4,6 +4,7 @@ import groupB.newbankV5.anaytics.components.AnayticsService;
 import groupB.newbankV5.anaytics.entities.ClientAnalytics;
 import groupB.newbankV5.anaytics.entities.MerchantAnalytics;
 import groupB.newbankV5.anaytics.entities.BankAccount;
+import groupB.newbankV5.anaytics.exceptions.MerchantNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +34,10 @@ public class TransactionController {
         return "OK";
     }
 
+
     @GetMapping("/merchant")
-    public List<MerchantAnalytics> getForMerchant(@RequestParam("bic") String bic, @RequestParam("iban") String iban) {
-        BankAccount bankAccount = new BankAccount(iban, bic);
-        return anayticsService.analyseMerchantBenifitsPerDay(bankAccount.getIBAN(), bankAccount.getBIC());
+    public List<MerchantAnalytics> getForMerchant(@RequestParam String name) throws MerchantNotFoundException {
+        return anayticsService.analyseMerchantBenifitsPerDay(name);
     }
 
     @GetMapping("/customer")
