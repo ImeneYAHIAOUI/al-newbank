@@ -36,30 +36,51 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// main.ts
 var newbank_sdk_1 = require("@teamb/newbank-sdk");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var loadBalancerHost, token, paymentService, paymentInfo, response, confirm;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var loadBalancerHost, _a, clientId, cardNumber, cvv, expiryDate, token, paymentService, paymentInfo, response, confirm_1, paymentService, paymentInfo, response, confirm_2;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
-                    loadBalancerHost = 'localhost';
-                    token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOZXdCYW5rIiwic3ViIjoiQVBJIEtleSIsImV4cCI6MTY5OTI3MDEyNSwiaWQiOjMsIm5hbWUiOiJhcHAxIiwiZW1haWwiOiJ5dXktZnXDqHl0dWdAamlvLmNvbSIsInVybCI6Imhwb3BwcHVldGloIiwiZGVzY3JpcHRpb24iOiJkeXJ0c3JmdWhrIiwiZGF0ZU9mSXNzdWUiOjE2OTkyNjY1MjU2MTZ9.f72xUXAngDyR7_dfqVcSnDfifAYwYVIA770Zl8pIt9Y";
+                    loadBalancerHost = 'localhost:80';
+                    _a = process.argv, clientId = _a[2], cardNumber = _a[3], cvv = _a[4], expiryDate = _a[5], token = _a[6];
+                    if (!(cardNumber && cvv && expiryDate)) return [3 /*break*/, 3];
                     paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost);
                     paymentInfo = {
-                        cardNumber: '6920522972946995',
-                        cvv: '127',
-                        expirationDate: '11/2025',
-                        amount: '50',
+                        cardNumber: cardNumber,
+                        cvv: cvv,
+                        expirationDate: expiryDate,
+                        amount: '1',
                     };
+                    response = void 0;
                     return [4 /*yield*/, paymentService.authorize(paymentInfo, token)];
                 case 1:
-                    response = _a.sent();
+                    response = _b.sent();
                     return [4 /*yield*/, paymentService.confirmPayment(response.transactionId, token)];
                 case 2:
-                    confirm = _a.sent();
-                    console.log(confirm);
-                    return [2 /*return*/];
+                    confirm_1 = _b.sent();
+                    console.log(confirm_1);
+                    return [3 /*break*/, 6];
+                case 3:
+                    paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost);
+                    paymentInfo = {
+                        cardNumber: "6256783866900738",
+                        cvv: "256",
+                        expirationDate: "11/2025",
+                        amount: '1',
+                    };
+                    response = void 0;
+                    return [4 /*yield*/, paymentService.authorize(paymentInfo, "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOZXdCYW5rIiwic3ViIjoiQVBJIEtleSIsImV4cCI6MTY5OTgzNTQyNywiaWQiOjQsIm5hbWUiOiJhcHAxIiwiZW1haWwiOiJ5dXktZnXDqHl0dWdAamlvLmNvbSIsInVybCI6Imhwb3BwcHVldGloIiwiZGVzY3JpcHRpb24iOiJkeXJ0c3JmdWhrIiwiZGF0ZU9mSXNzdWUiOjE2OTk4MzE4Mjc1NDF9.driNV0CGkDVigY1TG3sjaqObXqmdol5nFdTiFusK3ZE")];
+                case 4:
+                    response = _b.sent();
+                    return [4 /*yield*/, paymentService.confirmPayment(response.transactionId, "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOZXdCYW5rIiwic3ViIjoiQVBJIEtleSIsImV4cCI6MTY5OTgzNTQyNywiaWQiOjQsIm5hbWUiOiJhcHAxIiwiZW1haWwiOiJ5dXktZnXDqHl0dWdAamlvLmNvbSIsInVybCI6Imhwb3BwcHVldGloIiwiZGVzY3JpcHRpb24iOiJkeXJ0c3JmdWhrIiwiZGF0ZU9mSXNzdWUiOjE2OTk4MzE4Mjc1NDF9.driNV0CGkDVigY1TG3sjaqObXqmdol5nFdTiFusK3ZE")];
+                case 5:
+                    confirm_2 = _b.sent();
+                    console.log(confirm_2);
+                    _b.label = 6;
+                case 6: return [2 /*return*/];
             }
         });
     });

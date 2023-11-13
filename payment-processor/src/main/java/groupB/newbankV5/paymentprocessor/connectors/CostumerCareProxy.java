@@ -20,12 +20,10 @@ public class CostumerCareProxy implements ICostumerCare {
 
     @Override
     public AccountDto getAccountByIBAN(String accountNumber) {
-        log.info("Getting balance for account number: " + accountNumber);
         try{
-            log.info("port and host "+ costumerHostandPort);
             return restTemplate.getForEntity(costumerHostandPort + "/api/costumer/search?iban=" + accountNumber, AccountDto.class).getBody();
         } catch (Exception e) {
-            log.warning("Error getting balance for account number: " + e.getMessage());
+            log.warning("\u001B[31mError getting account for IBAN: \u001B[0m" + e.getMessage());
             return null;
         }
     }
@@ -36,31 +34,30 @@ public class CostumerCareProxy implements ICostumerCare {
             return restTemplate.getForEntity(costumerHostandPort + "/api/costumer/search?number=" + cardNumber + "&date=" + expiryDate + "&cvv=" + cvv, AccountDto.class).getBody();
 
         } catch (Exception e) {
-            log.warning("Error getting account for credit card: " + e.getMessage());
+            log.warning("\u001B[31mError getting account for credit card: \u001B[0m" + e.getMessage());
             return null;
         }
     }
 
     @Override
     public void updateBalance(long accountId, BigDecimal amount, String operation) {
-        log.info("Updating balance for account number: " + accountId);
         UpdateFundsDto updateFundsDto = new UpdateFundsDto(amount, operation);
         restTemplate.put(costumerHostandPort + "/api/costumer/"+accountId+"/funds" , updateFundsDto);
     }
 
     @Override
     public void reserveFunds(BigDecimal amount, String cardNumber, String expirationDate, String cvv) {
-        log.info("Reserving funds");
         ReserveFundsDto reserveFundsDto = new ReserveFundsDto(amount, cardNumber, expirationDate, cvv);
         restTemplate.put(costumerHostandPort + "/api/costumer/reservedfunds" , reserveFundsDto);
     }
 
     @Override
     public void deduceWeeklyLimit(long accountId, BigDecimal amount) {
-        log.info("Deducing weekly limit for account number: " + accountId);
         UpdateWeeklyLimitDto updateWeeklyLimitDto = new UpdateWeeklyLimitDto(amount);
         restTemplate.put(costumerHostandPort + "/api/costumer/"+accountId+"/deduceweeklylimit" , updateWeeklyLimitDto);
     }
+
+
 
 
 }

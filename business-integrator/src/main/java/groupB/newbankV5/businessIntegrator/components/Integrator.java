@@ -42,8 +42,7 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
         return optMerchant.get().getBankAccount();
 
     }
-
-
+  
     @Override
     public Application findApplicationById(Long id) throws ApplicationNotFoundException {
         Optional<Application> optApplication = applicationRepository.findById(id);
@@ -67,6 +66,10 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
             throw new MerchantNotFoundException("Merchant with Id " + id + " not found");
         return optMerchant.get();
     }
+    @Override
+    public void deleteMerchants(){
+        this.merchantRepository.deleteAll();
+    }
 
     @Override
     public Application integrateApplication(Application application, Merchant merchant) throws MerchantNotFoundException, ApplicationAlreadyExists,ApplicationNotFoundException {
@@ -85,15 +88,15 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
 
         application.generateToken();
         Application applicationFound = applicationRepository.saveAndFlush(application);
-        log.info("Application " + applicationFound.toString() + " integrated");
-        return applicationRepository.saveAndFlush(application);
+        log.info("\u001B[32mApplication " + application.getName() + " integrated\u001B[0m");
+        return applicationFound;
     }
 
     @Override
     public String createOrRegenerateToken(Application application) throws ApplicationNotFoundException {
-        Optional<Application> optApplication = applicationRepository.findById(application.getId());
+        Optional<Application> optApplication = applicationRepository.findByName(application.getName());
         if(optApplication.isEmpty())
-            throw new ApplicationNotFoundException("Application with Id " + application.getId() + " not found");
+            throw new ApplicationNotFoundException("Application with name " + application.getName() + " not found");
         Application applicationFound = optApplication.get();
         String token = applicationFound.generateToken();
         applicationRepository.saveAndFlush(applicationFound);
@@ -101,9 +104,9 @@ public class Integrator implements IBusinessIntegrator, IApplicationIntegrator, 
     }
     @Override
     public String getToken(Application application) throws ApplicationNotFoundException {
-        Optional<Application> optApplication = applicationRepository.findById(application.getId());
+        Optional<Application> optApplication = applicationRepository.findByName(application.getName());
         if(optApplication.isEmpty())
-            throw new ApplicationNotFoundException("Application with Id " + application.getId() + " not found");
+            throw new ApplicationNotFoundException("Application with name " + application.getName() + " not found");
         Application applicationFound = optApplication.get();
         return applicationFound.getApiKey();
     }

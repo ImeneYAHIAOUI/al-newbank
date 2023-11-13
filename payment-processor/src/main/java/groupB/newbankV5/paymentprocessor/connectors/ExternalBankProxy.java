@@ -25,11 +25,11 @@ public class ExternalBankProxy implements IExternalBank {
 
     public AuthorizeDto authorizeTransfer(TransferDto transferDto) {
 
-        log.info("Authorizing transfer");
+        log.info("\u001B[32mCalling external bank to authorize transfer\u001B[0m");
         try {
             return restTemplate.postForEntity(externalBankHostandPort + "/api/externalbank/authorize", transferDto, AuthorizeDto.class).getBody();
         } catch (Exception e) {
-            log.warning("Error authorizing transfer: " + e.getMessage());
+            log.warning("\u001B[31mError authorizing transfer: \u001B[0m" + e.getMessage());
             return null;
         }
     }

@@ -1,6 +1,8 @@
 package groupB.newbankV5.paymentgateway.connectors;
 
 import groupB.newbankV5.paymentgateway.connectors.dto.ReserveFundsDto;
+import groupB.newbankV5.paymentgateway.connectors.dto.TransactionDto;
+import groupB.newbankV5.paymentgateway.entities.Transaction;
 import groupB.newbankV5.paymentgateway.interfaces.IPaymentProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,14 +19,24 @@ public class PaymentProcessorProxy implements IPaymentProcessor {
     @Value("${paymentprocessor.host.baseurl:}")
     private String paymentProcessorHostandPort;
     @Override
-    public String reserveFunds(BigDecimal amount, String cardNumber, String expiryDate, String cvv) {
-        log.info("Reserving funds");
+    public String reserveFunds(Transaction transaction) {
         try {
-            ReserveFundsDto reserveFundsDto = new ReserveFundsDto( amount, cardNumber, expiryDate, cvv);
+            TransactionDto transactionDto = new TransactionDto();
+            transactionDto.setAmount(transaction.getAmount());
+            transactionDto.setAuthorizationToken(transaction.getAuthorizationToken());
+            transactionDto.setCreditCard(transaction.getCreditCard());
+            transactionDto.setCreditCardType(transaction.getCreditCardType());
+            transactionDto.setExternal(transaction.getExternal());
+            transactionDto.setFees(transaction.getFees());
+            transactionDto.setId(transaction.getId());
+            transactionDto.setTime(transaction.getTime());
+
+
+
             return restTemplate.postForEntity(paymentProcessorHostandPort + "/api/payment/reserveFunds",
-                    reserveFundsDto, String.class).getBody();
+                    transactionDto, String.class).getBody();
         } catch (Exception e) {
-            log.info("Error: " + e.getMessage());
+            log.severe("Error: " + e.getMessage());
             return "Error: " + e.getMessage();
         }
     }

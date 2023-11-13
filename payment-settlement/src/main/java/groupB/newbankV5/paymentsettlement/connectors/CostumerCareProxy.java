@@ -23,7 +23,7 @@ public class CostumerCareProxy implements ICostumerCare {
 
     @Override
     public void releaseFunds(List<ReleaseFundsDto> accounts) {
-        log.info("Releasing funds");
+        log.info("\u001B[32mSending release funds request to costumer care\u001B[0m");
          restTemplate.postForEntity(
                 costumerHostandPort + "/api/costumer/batchReleaseFunds",
                 accounts,

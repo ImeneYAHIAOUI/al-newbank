@@ -1,6 +1,5 @@
 package groupB.newbankV5.paymentgateway.components;
 
-import com.sun.tools.jconsole.JConsoleContext;
 import groupB.newbankV5.paymentgateway.config.KafkaProducerService;
 import groupB.newbankV5.paymentgateway.connectors.BusinessIntegratorProxy;
 import groupB.newbankV5.paymentgateway.connectors.CreditCardNetworkProxy;
@@ -63,20 +62,16 @@ public class Transactioner implements ITransactionProcessor {
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
             BadPaddingException, InvalidKeyException, InvalidKeySpecException {
         ApplicationDto application = businessIntegratorProxy.validateToken(token);
-        log.info("token validated");
         MerchantDto merchant = application.getMerchant();
-        log.info("encrypted credit card: " + cryptedCreditCard);
-
         CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
-        log.info("successfully decrypted credit card");
+        log.info("\u001B[32msuccessfully decrypted credit card\u001B[0m");
 
         CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
                 new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv(), amount)
         );
         if (!ccnResponseDto.isApproved()) {
-            throw new CCNException("Payment not authorized");
+            throw new CCNException("\u001B[31mPayment not authorized\u001B[0m");
         }
-        log.info(ccnResponseDto.getBankName());
         Transaction transaction = new Transaction(merchant.getBankAccount(), ccnResponseDto.getAuthToken(), amount);
         transaction.setId(UUID.randomUUID());
         transaction.setExternal(true);
@@ -94,12 +89,16 @@ public class Transactioner implements ITransactionProcessor {
 
     @Override
     public String confirmPayment(UUID transactionId) {
-        Transaction transaction = transactionRepository.findById(transactionId).orElse(null);
-        if (transaction != null) {
+        Transaction transaction = transactionRepository.findById(transactionId);
+        if (transaction != null && transaction.getStatus().equals(TransactionStatus.AUTHORIZED)) {
+            transaction.setStatus(TransactionStatus.CONFIRMED);
+            transactionRepository.save(transaction);
+
             CreditCard usedCreditCard = transaction.getCreditCard();
-            log.info("Confirming payment for transaction :"+transaction.getBank());
-            if(transaction.getBank().equals("NewBank"))
-                paymentProcessor.reserveFunds(transaction.getAmount(), usedCreditCard.getCardNumber(), usedCreditCard.getExpiryDate(), usedCreditCard.getCvv());
+            if(transaction.getBank().equals("NewBank")) {
+                log.info("\u001B[32msend fund reservation request\u001B[0m");
+                paymentProcessor.reserveFunds(transaction);
+            }
             else
                 mockBankProxy.reserveFunds(transaction.getAmount(), usedCreditCard.getCardNumber(), usedCreditCard.getExpiryDate(), usedCreditCard.getCvv());
             transaction.setStatus(TransactionStatus.PENDING_SETTLEMENT);
@@ -107,6 +106,10 @@ public class Transactioner implements ITransactionProcessor {
             kafkaProducerService.sendMessage(transaction);
             return "Payment confirmed";
         }
-        return "Transaction not found, try again";
+        if (transaction == null)
+            return "Transaction not found, try again";
+        return "Payment already confirmed";
+
     }
+
 }

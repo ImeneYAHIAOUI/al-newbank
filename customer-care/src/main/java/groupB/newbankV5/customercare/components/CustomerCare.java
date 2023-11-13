@@ -117,7 +117,6 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
             addFeesToBankAccount(amount.getFees());
             return accountRepository.findByType(AccountType.NEWBANK_VIRTUAL_ACCOUNT).orElseThrow();
         }
-
         Account account = accountRepository.findByIBAN(amount.getIBAN()).orElseThrow();
         account.setReservedBalance(account.getReservedBalance().subtract(amount.getAmount()));
         if (amount.getReceiverIban() != null) {
@@ -203,6 +202,11 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
     public Account upgradeToBusinessAccount(Account account) {
         account.setType(AccountType.BUSINESS);
         account.setWeekly_payment_limit(Constants.WEEKLY_PAYMENT_LIMIT_BUSINESS);
+        account.setRestOfTheWeekLimit(Constants.WEEKLY_PAYMENT_LIMIT_BUSINESS);
+        account.getCreditCards().forEach(creditCard -> {
+            creditCard.setRestOfLimit(Constants.DEFAULT_CARD_LIMIT_BUSINESS);
+            creditCard.setLimit(Constants.DEFAULT_CARD_LIMIT_BUSINESS);
+        });
         return accountRepository.save(account);
     }
     @Scheduled(cron = "0 0 0 1 * *")

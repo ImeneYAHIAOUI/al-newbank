@@ -37,6 +37,7 @@ public class Transaction  {
     private BigDecimal amount;
     private TransactionStatus status;
     private BigDecimal fees;
+    private CreditCard creditCard;
 
 
     public Transaction(  BankAccount recipient, BankAccount sender, Boolean isExternal, String authorizationToken, BigDecimal amount, TransactionStatus status) {
@@ -154,5 +155,13 @@ public class Transaction  {
 
     public void setCreditCardType(CardType creditCardType) {
         this.creditCardType = creditCardType;
+    }
+
+    public CreditCard getCreditCard() {
+        return creditCard;
+    }
+
+    public void setCreditCard(CreditCard creditCard) {
+        this.creditCard = creditCard;
     }
 }

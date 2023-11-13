@@ -7,6 +7,7 @@ public class ReserveFundsDto {
     private String cardNumber;
     private String expirationDate;
     private String cvv;
+    private String authToken;
 
     public ReserveFundsDto(BigDecimal amount, String cardNumber, String expirationDate, String cvv) {
         this.amount = amount;
@@ -45,5 +46,13 @@ public class ReserveFundsDto {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 }

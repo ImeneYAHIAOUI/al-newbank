@@ -10,14 +10,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.logging.Logger;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping(path = VirtualCardController.BASE_URI, produces = APPLICATION_JSON_VALUE)
 
 public class VirtualCardController {
+    private static final Logger log = Logger.getLogger(VirtualCardController.class.getName());
 
-        public static final String BASE_URI = "/api/virtualcard";
+
+    public static final String BASE_URI = "/api/virtualcard";
 
         private final VirtualCardGenerator virtualCardGenerator;
 
@@ -28,6 +32,7 @@ public class VirtualCardController {
 
         @PostMapping("generate")
         public ResponseEntity<CardGenerationResponseDto> generateNewBankVirtualCard(@RequestBody CardGenerationRequestDto cardGenerationRequestDto) {
+            log.info("\u001B[32mReceived virtual card generation request\u001B[0m");
             return ResponseEntity.status(HttpStatus.CREATED).body(virtualCardGenerator.generateVirtualCard(cardGenerationRequestDto));
         }
 }

@@ -31,12 +31,16 @@ public class PaymentSettlementScheduler {
     private SettlePayment settlePayment;
 
     @PostMapping
-    @Scheduled(cron = " * * * * * *")
+    @Scheduled(cron = "*/10 * * * * *")
     public ResponseEntity<String> process() {
-        log.info("PROCESS SETTLEMENT - START");
         Transaction[] transactions = transactionProxy.getTransactionsToSettle();
+        if(transactions.length == 0) {
+            log.info("PROCESS SETTLEMENT - NO TRANSACTIONS TO SETTLE");
+            return ResponseEntity.status(HttpStatus.OK).body("NO TRANSACTIONS TO SETTLE");
+        }
+        log.info("\u001B[32mPROCESS SETTLEMENT - START\u001B[0m");
         settlePayment.settlePayments();
-        log.info("PROCESS SETTLEMENT - END");
+        log.info("\u001B[32mPROCESS SETTLEMENT - END\u001B[0m");
 
         return ResponseEntity.status(HttpStatus.OK).body("DONE");
     }

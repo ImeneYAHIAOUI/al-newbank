@@ -37,7 +37,7 @@ public class TransferController {
 
     @PostMapping("/process")
     public ResponseEntity<TransferResponseDto> processPayment(@RequestBody TransferDto transferDto) {
-        log.info("Processing transfer");
+        log.info("\u001B[32mProcessing transfer\u001B[0m");
         return ResponseEntity.status(HttpStatus.OK).body(transactionProcessor.authorizeTransfer(transferDto));
 
     }

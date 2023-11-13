@@ -15,7 +15,6 @@ public class SavingsAccountDto {
         }else{
             savingsAccountDto.setBalance(savingsAccount.getBalance());
         }
-        System.out.printf("savingsAccountDto: %s%n", savingsAccountDto);
         return savingsAccountDto;
     }
 

@@ -50,7 +50,7 @@ export class GatewayProxyService {
       return response.data;
     } catch (error: any) {
       if (error.response && error.response.status === HttpStatus.NOT_FOUND) {
-        console.error(error.response.data)
+        console.error(error.response)
         console.error(`Application not found`);
         throw new ApplicationNotFound();
       } else {

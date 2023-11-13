@@ -18,7 +18,7 @@ public class MockBankProxy {
 
 
     public AuthorizeDto checkMockBankCreditCard(CreditCardInformationDto creditCard ) {
-        log.info("Authorizing payment");
+        log.info("\u001B[32mSending credit card verification request to mock bank\u001B[0m");
         return restTemplate.postForEntity( mockBankHostandPort + "/api/externalbank/validateCreditCard", creditCard, AuthorizeDto.class).getBody();
     }
 }

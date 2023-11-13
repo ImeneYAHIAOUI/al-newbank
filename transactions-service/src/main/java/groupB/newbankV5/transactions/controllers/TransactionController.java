@@ -57,7 +57,6 @@ public class TransactionController {
 
     @GetMapping("/toSettle")
     public List<Transaction> transactionToSettle(){
-        log.info("Received request to get transactions to settle");
         return transactionRepository.findAll().stream()
                     .filter(transaction -> !transaction.getStatus().equals(TransactionStatus.SETTLED))
                     .collect(Collectors.toList());
@@ -84,11 +83,11 @@ public class TransactionController {
         // Process the received message
         try {
             Transaction transaction = objectMapper.readValue(payload, Transaction.class);
-            log.info("Received transaction: " + transaction.toString());
+            log.info("\u001B[32mReceived transaction: " + transaction.getId() + "\u001B[0m");
             // Save a new one or save with the updated status
             transactionRepository.save(transaction);
         } catch (JsonProcessingException e) {
-            log.error("Error processing transaction: " + e.getMessage());
+            log.error("\u001B[31mError while processing transaction: " + e.getMessage() + "\u001B[0m");
         }
     }
 }

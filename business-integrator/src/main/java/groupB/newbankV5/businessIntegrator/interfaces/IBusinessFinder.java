@@ -7,4 +7,5 @@ import groupB.newbankV5.businessIntegrator.exceptions.MerchantNotFoundException;
 public interface IBusinessFinder {
     Merchant findMerchantById(Long merchantId) throws MerchantNotFoundException;
     BankAccount findMerchantAccountByName(String name) throws MerchantNotFoundException;
+
 }

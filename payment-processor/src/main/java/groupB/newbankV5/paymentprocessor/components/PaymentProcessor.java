@@ -7,6 +7,7 @@ import groupB.newbankV5.paymentprocessor.connectors.dto.CreditCardDto;
 import groupB.newbankV5.paymentprocessor.controllers.dto.*;
 import groupB.newbankV5.paymentprocessor.entities.*;
 import groupB.newbankV5.paymentprocessor.interfaces.*;
+import groupB.newbankV5.paymentprocessor.repositories.PaymentTokenRepository;
 import groupB.newbankV5.paymentprocessor.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -34,15 +37,17 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
 
     private final KafkaProducerService kafkaProducerService;
    private final TransactionRepository transactionRepository;
+   private final PaymentTokenRepository paymentTokenRepository;
 
 
 
    @Autowired
-    public PaymentProcessor(ICostumerCare costumerCare, ExternalBankProxy externalBankProxy, KafkaProducerService kafkaProducerService, TransactionRepository transactionRepository) {
+    public PaymentProcessor(ICostumerCare costumerCare, ExternalBankProxy externalBankProxy, KafkaProducerService kafkaProducerService, TransactionRepository transactionRepository, PaymentTokenRepository paymentTokenRepository) {
         this.customerCare = costumerCare;
         this.externalBankProxy = externalBankProxy;
         this.kafkaProducerService = kafkaProducerService;
         this.transactionRepository = transactionRepository;
+       this.paymentTokenRepository = paymentTokenRepository;
    }
 
 
@@ -50,12 +55,13 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
     public PaymentResponseDto authorizePayment(PaymentDetailsDTO paymentDetails) {
         log.info("Authorizing payment");
         Transaction transaction = new Transaction();
+        String authToken = generateAuthToken();
+        paymentTokenRepository.save(new PaymentToken(authToken));
         AccountDto accountDto = customerCare.getAccountByCreditCard(paymentDetails.getCardNumber(), paymentDetails.getExpirationDate(), paymentDetails.getCvv());
         if (accountDto == null) {
-            return new PaymentResponseDto(false, "Account not found", generateAuthToken());
+            return new PaymentResponseDto(false, "Account not found", authToken);
         }
         fillCommunTransactionInformation(transaction, accountDto, paymentDetails.getToAccountIBAN(), paymentDetails.getToAccountBIC(), paymentDetails.getAmount());
-        String authToken = generateAuthToken();
         transaction.setExternal(true);
         transaction.setAuthorizationToken(authToken);
 
@@ -93,15 +99,16 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
 
     @Override
     public TransferResponseDto authorizeTransfer(TransferDto transferDetails) {
-        log.info("Authorizing transfer");
+        log.info("\u001B[32mAuthorizing transfer\u001B[0m");
         Transaction transaction = new Transaction();
         AccountDto accountDto = customerCare.getAccountByIBAN(transferDetails.getFromAccountIBAN());
+        String authToken = generateAuthToken();
+        paymentTokenRepository.save(new PaymentToken(authToken));
         if (accountDto == null) {
-            return new TransferResponseDto(false, "Account not found", generateAuthToken());
+            return new TransferResponseDto(false, "Account not found", authToken);
         }
 
         fillCommunTransactionInformation(transaction, accountDto, transferDetails.getToAccountIBAN(), transferDetails.getToAccountBIC(), transferDetails.getAmount());
-        String authToken = generateAuthToken();
         transaction.setAuthorizationToken(authToken);
 
         if(isFraudulent(transferDetails)) {
@@ -120,7 +127,7 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
             transaction.setStatus(TransactionStatus.FAILED);
             transactionRepository.save(transaction);
             kafkaProducerService.sendMessage(transaction);
-            return new TransferResponseDto(false, "limit transfer", generateAuthToken());
+            return new TransferResponseDto(false, "limit transfer", authToken);
         }
         transaction.setStatus(TransactionStatus.AUTHORIZED);
         if (isNewBankAccount(transferDetails.getToAccountIBAN())) {
@@ -153,29 +160,47 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
     @Override
     public CreditCardResponseDto validateCreditCard(CreditCardInformationDto paymentDetails) {
         AccountDto accountDto = customerCare.getAccountByCreditCard(paymentDetails.getCardNumber(), paymentDetails.getExpirationDate(), paymentDetails.getCvv());
+        String authToken = generateAuthToken();
+        paymentTokenRepository.save(new PaymentToken(authToken));
         if(accountDto == null){
-            return new CreditCardResponseDto(false, "Credit card does not existe", generateAuthToken());
+            return new CreditCardResponseDto(false, "Credit card does not existe", authToken);
         }
         List<CreditCardDto> creditCards = accountDto.getCreditCards();
         CreditCardDto creditCardDto = creditCards.stream().filter(creditCard -> creditCard.getCardNumber().equals(paymentDetails.getCardNumber())).findFirst().orElseThrow();
         if(creditCardDto.getRestOfLimit().compareTo(paymentDetails.getAmount()) < 0){
-            return new CreditCardResponseDto(false, "Credit card limit exceeded", generateAuthToken());
+            return new CreditCardResponseDto(false, "Credit card limit exceeded", authToken);
         }
         if(accountDto.getBalance().compareTo(paymentDetails.getAmount()) < 0){
-            return new CreditCardResponseDto(false, "Insufficient funds", generateAuthToken());
+            return new CreditCardResponseDto(false, "Insufficient funds", authToken);
         }
-        return new CreditCardResponseDto(true, "Credit card is valid", generateAuthToken(), accountDto.getIBAN(), accountDto.getBIC(), creditCardDto.getCardType());
+        return new CreditCardResponseDto(true, "Credit card is valid", authToken, accountDto.getIBAN(), accountDto.getBIC(), creditCardDto.getCardType());
 
 
     }
 
     @Override
-    public void reserveFunds(BigDecimal amount, String cardNumber, String expirationDate, String cvv) {
+    public String reserveFunds(Transaction transaction) {
         try {
-            customerCare.reserveFunds(amount, cardNumber, expirationDate, cvv);
+            Optional<PaymentToken> paymentToken = paymentTokenRepository.findById(transaction.getAuthorizationToken());
+            if (paymentToken.isEmpty()) {
+                return "Invalid token";
+            }
+            if (paymentToken.get().isUsed()) {
+                return "Token already used";
+            }
+            if (paymentToken.get().getExpiryDate().isBefore(LocalDateTime.now())) {
+                return "Token expired";
+            }
+            paymentToken.get().setUsed(true);
+            paymentTokenRepository.save(paymentToken.get());
+            transaction.setStatus(TransactionStatus.PENDING_SETTLEMENT);
+            transactionRepository.save(transaction);
+            customerCare.reserveFunds(transaction.getAmount(), transaction.getCreditCard().getCardNumber(), transaction.getCreditCard().getExpiryDate(), transaction.getCreditCard().getCvv());
+            return "Funds reserved";
         }
         catch (Exception e){
-            log.info("Error while reserving funds: " + e.getMessage());
+            log.info("\u001B[30mError while reserving funds: \u001B[0m" + e.getMessage());
+            return "Error while reserving funds: " + e.getMessage();
         }
     }
 
@@ -202,7 +227,6 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
 
     @Override
     public boolean isFraudulent(PaymentDetailsDTO transaction) {
-        System.out.println(transaction);
         return checkAmount(transaction.getAmount());
     }
 
@@ -235,10 +259,10 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
 
     private String generateAuthToken() {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder sb = new StringBuilder(10);
+        StringBuilder sb = new StringBuilder(30);
         SecureRandom random = new SecureRandom();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 30; i++) {
             int randomIndex = random.nextInt(characters.length());
             char randomChar = characters.charAt(randomIndex);
             sb.append(randomChar);

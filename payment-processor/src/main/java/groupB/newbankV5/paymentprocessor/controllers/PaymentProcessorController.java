@@ -1,6 +1,5 @@
 package groupB.newbankV5.paymentprocessor.controllers;
 
-import groupB.newbankV5.paymentprocessor.connectors.dto.ReserveFundsDto;
 import groupB.newbankV5.paymentprocessor.controllers.dto.CreditCardInformationDto;
 import groupB.newbankV5.paymentprocessor.controllers.dto.CreditCardResponseDto;
 import groupB.newbankV5.paymentprocessor.controllers.dto.PaymentDetailsDTO;
@@ -43,34 +42,29 @@ public class PaymentProcessorController {
 
     @PostMapping("/checkCreditCard")
     public ResponseEntity<CreditCardResponseDto> checkCreditCard(@RequestBody CreditCardInformationDto creditCardInformationDto) {
-        log.info("Checking credit card");
+        log.info("\u001B[32mChecking credit card\u001B[0m");
         return ResponseEntity.status(HttpStatus.OK).body(transactionProcessor.validateCreditCard(creditCardInformationDto));
 
     }
 
     @GetMapping("/transactions")
     public ResponseEntity<List<Transaction>> getTransactions() {
-        log.info("Getting transactions");
         return ResponseEntity.status(HttpStatus.OK).body(transactionRepository.findAll());
 
     }
 
     @PostMapping("/batchSaveTransactions")
     public ResponseEntity<List<Transaction>> batchSaveTransactions(@RequestBody List<Transaction> transactions) {
-        log.info("Saving transactions");
-        for (Transaction transaction: transactions){
-            log.info(transaction.toString());
-            log.info(transactionRepository.save(transaction).toString());
-        }
+        transactionRepository.saveAll(transactions);
         return ResponseEntity.status(HttpStatus.OK).body(transactions);
 
     }
 
     @PostMapping("/reserveFunds")
-    public ResponseEntity<String> reserveFunds(@RequestBody ReserveFundsDto reserveFundsDto ) {
-        log.info("Reserving funds");
-        transactionProcessor.reserveFunds(reserveFundsDto.getAmount(), reserveFundsDto.getCardNumber(), reserveFundsDto.getExpirationDate(), reserveFundsDto.getCvv());
-        return ResponseEntity.status(HttpStatus.OK).body("Funds reserved");
+    public ResponseEntity<String> reserveFunds(@RequestBody Transaction transaction) {
+        log.info("\u001B[32mReserving funds\u001B[0m");
+        String response = transactionProcessor.reserveFunds(transaction);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }
 

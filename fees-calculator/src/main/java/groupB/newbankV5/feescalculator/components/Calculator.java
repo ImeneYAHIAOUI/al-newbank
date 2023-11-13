@@ -25,7 +25,6 @@ public class Calculator implements IFeesCalculator {
 
     @Override
     public void applyFees(Transaction transaction) {
-        log.info("Applying fees to transaction: " + transaction.getId());
         BigDecimal fees = BigDecimal.ZERO;
         if (transaction.getCreditCardType() == CardType.CREDIT) {
             fees = fees.add(transaction.getAmount().multiply(BigDecimal.valueOf(CREDIT_INTERCHANGE_FEE_RATE)));
@@ -42,8 +41,6 @@ public class Calculator implements IFeesCalculator {
 
         transaction.setFees(fees);
         transaction.setStatus(TransactionStatus.FEES_CALCULATED);
-        log.info("Fees applied: " + transaction.getFees());
-        log.info("Transaction status updated and sent to: " + transaction.toString());
     }
 
 }
