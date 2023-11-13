@@ -3,12 +3,7 @@
 
 # Ensure the CSV file is created and has headers
 
-
-
-echo "ClientID,CardNumber,CVV,ExpiryDate" > client_cards.csv
-
-for i in {1..1000}
-do
+create_account(){
     url="http://localhost:5003/api/costumer"
     data='{
       "firstName": "valentin",
@@ -55,4 +50,11 @@ do
     else
         echo -e "\033[0;31mErreur lors de la création du compte client. Code de réponse HTTP : $response\033[0m"
     fi
+}
+
+echo "ClientID,CardNumber,CVV,ExpiryDate" > client_cards.csv
+
+for i in {1..1000}
+do
+  create_account &
 done
