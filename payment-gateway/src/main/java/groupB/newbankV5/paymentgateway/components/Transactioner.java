@@ -12,10 +12,7 @@ import groupB.newbankV5.paymentgateway.entities.*;
 import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.exceptions.CCNException;
 import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;
-import groupB.newbankV5.paymentgateway.interfaces.IMockBank;
-import groupB.newbankV5.paymentgateway.interfaces.IPaymentProcessor;
-import groupB.newbankV5.paymentgateway.interfaces.IRSA;
-import groupB.newbankV5.paymentgateway.interfaces.ITransactionProcessor;
+import groupB.newbankV5.paymentgateway.interfaces.*;
 
 import groupB.newbankV5.paymentgateway.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +29,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 @Service
-public class Transactioner implements ITransactionProcessor {
+public class Transactioner implements ITransactionProcessor, ITransactionFinder {
 
     private static final Logger log = Logger.getLogger(Transactioner.class.getName());
     private final CreditCardNetworkProxy creditCardNetworkProxy;
@@ -56,7 +53,26 @@ public class Transactioner implements ITransactionProcessor {
         this.kafkaProducerService = kafkaProducerService;
     }
 
-
+    @Override
+    public long getConfirmedTransaction(String token) throws InvalidTokenException, ApplicationNotFoundException {
+        ApplicationDto application = businessIntegratorProxy.validateToken(token);
+        Long merchantId = application.getMerchant().getId();
+        long confirmedTransactionsCount = transactionRepository.findByStatus(TransactionStatus.CONFIRMED)
+                .stream()
+                .filter(transaction -> merchantId.equals(transaction.getMerchantId()))
+                .count();
+        return confirmedTransactionsCount;
+    }
+    @Override
+    public long getAuthorizedTransaction(String token) throws InvalidTokenException, ApplicationNotFoundException {
+        ApplicationDto application = businessIntegratorProxy.validateToken(token);
+        Long merchantId = application.getMerchant().getId();
+        long confirmedTransactionsCount = transactionRepository.findByStatus(TransactionStatus.AUTHORIZED)
+                .stream()
+                .filter(transaction -> merchantId.equals(transaction.getMerchantId()))
+                .count();
+        return confirmedTransactionsCount;
+    }
     @Override
     public Transaction processPayment(String token, BigDecimal amount, String cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
@@ -76,6 +92,7 @@ public class Transactioner implements ITransactionProcessor {
         transaction.setId(UUID.randomUUID());
         transaction.setExternal(true);
         transaction.setCreditCardType(ccnResponseDto.getCardType());
+        transaction.setMerchantId(merchant.getId());
         CreditCard card = new CreditCard(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv());
         transaction.setCreditCard(card);
         transaction.setSender(new BankAccount(ccnResponseDto.getAccountIBAN(),ccnResponseDto.getAccountBIC()));
@@ -88,10 +105,13 @@ public class Transactioner implements ITransactionProcessor {
     }
 
     @Override
-    public String confirmPayment(UUID transactionId) {
+    public String confirmPayment(UUID transactionId ,String token) throws InvalidTokenException, ApplicationNotFoundException{
+        ApplicationDto application = businessIntegratorProxy.validateToken(token);
+        MerchantDto merchant = application.getMerchant();
         Transaction transaction = transactionRepository.findById(transactionId);
         if (transaction != null && transaction.getStatus().equals(TransactionStatus.AUTHORIZED)) {
             transaction.setStatus(TransactionStatus.CONFIRMED);
+            transaction.setMerchantId(merchant.getId());
             transactionRepository.save(transaction);
 
             CreditCard usedCreditCard = transaction.getCreditCard();
@@ -102,6 +122,7 @@ public class Transactioner implements ITransactionProcessor {
             else
                 mockBankProxy.reserveFunds(transaction.getAmount(), usedCreditCard.getCardNumber(), usedCreditCard.getExpiryDate(), usedCreditCard.getCvv());
             transaction.setStatus(TransactionStatus.PENDING_SETTLEMENT);
+
             transactionRepository.save(transaction);
             kafkaProducerService.sendMessage(transaction);
             return "Payment confirmed";

@@ -20,5 +20,5 @@ public interface ITransactionProcessor {
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
             BadPaddingException, InvalidKeyException, InvalidKeySpecException;
 
-    String confirmPayment(UUID transactionId);
+    String confirmPayment(UUID transactionId,String token) throws InvalidTokenException, ApplicationNotFoundException;
 }

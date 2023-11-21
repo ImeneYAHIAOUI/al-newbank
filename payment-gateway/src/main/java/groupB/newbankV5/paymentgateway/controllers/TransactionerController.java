@@ -6,6 +6,7 @@ import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.exceptions.CCNException;
 import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;
 import groupB.newbankV5.paymentgateway.interfaces.IRSA;
+import groupB.newbankV5.paymentgateway.interfaces.ITransactionFinder;
 import groupB.newbankV5.paymentgateway.interfaces.ITransactionProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,11 +36,13 @@ public class TransactionerController {
     public static final String BASE_URI = "/api/gateway";
     private final IRSA crypto;
     private final ITransactionProcessor transactionProcessor;
+    private final ITransactionFinder transactionFinder;
 
     @Autowired
-    public TransactionerController(ITransactionProcessor transactionProcessor,IRSA crypto) {
+    public TransactionerController(ITransactionProcessor transactionProcessor,IRSA crypto, ITransactionFinder transactionFinder) {
         this.transactionProcessor = transactionProcessor;
         this.crypto=crypto;
+        this.transactionFinder=transactionFinder;
     }
 
 //    @PostMapping("/process")
@@ -64,15 +67,31 @@ public class TransactionerController {
     }
     @GetMapping("applications/public-key")
     public ResponseEntity<String> getAesKey(HttpServletRequest request, @RequestHeader("Authorization") String authorizationHeader) throws NoSuchAlgorithmException, ApplicationNotFoundException, InvalidKeySpecException {
-
         String token = authorizationHeader.substring(7);
         PublicKey publicKey = crypto.getOrGenerateRSAPublicKey(token);
         return ResponseEntity.ok().body(Base64.getEncoder().encodeToString(publicKey.getEncoded()));
     }
+    @GetMapping("/transactions/confirmed")
+    public ResponseEntity<Long> getConfirmedTransaction( @RequestHeader("Authorization") String authorizationHeader ) throws InvalidTokenException,
+            ApplicationNotFoundException {
+        log.info("\u001B[32m getting confirmed transactions\u001B[0m");
+        String token = authorizationHeader.substring(7);
+        long number = transactionFinder.getConfirmedTransaction(token);
+        return ResponseEntity.status(200).body(number);
+    }
+    @GetMapping("/transactions/authorized")
+    public ResponseEntity<Long> getAuthorizedTransaction( @RequestHeader("Authorization") String authorizationHeader ) throws InvalidTokenException,
+            ApplicationNotFoundException {
+        log.info("\u001B[32m getting authorized transactions\u001B[0m");
+        String token = authorizationHeader.substring(7);
+        long number = transactionFinder.getAuthorizedTransaction(token);
+        return ResponseEntity.status(200).body(number);
+    }
 
     @PostMapping("confirmPayment/{transactionId}")
-    public ResponseEntity<String> confirmPayment(@PathVariable UUID transactionId) {
-        String resp = transactionProcessor.confirmPayment(transactionId);
+    public ResponseEntity<String> confirmPayment(@PathVariable UUID transactionId, @RequestHeader("Authorization") String authorizationHeader)throws InvalidTokenException, ApplicationNotFoundException {
+        String token = authorizationHeader.substring(7);
+        String resp = transactionProcessor.confirmPayment(transactionId,token);
         log.info("\u001B[32mPayment confirmed\u001B[0m");
         return ResponseEntity.status(202).body(resp);
     }
