@@ -57,5 +57,3 @@ HELP.md
 /web-sdk/lib/dist/
 node_modules/class-validator/cjs/decorator/common/NotEquals.js.map
 *.map
-*.js
-*.ts
