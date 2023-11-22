@@ -106,10 +106,10 @@ public class CostumerController {
 
     @PostMapping()
     public ResponseEntity<AccountDto> createAccount(@RequestBody AccountCreationDto accountCreationDto) {
-        log.info("\u001B[32mReceived account creation request\u001B[0m");
+        log.info("Received account creation request");
         Account account = accountRegistration.createAccount(accountCreationDto);
         AccountDto accountDto = AccountDto.accountDtoFactory(account);
-        log.info("\u001B[32mAccount created\u001B[0m");
+        log.info("Account created");
         return ResponseEntity.status(201).body(accountDto);
     }
 
@@ -124,10 +124,10 @@ public class CostumerController {
 
     @PostMapping("{id}/virtualCard/credit")
     public ResponseEntity<AccountDto> createVirtualCreditCard(@PathVariable long id) {
-        log.info("\u001B[32mReceived virtual credit card creation request\u001B[0m");
+        log.info("Received virtual credit card creation request");
         Account account = accountFinder.findAccountById(id).orElseThrow();
         AccountDto accountDto = AccountDto.accountDtoFactory(virtualCardRequester.requestVirtualCard(account, CardType.CREDIT));
-        log.info("\u001B[32mVirtual credit card created\u001B[0m");
+        log.info("Virtual credit card created");
         return ResponseEntity.status(201).body(accountDto);
     }
 
@@ -147,7 +147,7 @@ public class CostumerController {
 
     @PutMapping("reservedfunds")
     public ResponseEntity<AccountDto> updateReservedFunds( @RequestBody ReserveFundsDto reserveFundsDto) {
-        log.info("\u001B[32mReceived reserve amount "+reserveFundsDto.getAmount()+" request\u001B[0m");
+        log.info("\u001B[34mReceived reserve amount "+reserveFundsDto.getAmount()+" request\u001B[0m");
         Account account = accountFinder.findByCreditCard(reserveFundsDto.getCardNumber(), reserveFundsDto.getExpirationDate(), reserveFundsDto.getCvv()).orElseThrow();
         try {
             account = fundsHandler.addReservedFunds(account, reserveFundsDto.getAmount(), reserveFundsDto.getCardNumber(), reserveFundsDto.getExpirationDate(), reserveFundsDto.getCvv());
@@ -155,7 +155,7 @@ public class CostumerController {
             return ResponseEntity.status(400).build();
         }
         AccountDto accountDto = AccountDto.accountDtoFactory(account);
-        log.info("\u001B[32mReserved funds\u001B[0m");
+        log.info("\u001B[34mReserved funds\u001B[0m");
         return ResponseEntity.status(200).body(accountDto);
 
     }
@@ -216,7 +216,7 @@ public class CostumerController {
     }
     @PostMapping("batchReleaseFunds")
     public ResponseEntity<Object> batchReleaseFunds(@RequestBody List<ReleaseFundsDto> releaseFundsDtos) {
-        log.info("\u001B[32mReceived batch release funds request\u001B[0m");
+        log.info("\u001B[35mReceived batch release funds request\u001B[0m");
         for(ReleaseFundsDto releaseFundsDto : releaseFundsDtos) {
             try {
                 fundsHandler.releaseReservedFunds(releaseFundsDto);
@@ -224,7 +224,7 @@ public class CostumerController {
                 return ResponseEntity.status(400).build();
             }
         }
-        log.info("\u001B[32mBatch release funds completed\u001B[0m");
+        log.info("\u001B[35mBatch release funds completed\u001B[0m");
         return ResponseEntity.status(200).build();
 
 

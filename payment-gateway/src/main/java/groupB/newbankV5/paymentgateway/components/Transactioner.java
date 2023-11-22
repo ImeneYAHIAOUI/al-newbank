@@ -64,8 +64,7 @@ public class Transactioner implements ITransactionProcessor {
         ApplicationDto application = businessIntegratorProxy.validateToken(token);
         MerchantDto merchant = application.getMerchant();
         CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
-        log.info("\u001B[32msuccessfully decrypted credit card\u001B[0m");
-
+        log.info("\u001B[32mSending payment authorization request to CCN\u001B[0m");
         CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
                 new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv(), amount)
         );
@@ -82,6 +81,7 @@ public class Transactioner implements ITransactionProcessor {
         transaction.setRecipient(merchant.getBankAccount());
         transaction.setStatus(TransactionStatus.AUTHORIZED);
         transaction.setBank(ccnResponseDto.getBankName());
+        log.info("\u001B[32mPayment authorized\u001B[0m");
 
         transactionRepository.save(transaction);
         return transaction;
@@ -96,13 +96,14 @@ public class Transactioner implements ITransactionProcessor {
 
             CreditCard usedCreditCard = transaction.getCreditCard();
             if(transaction.getBank().equals("NewBank")) {
-                log.info("\u001B[32msend fund reservation request\u001B[0m");
+                log.info("\u001B[34msend fund reservation request to NewBank\u001B[0m");
                 paymentProcessor.reserveFunds(transaction);
             }
             else
                 mockBankProxy.reserveFunds(transaction.getAmount(), usedCreditCard.getCardNumber(), usedCreditCard.getExpiryDate(), usedCreditCard.getCvv());
             transaction.setStatus(TransactionStatus.PENDING_SETTLEMENT);
             transactionRepository.save(transaction);
+            log.info("\u001B[34mPublishing transaction to Kafka\u001B[0m");
             kafkaProducerService.sendMessage(transaction);
             return "Payment confirmed";
         }

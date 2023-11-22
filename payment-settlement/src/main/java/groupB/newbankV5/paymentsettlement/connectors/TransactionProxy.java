@@ -29,7 +29,7 @@ public class TransactionProxy {
         try{
               restTemplate.put(transactionHostandPort + "/api/transactions/settle", transactions,
                      String.class);
-              log.info("\u001B[32mTransactions saved\u001B[0m");
+              log.info("\u001B[35mTransactions saved\u001B[0m");
         } catch (Exception e) {
             log.warning("\u001B[31mError saving transactions: \u001B[0m" + e.getMessage());
         }

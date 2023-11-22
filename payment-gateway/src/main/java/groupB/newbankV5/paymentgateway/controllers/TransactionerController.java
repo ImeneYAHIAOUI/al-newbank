@@ -72,8 +72,9 @@ public class TransactionerController {
 
     @PostMapping("confirmPayment/{transactionId}")
     public ResponseEntity<String> confirmPayment(@PathVariable UUID transactionId) {
+        log.info("\u001B[34mReceived request to confirm payment\u001B[0m");
         String resp = transactionProcessor.confirmPayment(transactionId);
-        log.info("\u001B[32mPayment confirmed\u001B[0m");
+        log.info("\u001B[34mPayment confirmed\u001B[0m");
         return ResponseEntity.status(202).body(resp);
     }
 
