@@ -37,6 +37,7 @@ public class CreditCardVerificationController {
             log.info("\u001B[32mReceived credit card verification request\u001B[0m");
             return ResponseEntity.status(HttpStatus.OK).body(creditCardAuthorizer.ValidateCreditCard(creditCardInformationDto));
         } catch (InvalidCardInformation e) {
+            log.warning("\u001B[31mInvalid card information\u001B[0m");
             CreditCardCheckResponseDto errorResponse = new CreditCardCheckResponseDto();
             errorResponse.setResponse(false);
             errorResponse.setMessage(e.getMessage());

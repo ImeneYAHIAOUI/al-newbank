@@ -69,5 +69,4 @@ public class TransactionerController {
         PublicKey publicKey = crypto.getOrGenerateRSAPublicKey(token);
         return ResponseEntity.ok().body(Base64.getEncoder().encodeToString(publicKey.getEncoded()));
     }
-
 }

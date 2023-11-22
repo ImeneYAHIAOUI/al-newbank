@@ -57,9 +57,12 @@ public class TransactionController {
 
     @GetMapping("/toSettle")
     public List<Transaction> transactionToSettle(){
-        return transactionRepository.findAll().stream()
+        List<Transaction>  transactions = transactionRepository.findAll().stream()
                     .filter(transaction -> !transaction.getStatus().equals(TransactionStatus.SETTLED))
                     .collect(Collectors.toList());
+        if(transactions.size() > 0)
+            log.info("\u001B[35mSending " + transactions.size() + " transaction" + (transactions.size() > 1 ? "s" : "") + " to settle\u001B[0m");
+        return transactions;
     }
 
     @PutMapping("settle")
@@ -83,9 +86,11 @@ public class TransactionController {
         // Process the received message
         try {
             Transaction transaction = objectMapper.readValue(payload, Transaction.class);
-            log.info("\u001B[32mReceived transaction: " + transaction.getId() + "\u001B[0m");
+            log.info("\u001B[34mReceived transaction from Kafka\u001B[0m");
+
             // Save a new one or save with the updated status
             transactionRepository.save(transaction);
+            log.info("\u001B[34mTransaction saved\u001B[0m");
         } catch (JsonProcessingException e) {
             log.error("\u001B[31mError while processing transaction: " + e.getMessage() + "\u001B[0m");
         }

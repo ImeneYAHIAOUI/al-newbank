@@ -32,9 +32,9 @@ public class FeesCalculatorController {
 
     @PostMapping("calculate")
     public ResponseEntity<List<Transaction>> calculateFees(@RequestBody List<Transaction> transactions) {
-        log.info("\u001B[32mReceived request to apply fees\u001B[0m");
+        log.info("\u001B[0m\u001B[35mReceived request to apply fees\u001B[0m");
         transactions.forEach(calculator::applyFees);
-        log.info("\u001B[32mFees applied\u001B[0m");
+        log.info("\u001B[35mFees applied\u001B[0m");
         return ResponseEntity.ok().body(transactions);
     }
 }

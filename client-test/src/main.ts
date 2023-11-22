@@ -5,7 +5,8 @@ import { PaymentInfoDTO } from "@teamb/newbank-sdk/dist/sdk/dto/payment-info.dto
 
 async function main() {
     const loadBalancerHost = 'localhost:80';
-    const [, , clientId, cardNumber, cvv, expiryDate, token] = process.argv;
+    const [ , ,cardNumber, cvv, expiryDate, token] = process.argv;
+
 
 
     // Access command line arguments
@@ -16,7 +17,7 @@ async function main() {
             cardNumber: cardNumber,
             cvv: cvv,
             expirationDate: expiryDate,
-            amount: '1',
+            amount: '500',
         };
         let response: AuthorizeDto;
         response = await paymentService.authorize(paymentInfo, token);

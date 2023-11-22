@@ -22,7 +22,7 @@ public class CreditCardNetworkProxy implements ICreditCardNetwork {
 
     @Override
     public CreditCardDto getCreditCardDetails(CardGenerationRequestDto cardGenerationRequest) {
-        log.info("\u001B[32m" + "Sending card creation request to Credit Card Network" + "\u001B[0m");
+        log.info("Sending card creation request to Credit Card Network");
         return restTemplate.postForEntity(ccnHostandPort + "/api/virtualcard/generate", cardGenerationRequest, CreditCardDto.class).getBody();
     }
 

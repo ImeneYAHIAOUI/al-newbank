@@ -41,7 +41,6 @@ public class SettlePayment {
 
 
     public void deductFunds(List<ReleaseFundsDto> accounts) {
-        log.info("Deducting funds");
         costumerCare.releaseFunds(accounts);
     }
 
@@ -49,7 +48,7 @@ public class SettlePayment {
 
     public void settlePayments() {
         Transaction[] transactions = transactionProxy.getTransactionsToSettle();
-        log.info("\u001B[32mNumber of transactions to settle: " + transactions.length + "\u001B[0m");
+        log.info("\u001B[35mNumber of transactions to settle: " + transactions.length + "\u001B[0m");
         transactions = feesCalculator.calculateFees(transactions);
         List<ReleaseFundsDto> accounts = new ArrayList<>();
         for (Transaction transaction : transactions) {

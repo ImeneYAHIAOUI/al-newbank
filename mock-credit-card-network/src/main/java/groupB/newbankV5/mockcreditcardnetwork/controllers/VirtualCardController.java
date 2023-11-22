@@ -32,7 +32,7 @@ public class VirtualCardController {
 
         @PostMapping("generate")
         public ResponseEntity<CardGenerationResponseDto> generateNewBankVirtualCard(@RequestBody CardGenerationRequestDto cardGenerationRequestDto) {
-            log.info("\u001B[32mReceived virtual card generation request\u001B[0m");
+            log.info("Received virtual card generation request");
             return ResponseEntity.status(HttpStatus.CREATED).body(virtualCardGenerator.generateVirtualCard(cardGenerationRequestDto));
         }
 }

@@ -23,7 +23,7 @@ public class ExternalBankProxy implements IExternalBank {
 
 
     public SettleDto addAmount(IbanAmountDto transferDto) {
-        log.info("\u001B[32mCalling external bank to add amount\u001B[0m");
+        log.info("\u001B[35mCalling external bank to add amount\u001B[0m");
         try {
             return restTemplate.postForEntity(externalBankHostandPort + "/api/externalbank/add", transferDto,
                     SettleDto.class).getBody();
