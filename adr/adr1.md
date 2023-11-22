@@ -7,7 +7,7 @@ description: >
 
 ## Context
 
-The current payment gateway system operates as a Single Point of Failure (SPOF),
+The current payment gateway service operates as a Single Point of Failure (SPOF),
 where all transactions are processed within a single service. This service manages
 both payment authorization, communicating with the CCN service for card authorization
 and the business integrator service for merchant information, and the confirmation
