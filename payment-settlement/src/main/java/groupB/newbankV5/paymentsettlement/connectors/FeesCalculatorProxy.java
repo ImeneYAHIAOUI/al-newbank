@@ -24,7 +24,7 @@ public class FeesCalculatorProxy implements FeesCalculator {
 
     @Override
     public Transaction[] calculateFees(Transaction[] transactions) {
-        log.info("\u001B[Sending fees calculation request to fees calculator\u001B[0m");
+        log.info("\u001B[35mSending fees calculation request to fees calculator\u001B[0m");
         try {
              return restTemplate.postForEntity(feesCalculatorHostandPort + "/api/feescalculator/calculate", transactions, Transaction[].class).getBody();
 

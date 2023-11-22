@@ -38,9 +38,9 @@ public class PaymentSettlementScheduler {
             log.info("PROCESS SETTLEMENT - NO TRANSACTIONS TO SETTLE");
             return ResponseEntity.status(HttpStatus.OK).body("NO TRANSACTIONS TO SETTLE");
         }
-        log.info("\u001B[32mPROCESS SETTLEMENT - START\u001B[0m");
+        log.info("\u001B[35mPROCESS SETTLEMENT - START\u001B[0m");
         settlePayment.settlePayments();
-        log.info("\u001B[32mPROCESS SETTLEMENT - END\u001B[0m");
+        log.info("\u001B[35mPROCESS SETTLEMENT - END\u001B[0m");
 
         return ResponseEntity.status(HttpStatus.OK).body("DONE");
     }

@@ -93,6 +93,7 @@ public class TransactionerController {
         String token = authorizationHeader.substring(7);
         String resp = transactionProcessor.confirmPayment(transactionId,token);
         log.info("\u001B[32mPayment confirmed\u001B[0m");
+
         return ResponseEntity.status(202).body(resp);
     }
 

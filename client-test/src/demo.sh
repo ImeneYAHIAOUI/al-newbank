@@ -13,12 +13,11 @@ data='{
 response=$(curl -s -H "Content-Type: application/json" -d "$data" "$url")
 
     # Extract ID from the response
-    id=$(echo "$response" | grep -o '"id":[0-9]*' | cut -d: -f2 | head -1)
+    clientId=$(echo "$response" | grep -o '"id":[0-9]*' | cut -d: -f2 | head -1)
 
     if [ "$?" -eq 0 ]; then
-    id=$(echo "$response" | grep -o '"id":[0-9]*' | cut -d: -f2 | head -1)
-    echo -e "\033[0;34mID client:\033[0m \033[0;32m$id\033[0m"
-    debitCardUrl="http://localhost:5003/api/costumer/$id/virtualCard/credit"
+    echo -e "\033[0;34mID client:\033[0m \033[0;32m$clientId\033[0m"
+    debitCardUrl="http://localhost:5003/api/costumer/$clientId/virtualCard/credit"
     debitCardResponse=$(curl -s -X POST "$debitCardUrl")
     cardNumber=$(echo "$debitCardResponse" | grep -oi '"cardNumber":"[^"]*' | cut -d'"' -f4)
     cvv=$(echo "$debitCardResponse" | grep -oi '"cvv":"[^"]*' | cut -d'"' -f4)
@@ -27,7 +26,7 @@ response=$(curl -s -H "Content-Type: application/json" -d "$data" "$url")
    "amount": 1000,
    "operation": "deposit"
  }'
- fundsUrl="http://localhost:5003/api/costumer/${id}/funds"
+ fundsUrl="http://localhost:5003/api/costumer/$clientId/funds"
  response=$(curl -s -o /dev/null -w "%{http_code}" -X PUT -H "Content-Type: application/json" -d "$operation" "$fundsUrl")
 
     # Couleurs ANSI
@@ -121,7 +120,6 @@ echo -e "\033[0;34mID Application:\033[0m \033[0;32m$ApplicationId\033[0m"
 apiKey=$(echo "$response" | grep -o '"apiKey":"[^"]*' | cut -d'"' -f4)
 echo -e "\033[0;34mAPI Key:\033[0m \033[0;32m$apiKey\033[0m"
 echo ""
-tokenUrl="http://localhost:5012/api/integration/applications/token?name=${appName}"
-tokenReponse=$(curl -s -X POST "$tokenUrl")
-echo -e "\033[0;34mtoken:\033[0m \033[0;32m$tokenReponse\033[0m"
 
+
+ts-node main.ts "$cardNumber" "$cvv" "$expiryDate" "$apiKey"

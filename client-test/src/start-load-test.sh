@@ -9,7 +9,7 @@
 url="http://localhost:5003/api/costumer"
 data='{
   "firstName": "Christodphe",
-  "lastName": "gazdzeh",
+  "lastName": "gazdzeh"docj,
   "email": "Christodqdphe.gazzeh@gmail.com",
   "phoneNumber": "0755877907",
   "BirthDate": "1980-01-01",
