@@ -66,13 +66,13 @@ function main() {
                 case 3:
                     paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost);
                     paymentInfo = {
-                        cardNumber: "6161522542307884",
-                        cvv: "907",
+                        cardNumber: "6176011619984148",
+                        cvv: "994",
                         expirationDate: "11/2025",
                         amount: '1',
                     };
                     response = void 0;
-                    tokeni = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOZXdCYW5rIiwic3ViIjoiQVBJIEtleSIsImV4cCI6MTY5OTg5OTk0NSwiaWQiOjQsIm5hbWUiOiJjb29raWVfZmFjdG9yeV9hcHBfYjQ3NmM0ODciLCJlbWFpbCI6ImNvb2tpZS5mYWN0b3J5LmFwcDYxMzlAZ21haWwuY29tIiwidXJsIjoiaHR0cDovL2Nvb2tpZV9mYWN0b3J5X2FwcF9iNDc2YzQ4Ny5jb20iLCJkZXNjcmlwdGlvbiI6IkNvb2tpZSBGYWN0b3J5IEFwcCAtIGQyNjhlZDgwIiwiZGF0ZU9mSXNzdWUiOjE2OTk4OTYzNDU1NDR9.ZEHwKzt9Yj8yzygGB9SgNiD6LbJQ-Ob8B7kgDcaN4tk";
+                    tokeni = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOZXdCYW5rIiwic3ViIjoiQVBJIEtleSIsImV4cCI6MTcwMDY1ODE3MywiaWQiOjIsIm5hbWUiOiJjb29raWVfZmFjdG9yeV9hcHBfODE4MTcwZTQiLCJlbWFpbCI6ImNvb2tpZS5mYWN0b3J5LmFwcDM3ODVAZ21haWwuY29tIiwidXJsIjoiaHR0cDovL2Nvb2tpZV9mYWN0b3J5X2FwcF84MTgxNzBlNC5jb20iLCJkZXNjcmlwdGlvbiI6IkNvb2tpZSBGYWN0b3J5IEFwcCAtIDNmMGVkZDY3IiwiZGF0ZU9mSXNzdWUiOjE3MDA2NTQ1NzMyMzl9.1dANJuFn-U-g0vynRVaLcLA8glMCDo93KNrjGnkOVCU";
                     return [4 /*yield*/, paymentService.authorize(paymentInfo, tokeni)];
                 case 4:
                     response = _b.sent();

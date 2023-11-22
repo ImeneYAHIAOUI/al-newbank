@@ -4,13 +4,16 @@ import axios from 'axios';
 import * as crypto from 'crypto';
 import {PaymentDto} from "../dto/payment.dto";
 import {AuthorizeDto} from "../dto/authorise.dto";
+import { GatewayConfirmationProxyService } from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
 
 
 export class PaymentService {
   private readonly gatewayProxyService;
+  private readonly gatewayConfirmationProxyService;
 
   constructor(loadBalancerHost: string) {
     this.gatewayProxyService = new GatewayProxyService(loadBalancerHost);
+    this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService('localhost:5070');
   }
 
   validateCardInfo(paymentInfo: PaymentInfoDTO): void {
@@ -97,7 +100,7 @@ export class PaymentService {
   }
   async confirmPayment(transactionId: string, token: string){
     console.debug('payment confirmation request sent');
-    return await this.gatewayProxyService.confirmPayment(transactionId, token);
+    return await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
   }
 
   async pay(paymentInfo: PaymentInfoDTO, token: string) {

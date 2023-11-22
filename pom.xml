@@ -31,7 +31,8 @@
         <module>payment-processor</module>
         <module>mock-credit-card-network</module>
         <module>customer-care</module>
-        <module>payment-gateway</module>
+        <module>payment-gateway-authorizer</module>
+        <module>payment-gateway-confirmation</module>
         <module>payment-settlement</module>
         <module>fees-calculator</module>
         <module>transactions-service</module>
