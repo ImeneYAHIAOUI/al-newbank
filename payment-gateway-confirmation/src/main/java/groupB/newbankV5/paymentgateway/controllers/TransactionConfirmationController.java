@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import groupB.newbankV5.paymentgateway.connectors.PaymentProcessorProxy;
 import groupB.newbankV5.paymentgateway.entities.Transaction;
+import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
+import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;
 import groupB.newbankV5.paymentgateway.interfaces.ITransactionConfirmation;
+import groupB.newbankV5.paymentgateway.interfaces.ITransactionFinder;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,15 +26,23 @@ public class TransactionConfirmationController {
     public static final String BASE_URI = "/api/gateway-confirmation";
     private final ITransactionConfirmation transactionProcessor;
     private final PaymentProcessorProxy paymentProcessorProxy;
-
+    private final ITransactionFinder transactionFinder;
     private final ObjectMapper objectMapper;
 
     @Autowired
     public TransactionConfirmationController(ITransactionConfirmation transactionProcessor,
-            PaymentProcessorProxy paymentProcessorProxy, ObjectMapper objectMapper) {
+            PaymentProcessorProxy paymentProcessorProxy, ObjectMapper objectMapper, ITransactionFinder transactionFinder) {
         this.transactionProcessor = transactionProcessor;
         this.paymentProcessorProxy = paymentProcessorProxy;
         this.objectMapper = objectMapper;
+        this.transactionFinder=transactionFinder;
+    }
+    @GetMapping("/transactions/confirmed/{id}")
+    public ResponseEntity<Long> getConfirmedTransaction(@PathVariable("id") Long id ) throws InvalidTokenException,
+            ApplicationNotFoundException {
+        log.info("\u001B[32m getting confirmed transactions\u001B[0m");
+        long number = transactionFinder.getConfirmedTransaction(id);
+        return ResponseEntity.status(200).body(number);
     }
 
 

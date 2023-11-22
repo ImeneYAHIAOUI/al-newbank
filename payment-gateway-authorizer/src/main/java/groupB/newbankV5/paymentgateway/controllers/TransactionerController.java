@@ -85,13 +85,5 @@ public class TransactionerController {
         long number = transactionFinder.getAuthorizedTransaction(id);
         return ResponseEntity.status(200).body(number);
     }
-    @PostMapping("confirmPayment/{transactionId}")
-    public ResponseEntity<String> confirmPayment(@PathVariable UUID transactionId, @RequestHeader("Authorization") String authorizationHeader)throws InvalidTokenException, ApplicationNotFoundException {
-        String token = authorizationHeader.substring(7);
-        String resp = transactionProcessor.confirmPayment(transactionId,token);
-        log.info("\u001B[32mPayment confirmed\u001B[0m");
-
-        return ResponseEntity.status(202).body(resp);
-    }
 
 }

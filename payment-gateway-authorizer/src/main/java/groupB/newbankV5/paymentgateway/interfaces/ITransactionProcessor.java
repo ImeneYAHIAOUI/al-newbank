@@ -19,7 +19,4 @@ public interface ITransactionProcessor {
     Transaction processPayment(String token, BigDecimal amount, String cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
             BadPaddingException, InvalidKeyException, InvalidKeySpecException;
-
-    String confirmPayment(UUID transactionId,String token) throws InvalidTokenException, ApplicationNotFoundException;
-
 }

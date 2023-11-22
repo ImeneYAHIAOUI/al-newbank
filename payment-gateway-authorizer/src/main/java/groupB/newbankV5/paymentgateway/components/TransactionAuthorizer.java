@@ -28,7 +28,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 @Service
-public class Transactioner implements ITransactionProcessor, ITransactionFinder {
+public class TransactionAuthorizer implements ITransactionProcessor, ITransactionFinder {
 
     private static final Logger log = Logger.getLogger(TransactionAuthorizer.class.getName());
     private final CreditCardNetworkProxy creditCardNetworkProxy;
@@ -48,14 +48,6 @@ public class Transactioner implements ITransactionProcessor, ITransactionFinder 
         this.kafkaProducerService = kafkaProducerService;
     }
 
-    @Override
-    public long getConfirmedTransaction(Long merchantId) throws InvalidTokenException, ApplicationNotFoundException {
-        long confirmedTransactionsCount = transactionRepository.findByStatus(TransactionStatus.CONFIRMED)
-                .stream()
-                .filter(transaction -> merchantId.equals(transaction.getMerchantId()))
-                .count();
-        return confirmedTransactionsCount;
-    }
     @Override
     public long getAuthorizedTransaction(Long merchantId) throws InvalidTokenException, ApplicationNotFoundException {
         long confirmedTransactionsCount = transactionRepository.findByStatus(TransactionStatus.AUTHORIZED)
@@ -93,36 +85,6 @@ public class Transactioner implements ITransactionProcessor, ITransactionFinder 
 
         transactionRepository.save(transaction);
         return transaction;
-    }
-
-    @Override
-    public String confirmPayment(UUID transactionId ,String token) throws InvalidTokenException, ApplicationNotFoundException{
-        ApplicationDto application = businessIntegratorProxy.validateToken(token);
-        MerchantDto merchant = application.getMerchant();
-        Transaction transaction = transactionRepository.findById(transactionId);
-        if (transaction != null && transaction.getStatus().equals(TransactionStatus.AUTHORIZED)) {
-            transaction.setStatus(TransactionStatus.CONFIRMED);
-            transaction.setMerchantId(merchant.getId());
-            transactionRepository.save(transaction);
-
-            CreditCard usedCreditCard = transaction.getCreditCard();
-            if(transaction.getBank().equals("NewBank")) {
-                log.info("\u001B[34msend fund reservation request to NewBank\u001B[0m");
-                paymentProcessor.reserveFunds(transaction);
-            }
-            else
-                mockBankProxy.reserveFunds(transaction.getAmount(), usedCreditCard.getCardNumber(), usedCreditCard.getExpiryDate(), usedCreditCard.getCvv());
-            transaction.setStatus(TransactionStatus.PENDING_SETTLEMENT);
-
-            transactionRepository.save(transaction);
-            log.info("\u001B[34mPublishing transaction to Kafka\u001B[0m");
-            kafkaProducerService.sendMessage(transaction);
-            return "Payment confirmed";
-        }
-        if (transaction == null)
-            return "Transaction not found, try again";
-        return "Payment already confirmed";
-
     }
 
 
