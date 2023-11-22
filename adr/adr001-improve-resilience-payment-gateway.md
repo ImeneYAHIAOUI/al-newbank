@@ -37,7 +37,7 @@ The adoption of the Strangler Fig Pattern will guide the implementation of this 
   1. **Identify Incremental Steps:**
       - Identify components and functionalities within the existing payment gateway that can be incrementally replaced.
   2. **Build New Authorizer Service:**
-      - Develop and deploy the new Authorizer Service alongside the existing payment gateway.
+      - Develop, build and run the new Authorizer Service alongside the existing payment gateway.
   3. **Gradual Migration:**
       - Gradually route authorization requests to the new Authorizer Service while still using the existing service for other functionalities.
   4. **Monitor and Test:**
