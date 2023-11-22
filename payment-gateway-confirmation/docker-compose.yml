@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  payment-gateway-confirmation-service:
+    restart: always
+    image: "newbank/payment-gateway-confirmation"
+    container_name: "payment-gateway-confirmation-service"
+    env_file:
+      - .env
+    ports:
+      - "5070:8080"
+    depends_on:
+      - gateway-db1
+      - gateway-db2
+    environment:
+      - CCN_WITH_PORT=${CCN_SERVICE}:8080
+      - PAYMENT_WITH_PORT=${PAYMENTPROCESSOR_SERVICE}:8080
+      - EXTERNALBANK_WITH_PORT=${EXTERNAL_BANK_SERVICE}:8080
+      - REDIS_HOST1=gateway-db1
+      - REDIS_HOST2=gateway-db2
+    networks:
+      - spring-newbank-network
+
+networks:
+  spring-newbank-network:
+    external: true
+
+
+
