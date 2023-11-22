@@ -36,7 +36,6 @@ async function main() {
         response = await paymentService.authorize(paymentInfo, tokeni);
         const confirm = await paymentService.confirmPayment(response.transactionId, tokeni);
         console.log(confirm);
-
     }
 }
 

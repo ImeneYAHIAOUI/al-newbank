@@ -71,23 +71,20 @@ public class TransactionerController {
         PublicKey publicKey = crypto.getOrGenerateRSAPublicKey(token);
         return ResponseEntity.ok().body(Base64.getEncoder().encodeToString(publicKey.getEncoded()));
     }
-    @GetMapping("/transactions/confirmed")
-    public ResponseEntity<Long> getConfirmedTransaction( @RequestHeader("Authorization") String authorizationHeader ) throws InvalidTokenException,
+    @GetMapping("/transactions/confirmed/{id}")
+    public ResponseEntity<Long> getConfirmedTransaction(@PathVariable("id") Long id ) throws InvalidTokenException,
             ApplicationNotFoundException {
         log.info("\u001B[32m getting confirmed transactions\u001B[0m");
-        String token = authorizationHeader.substring(7);
-        long number = transactionFinder.getConfirmedTransaction(token);
+        long number = transactionFinder.getConfirmedTransaction(id);
         return ResponseEntity.status(200).body(number);
     }
-    @GetMapping("/transactions/authorized")
-    public ResponseEntity<Long> getAuthorizedTransaction( @RequestHeader("Authorization") String authorizationHeader ) throws InvalidTokenException,
+    @GetMapping("/transactions/authorized/{id}")
+    public ResponseEntity<Long> getAuthorizedTransaction( @PathVariable("id") Long id ) throws InvalidTokenException,
             ApplicationNotFoundException {
         log.info("\u001B[32m getting authorized transactions\u001B[0m");
-        String token = authorizationHeader.substring(7);
-        long number = transactionFinder.getAuthorizedTransaction(token);
+        long number = transactionFinder.getAuthorizedTransaction(id);
         return ResponseEntity.status(200).body(number);
     }
-
     @PostMapping("confirmPayment/{transactionId}")
     public ResponseEntity<String> confirmPayment(@PathVariable UUID transactionId, @RequestHeader("Authorization") String authorizationHeader)throws InvalidTokenException, ApplicationNotFoundException {
         String token = authorizationHeader.substring(7);
@@ -96,6 +93,4 @@ public class TransactionerController {
 
         return ResponseEntity.status(202).body(resp);
     }
-
-
 }

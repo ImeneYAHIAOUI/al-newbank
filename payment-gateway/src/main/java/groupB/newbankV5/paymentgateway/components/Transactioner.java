@@ -54,9 +54,7 @@ public class Transactioner implements ITransactionProcessor, ITransactionFinder 
     }
 
     @Override
-    public long getConfirmedTransaction(String token) throws InvalidTokenException, ApplicationNotFoundException {
-        ApplicationDto application = businessIntegratorProxy.validateToken(token);
-        Long merchantId = application.getMerchant().getId();
+    public long getConfirmedTransaction(Long merchantId) throws InvalidTokenException, ApplicationNotFoundException {
         long confirmedTransactionsCount = transactionRepository.findByStatus(TransactionStatus.CONFIRMED)
                 .stream()
                 .filter(transaction -> merchantId.equals(transaction.getMerchantId()))
@@ -64,9 +62,7 @@ public class Transactioner implements ITransactionProcessor, ITransactionFinder 
         return confirmedTransactionsCount;
     }
     @Override
-    public long getAuthorizedTransaction(String token) throws InvalidTokenException, ApplicationNotFoundException {
-        ApplicationDto application = businessIntegratorProxy.validateToken(token);
-        Long merchantId = application.getMerchant().getId();
+    public long getAuthorizedTransaction(Long merchantId) throws InvalidTokenException, ApplicationNotFoundException {
         long confirmedTransactionsCount = transactionRepository.findByStatus(TransactionStatus.AUTHORIZED)
                 .stream()
                 .filter(transaction -> merchantId.equals(transaction.getMerchantId()))

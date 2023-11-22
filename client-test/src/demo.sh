@@ -123,3 +123,4 @@ echo ""
 
 
 ts-node main.ts "$cardNumber" "$cvv" "$expiryDate" "$apiKey"
+
