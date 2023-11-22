@@ -1,6 +1,7 @@
 package groupB.newbankV5.paymentgateway.repositories;
 
 import groupB.newbankV5.paymentgateway.entities.Transaction;
+import groupB.newbankV5.paymentgateway.entities.TransactionStatus;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionRepository {
@@ -22,6 +24,19 @@ public class TransactionRepository {
     ) {
         this.redisTemplate1 = redisTemplate1;
         this.redisTemplate2 = redisTemplate2;
+    }
+    public List<Transaction> findByStatus(TransactionStatus status) {
+        List<Transaction> transactionsFromTemplate1 = findByStatusInTemplate(redisTemplate1, status.toString());
+        List<Transaction> transactionsFromTemplate2 = findByStatusInTemplate(redisTemplate2, status.toString());
+        transactionsFromTemplate1.addAll(transactionsFromTemplate2);
+        return transactionsFromTemplate1;
+    }
+    private List<Transaction> findByStatusInTemplate(RedisTemplate<String, Transaction> redisTemplate, String status) {
+        return redisTemplate.keys("*")
+                .stream()
+                .map(redisTemplate.opsForValue()::get)
+                .filter(transaction -> transaction != null && status.equals(transaction.getStatus()))
+                .collect(Collectors.toList());
     }
 
     public void save(Transaction transaction) {

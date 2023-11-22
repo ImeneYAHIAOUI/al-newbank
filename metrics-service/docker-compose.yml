@@ -1,0 +1,17 @@
+version: '3.1'
+services:
+
+  anaylytics-service:
+    image: "newbank/metrics-service"
+    container_name: "metrics-service"
+    ports:
+      - "3003:8080"
+    restart: on-failure
+    networks:
+      - spring-newbank-network
+    environment:
+      - TRANSACTION_WITH_PORT=${TRANSACTION_SERVICE}:8080
+      - BUSINESSINTEGRATOR_WITH_PORT=${BUSINESSINTEGRATOR_SERVICE}:8080
+networks:
+  spring-newbank-network:
+    external: true
