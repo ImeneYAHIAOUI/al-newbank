@@ -18,12 +18,9 @@ The decision involves dividing the service into two separate services with clear
 
 1. **Authorizer Service:**
    - Responsible for the initial processing of transactions.
-   - Communicates with the CCN service to authorize the card and the business integrator for merchant information.
 
 2. **Confirmation Service:**
    - Responsible for triggering fund settlement after authorization.
-   - Communicates with the payment service in the case of internal payment or the external bank in the case of an external transaction.
-   - Utilizes a Kafka topic to push payment information.
 
 This division into two services aims to reduce the risk of system failure in case of issues with one of the services. The separation of responsibilities also facilitates maintenance, scalability, and more granular issue resolution.
 
