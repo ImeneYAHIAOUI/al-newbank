@@ -5,7 +5,7 @@ import groupB.newbankV5.paymentgateway.connectors.MockBankProxy;
 import groupB.newbankV5.paymentgateway.entities.*;
 import groupB.newbankV5.paymentgateway.interfaces.IMockBank;
 import groupB.newbankV5.paymentgateway.interfaces.IPaymentProcessor;
-import groupB.newbankV5.paymentgateway.interfaces.ITransactionProcessor;
+import groupB.newbankV5.paymentgateway.interfaces.ITransactionConfirmation;
 
 import groupB.newbankV5.paymentgateway.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +14,9 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 @Service
-public class Transactioner implements ITransactionProcessor {
+public class TransactionConfirmator implements ITransactionConfirmation {
 
-    private static final Logger log = Logger.getLogger(Transactioner.class.getName());
+    private static final Logger log = Logger.getLogger(TransactionConfirmator.class.getName());
     private final IPaymentProcessor paymentProcessor;
     private final TransactionRepository transactionRepository;
     private final IMockBank mockBankProxy;
@@ -24,7 +24,7 @@ public class Transactioner implements ITransactionProcessor {
     private final KafkaProducerService kafkaProducerService;
 
     @Autowired
-    public Transactioner(TransactionRepository transactionRepository, IPaymentProcessor paymentProcessor, MockBankProxy mockBankProxy, KafkaProducerService kafkaProducerService) {
+    public TransactionConfirmator(TransactionRepository transactionRepository, IPaymentProcessor paymentProcessor, MockBankProxy mockBankProxy, KafkaProducerService kafkaProducerService) {
         this.transactionRepository = transactionRepository;
         this.paymentProcessor = paymentProcessor;
         this.mockBankProxy = mockBankProxy;

@@ -70,12 +70,4 @@ public class TransactionerController {
         return ResponseEntity.ok().body(Base64.getEncoder().encodeToString(publicKey.getEncoded()));
     }
 
-    @PostMapping("confirmPayment/{transactionId}")
-    public ResponseEntity<String> confirmPayment(@PathVariable UUID transactionId) {
-        String resp = transactionProcessor.confirmPayment(transactionId);
-        log.info("\u001B[32mPayment confirmed\u001B[0m");
-        return ResponseEntity.status(202).body(resp);
-    }
-
-
 }

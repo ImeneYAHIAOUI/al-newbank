@@ -3,7 +3,7 @@
 
 docker-compose -f docker-compose.yml down
 docker-compose --env-file ./.env \
-               -f payment-gateway/docker-compose.yml \
+               -f payment-gateway-authorizer/docker-compose.yml \
                -f payment-gateway-confirmation/docker-compose.yml \
                -f fees-calculator/docker-compose.yml \
                -f customer-care/docker-compose.yml \

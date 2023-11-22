@@ -12,11 +12,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableRedisRepositories
 @EnableAsync
 @EnableScheduling
-public class PaymentGatewayApplication {
+public class PaymentGatewayAuthorizerApplication {
 
 	public static void main(String[] args) {
 
-		SpringApplication.run(PaymentGatewayApplication.class, args);
+		SpringApplication.run(PaymentGatewayAuthorizerApplication.class, args);
 	}
 
 }

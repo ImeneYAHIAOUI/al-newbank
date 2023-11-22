@@ -21,7 +21,6 @@ public class PaymentProcessorProxy implements IPaymentProcessor {
     @Override
     public String reserveFunds(Transaction transaction) {
         try {
-            log.info("testing "+ paymentProcessorHostandPort);
 
             TransactionDto transactionDto = new TransactionDto();
             transactionDto.setAmount(transaction.getAmount());
