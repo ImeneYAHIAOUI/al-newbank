@@ -30,6 +30,7 @@ public class CostumerCareProxy implements ICostumerCare {
 
     @Override
     public AccountDto getAccountByCreditCard(String cardNumber, String expiryDate, String cvv) {
+        log.info("\u001B[32mSending request to get account\u001B[0m");
         try{
             return restTemplate.getForEntity(costumerHostandPort + "/api/costumer/search?number=" + cardNumber + "&date=" + expiryDate + "&cvv=" + cvv, AccountDto.class).getBody();
 

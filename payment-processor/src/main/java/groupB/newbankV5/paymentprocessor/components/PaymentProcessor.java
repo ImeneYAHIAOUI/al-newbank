@@ -163,16 +163,20 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
         String authToken = generateAuthToken();
         paymentTokenRepository.save(new PaymentToken(authToken));
         if(accountDto == null){
+            log.info("\u001B[31mCredit card does not existe\u001B[0m");
             return new CreditCardResponseDto(false, "Credit card does not existe", authToken);
         }
         List<CreditCardDto> creditCards = accountDto.getCreditCards();
         CreditCardDto creditCardDto = creditCards.stream().filter(creditCard -> creditCard.getCardNumber().equals(paymentDetails.getCardNumber())).findFirst().orElseThrow();
         if(creditCardDto.getRestOfLimit().compareTo(paymentDetails.getAmount()) < 0){
+            log.info("\u001B[31mCredit card limit exceeded\u001B[0m");
             return new CreditCardResponseDto(false, "Credit card limit exceeded", authToken);
         }
         if(accountDto.getBalance().compareTo(paymentDetails.getAmount()) < 0){
+            log.info("\u001B[31mInsufficient funds\u001B[0m");
             return new CreditCardResponseDto(false, "Insufficient funds", authToken);
         }
+        log.info("\u001B[32mCredit card is valid\u001B[0m");
         return new CreditCardResponseDto(true, "Credit card is valid", authToken, accountDto.getIBAN(), accountDto.getBIC(), creditCardDto.getCardType());
 
 
@@ -215,7 +219,7 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
 
     @Override
     public void deductFunds(long accountId, BigDecimal amount) {
-        log.info("Deducting funds");
+
         customerCare.updateBalance(accountId, amount, "withdraw");
     }
 

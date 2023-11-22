@@ -53,7 +53,6 @@ public class Crypto implements IRSA {
             generator.initialize(1024);
             KeyPair pair = generator.generateKeyPair();
             ApplicationKeyPair applicationKeyPair = new ApplicationKeyPair();
-            log.info("\u001B[32mGenerating RSA key pair for the application\u001B[0m");
             applicationKeyPair.setId(UUID.randomUUID());
             applicationKeyPair.setApplicationName(app.getName());
             ByteBuffer privateKeyByteBuffer = ByteBuffer.wrap(pair.getPrivate().getEncoded());

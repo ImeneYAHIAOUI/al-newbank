@@ -42,7 +42,7 @@ public class PaymentProcessorController {
 
     @PostMapping("/checkCreditCard")
     public ResponseEntity<CreditCardResponseDto> checkCreditCard(@RequestBody CreditCardInformationDto creditCardInformationDto) {
-        log.info("\u001B[32mChecking credit card\u001B[0m");
+        log.info("\u001B[32mReceived request to check credit card\u001B[0m");
         return ResponseEntity.status(HttpStatus.OK).body(transactionProcessor.validateCreditCard(creditCardInformationDto));
 
     }
@@ -62,8 +62,9 @@ public class PaymentProcessorController {
 
     @PostMapping("/reserveFunds")
     public ResponseEntity<String> reserveFunds(@RequestBody Transaction transaction) {
-        log.info("\u001B[32mReserving funds\u001B[0m");
+        log.info("\u001B[34mReceived request to reserve funds\u001B[0m");
         String response = transactionProcessor.reserveFunds(transaction);
+        log.info("\u001B[34mFunds reserved\u001B[0m");
         return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }
