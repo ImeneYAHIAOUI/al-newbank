@@ -9,9 +9,7 @@ description: >
 
 The current payment gateway service operates as a Single Point of Failure (SPOF),
 where all transactions are processed within a single service. This service manages
-both payment authorization, communicating with the CCN service for card authorization
-and the business integrator service for merchant information, and the confirmation
-step, communicating with the payment service and external bank, and pushing to a Kafka topic.
+both payment authorization and the confirmation step.
 This configuration poses potential risks to availability and resilience.
 
 ## Decision
@@ -31,8 +29,7 @@ This division into two services aims to reduce the risk of system failure in cas
 
 ### Architecture Change using Strangler Fig Pattern:
 
-The adoption of the Strangler Fig Pattern will guide the implementation of this architectural change. The Strangler Fig Pattern involves gradually replacing parts of an existing system with new, independently deployable services. In this context:
-
+The adoption of the Strangler Fig Pattern will guide the implementation of this architectural change which involves gradually replacing parts of the existing payment gateway with the new services. In this context:
 - **Strangler Fig Pattern Steps:**
   1. **Identify Incremental Steps:**
       - Identify components and functionalities within the existing payment gateway that can be incrementally replaced.
@@ -48,9 +45,10 @@ The adoption of the Strangler Fig Pattern will guide the implementation of this 
 
 This phased approach ensures minimal disruptions, allows for continuous testing, and facilitates a smooth transition from the monolithic payment gateway to the split services for authorization and confirmation.
 
-The diagrams illistrate the architecture before and after this change :
+### Payment Gateway Architecture: Before and After Splitting :
+Before :
 ![Architecture Before](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/before.png)
-
+After :
 ![Architecture After](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/after.png)
 
 ## Consequences
