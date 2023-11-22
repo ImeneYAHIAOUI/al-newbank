@@ -49,9 +49,9 @@ The adoption of the Strangler Fig Pattern will guide the implementation of this 
 This phased approach ensures minimal disruptions, allows for continuous testing, and facilitates a smooth transition from the monolithic payment gateway to the split services for authorization and confirmation.
 
 The diagrams illistrate the architecture before and after this change :
-![Architecture Before](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/before.png)
+![Architecture Before](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/before.png)
 
-![Architecture After](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/after.png)
+![Architecture After](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/after.png)
 
 ## Consequences
 
