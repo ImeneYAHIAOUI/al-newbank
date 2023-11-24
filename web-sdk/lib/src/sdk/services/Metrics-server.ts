@@ -17,12 +17,11 @@ export class MetricsServer {
     }
 
     start(): void {
-        // Utilisez le type correct pour l'enregistrement des métriques
         Metrics.authorizeCounter.inc();
         Metrics.authorizeFailCounter.inc();
         Metrics.confirmPaymentCounter.inc();
         Metrics.confirmPaymentFailCounter.inc();
-
+        Metrics.confirmPaymentFailCounter.inc();
         this.app.listen(this.port, () => {
             console.log(`Metrics server listening on port ${this.port}`);
         });

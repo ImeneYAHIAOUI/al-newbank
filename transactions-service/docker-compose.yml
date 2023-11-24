@@ -5,6 +5,7 @@ services:
     image: "newbank/transactions-service"
     container_name: "transactions-service"
     mem_limit: 1g
+    cpus: 2
     ports:
       - "4999:8080"
     depends_on:
