@@ -40,19 +40,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var newbank_sdk_1 = require("@teamb/newbank-sdk");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var loadBalancerHost, _a, clientId, cardNumber, cvv, expiryDate, token, paymentService, paymentInfo, response, confirm_1, paymentService, paymentInfo, response, tokeni, confirm_2;
+        var loadBalancerHost, _a, cardNumber, cvv, expiryDate, token, paymentService, paymentInfo, response, confirm_1, paymentService, paymentInfo, response, tokeni, confirm_2;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     loadBalancerHost = 'localhost:80';
-                    _a = process.argv, clientId = _a[2], cardNumber = _a[3], cvv = _a[4], expiryDate = _a[5], token = _a[6];
+                    _a = process.argv, cardNumber = _a[2], cvv = _a[3], expiryDate = _a[4], token = _a[5];
                     if (!(cardNumber && cvv && expiryDate)) return [3 /*break*/, 3];
-                    paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost);
+                    paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost, 6904);
                     paymentInfo = {
                         cardNumber: cardNumber,
                         cvv: cvv,
                         expirationDate: expiryDate,
-                        amount: '1',
+                        amount: '500',
                     };
                     response = void 0;
                     return [4 /*yield*/, paymentService.authorize(paymentInfo, token)];
@@ -64,7 +64,7 @@ function main() {
                     console.log(confirm_1);
                     return [3 /*break*/, 6];
                 case 3:
-                    paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost);
+                    paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost, 6904);
                     paymentInfo = {
                         cardNumber: "6176011619984148",
                         cvv: "994",

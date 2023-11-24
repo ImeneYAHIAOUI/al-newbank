@@ -122,5 +122,5 @@ echo -e "\033[0;34mAPI Key:\033[0m \033[0;32m$apiKey\033[0m"
 echo ""
 
 
-ts-node main.ts "$cardNumber" "$cvv" "$expiryDate" "$apiKey"
+ts-node main.ts "$cardNumber" "$cvv" "$expiryDate" "$apiKey" "6906"
 

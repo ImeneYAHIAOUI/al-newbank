@@ -5,15 +5,20 @@ import * as crypto from 'crypto';
 import {PaymentDto} from "../dto/payment.dto";
 import {AuthorizeDto} from "../dto/authorise.dto";
 import { GatewayConfirmationProxyService } from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
-
+import { Metrics } from './Metrics';
+ import {MetricsServer} from "./Metrics-server";
 
 export class PaymentService {
   private readonly gatewayProxyService;
   private readonly gatewayConfirmationProxyService;
+  private readonly metricsServer: MetricsServer;
 
-  constructor(loadBalancerHost: string) {
+
+  constructor(loadBalancerHost: string,metricsPort: number) {
     this.gatewayProxyService = new GatewayProxyService(loadBalancerHost);
     this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService('localhost:5070');
+    this.metricsServer = new MetricsServer(metricsPort);
+    this.metricsServer.start();
   }
 
   validateCardInfo(paymentInfo: PaymentInfoDTO): void {
@@ -94,13 +99,30 @@ export class PaymentService {
   }
 
   async authorize(paymentInfo: PaymentInfoDTO,token: string) {
-    const publicKey = await this.getPublicKey(token);
-    const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
-    return await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
+       try {
+                const publicKey = await this.getPublicKey(token);
+                const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
+                const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
+                Metrics.authorizeCounter.inc();
+
+                return result;
+            } catch (error) {
+                console.error('Authorization failed:', error);
+                Metrics.authorizeFailCounter.inc();
+                throw error;}
+
   }
   async confirmPayment(transactionId: string, token: string){
     console.debug('payment confirmation request sent');
-    return await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
+    try{
+     const result=await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
+     Metrics.confirmPaymentCounter.inc();
+     return result;
+    } catch (error) {
+      console.error('Payment confirmation failed:', error);
+      Metrics.confirmPaymentFailCounter.inc();
+      throw error;
+    }
   }
 
   async pay(paymentInfo: PaymentInfoDTO, token: string) {

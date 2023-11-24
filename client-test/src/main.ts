@@ -5,14 +5,14 @@ import { PaymentInfoDTO } from "@teamb/newbank-sdk/dist/sdk/dto/payment-info.dto
 
 async function main() {
     const loadBalancerHost = 'localhost:80';
-    const [ , ,cardNumber, cvv, expiryDate, token] = process.argv;
+    const [ , ,cardNumber, cvv, expiryDate, token,port] = process.argv;
 
 
 
     // Access command line arguments
 
     if ( cardNumber && cvv && expiryDate) {
-        const paymentService = new PaymentService(loadBalancerHost);
+        const paymentService = new PaymentService(loadBalancerHost,parseFloat(port));
         const paymentInfo: PaymentInfoDTO = {
             cardNumber: cardNumber,
             cvv: cvv,
@@ -24,7 +24,7 @@ async function main() {
         const confirm = await paymentService.confirmPayment(response.transactionId, token);
         console.log(confirm);
     } else {
-        const paymentService = new PaymentService(loadBalancerHost);
+        const paymentService = new PaymentService(loadBalancerHost,parseFloat(port));
         const paymentInfo: PaymentInfoDTO = {
             cardNumber: "6176011619984148",
             cvv: "994",
