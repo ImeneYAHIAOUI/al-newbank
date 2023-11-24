@@ -5,20 +5,15 @@ import * as crypto from 'crypto';
 import {PaymentDto} from "../dto/payment.dto";
 import {AuthorizeDto} from "../dto/authorise.dto";
 import { GatewayConfirmationProxyService } from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
-import { Metrics } from './Metrics';
- import {MetricsServer} from "./Metrics-server";
+import {MetricsServer} from "./Metrics-server";
 
 export class PaymentService {
   private readonly gatewayProxyService;
   private readonly gatewayConfirmationProxyService;
-  private readonly metricsServer: MetricsServer;
 
-
-  constructor(loadBalancerHost: string,metricsPort: number) {
+  constructor(loadBalancerHost: string,readonly metricsServer: MetricsServer) {
     this.gatewayProxyService = new GatewayProxyService(loadBalancerHost);
     this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService('localhost:5070');
-    this.metricsServer = new MetricsServer(metricsPort);
-    this.metricsServer.start();
   }
 
   validateCardInfo(paymentInfo: PaymentInfoDTO): void {
