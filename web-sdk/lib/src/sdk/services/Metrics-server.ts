@@ -62,25 +62,26 @@ class MetricsServer {
       }
     });
 
-    this.app.get('/authorize/success', (req, res) => {
-      this.authorizeSuccess();
-      res.send('Authorization successful');
-    });
+   this.app.post('/authorize/success', (req, res) => {
+     this.authorizeSuccess();
+     res.send('Authorization successful');
+   });
 
-    this.app.get('/authorize/failure', (req, res) => {
-      this.authorizeFailure();
-      res.send('Authorization failed');
-    });
+   this.app.post('/authorize/failure', (req, res) => {
+     this.authorizeFailure();
+     res.send('Authorization failed');
+   });
 
-    this.app.get('/confirm/payment/success', (req, res) => {
-      this.confirmPaymentSuccess();
-      res.send('Payment confirmation successful');
-    });
+   this.app.post('/confirm/payment/success', (req, res) => {
+     this.confirmPaymentSuccess();
+     res.send('Payment confirmation successful');
+   });
 
-    this.app.get('/confirm/payment/failure', (req, res) => {
-      this.confirmPaymentFailure();
-      res.send('Payment confirmation failed');
-    });
+   this.app.post('/confirm/payment/failure', (req, res) => {
+     this.confirmPaymentFailure();
+     res.send('Payment confirmation failed');
+   });
+
   }
 
   startServer() {

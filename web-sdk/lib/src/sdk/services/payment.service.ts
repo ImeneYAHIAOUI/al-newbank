@@ -5,18 +5,15 @@ import * as crypto from 'crypto';
 import {PaymentDto} from "../dto/payment.dto";
 import {AuthorizeDto} from "../dto/authorise.dto";
 import { GatewayConfirmationProxyService } from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
-import {MetricsServer} from "./Metrics-server";
-
+import { MetricsReporter } from './metrics-reporter';
 export class PaymentService {
   private readonly gatewayProxyService;
   private readonly gatewayConfirmationProxyService;
-  private readonly metricsServer ;
-
+  private readonly metricsReporter ;
   constructor(loadBalancerHost: string, metricsPort: number) {
     this.gatewayProxyService = new GatewayProxyService(loadBalancerHost);
     this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService('localhost:5070');
-    this.metricsServer = new MetricsServer(metricsPort);
-    this.cdmetricsServer.startServer();
+    this.metricsReporter = new MetricsReporter( `http://localhost:${metricsPort}`,metricsPort);
   }
 
   validateCardInfo(paymentInfo: PaymentInfoDTO): void {
@@ -101,8 +98,11 @@ export class PaymentService {
                 const publicKey = await this.getPublicKey(token);
                 const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
                 const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
+                     this.metricsReporter.sendPostRequest('/authorize/success')
+
                 return result;
             } catch (error) {
+                this.metricsReporter.sendPostRequest('/authorize/failure')
                 console.error('Authorization failed:', error);
                 throw error;}
 
@@ -111,8 +111,10 @@ export class PaymentService {
     console.debug('payment confirmation request sent');
     try{
      const result=await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
+     this.metricsReporter.sendPostRequest('/confirm/payment/success')
      return result;
     } catch (error) {
+      this.metricsReporter.sendPostRequest('/confirm/payment/failure')
       console.error('Payment confirmation failed:', error);
       throw error;
     }
