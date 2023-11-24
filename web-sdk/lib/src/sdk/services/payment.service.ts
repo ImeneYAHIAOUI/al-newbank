@@ -5,7 +5,7 @@ import * as crypto from 'crypto';
 import {PaymentDto} from "../dto/payment.dto";
 import {AuthorizeDto} from "../dto/authorise.dto";
 import { GatewayConfirmationProxyService } from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
-import { MetricsReporter } from './metrics-reporter';
+import { MetricsReporter } from './Metrics-reporter';
 export class PaymentService {
   private readonly gatewayProxyService;
   private readonly gatewayConfirmationProxyService;
@@ -99,7 +99,6 @@ export class PaymentService {
                 const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
                 const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
                      this.metricsReporter.sendPostRequest('/authorize/success')
-
                 return result;
             } catch (error) {
                 this.metricsReporter.sendPostRequest('/authorize/failure')
