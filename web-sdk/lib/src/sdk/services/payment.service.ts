@@ -10,10 +10,13 @@ import {MetricsServer} from "./Metrics-server";
 export class PaymentService {
   private readonly gatewayProxyService;
   private readonly gatewayConfirmationProxyService;
+  private readonly metricsServer ;
 
-  constructor(loadBalancerHost: string,readonly metricsServer: MetricsServer) {
+  constructor(loadBalancerHost: string, metricsPort: number) {
     this.gatewayProxyService = new GatewayProxyService(loadBalancerHost);
     this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService('localhost:5070');
+    this.metricsServer = new MetricsServer(metricsPort);
+    this.cdmetricsServer.startServer();
   }
 
   validateCardInfo(paymentInfo: PaymentInfoDTO): void {
@@ -98,12 +101,9 @@ export class PaymentService {
                 const publicKey = await this.getPublicKey(token);
                 const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
                 const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
-                Metrics.authorizeCounter.inc();
-
                 return result;
             } catch (error) {
                 console.error('Authorization failed:', error);
-                Metrics.authorizeFailCounter.inc();
                 throw error;}
 
   }
@@ -111,11 +111,9 @@ export class PaymentService {
     console.debug('payment confirmation request sent');
     try{
      const result=await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
-     Metrics.confirmPaymentCounter.inc();
      return result;
     } catch (error) {
       console.error('Payment confirmation failed:', error);
-      Metrics.confirmPaymentFailCounter.inc();
       throw error;
     }
   }
