@@ -10,7 +10,7 @@ export class MetricsServer {
     confirmPaymentCounter: Counter;
     confirmPaymentFailCounter: Counter;
   };
-  private server!: http.Server; // Ajout du point d'exclamation
+  private server!: http.Server;
   private readonly port: number;
 
   constructor(port = 5099) {

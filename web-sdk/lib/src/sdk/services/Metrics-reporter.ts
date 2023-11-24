@@ -1,14 +1,10 @@
 import axios from 'axios';
-import { MetricsServer } from './Metrics-server';
 
 export class MetricsReporter {
-  private readonly metricsServer;
   private readonly baseURL: string;
 
-  constructor(baseURL: string, metricsPort: number) {
+  constructor(baseURL: string) {
     this.baseURL = baseURL;
-    this.metricsServer = new MetricsServer(metricsPort);
-    this.metricsServer.startServer();
   }
 
   async sendPostRequest(endpoint: string) {

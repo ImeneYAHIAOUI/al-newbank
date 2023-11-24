@@ -10,11 +10,12 @@ export class PaymentService {
   private readonly gatewayProxyService;
   private readonly gatewayConfirmationProxyService;
   private readonly metricsReporter ;
-  constructor(loadBalancerHost: string, metricsPort: number) {
-    this.gatewayProxyService = new GatewayProxyService(loadBalancerHost);
-    this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService('localhost:5070');
-    this.metricsReporter = new MetricsReporter( `http://localhost:${metricsPort}`,metricsPort);
-  }
+constructor(loadBalancerHost: string, metricsReporter: MetricsReporter) {
+  this.gatewayProxyService = new GatewayProxyService(loadBalancerHost);
+  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService('localhost:5070');
+  this.metricsReporter = metricsReporter;
+}
+
 
   validateCardInfo(paymentInfo: PaymentInfoDTO): void {
     if (
