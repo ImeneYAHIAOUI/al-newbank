@@ -1,5 +1,6 @@
 import express, { Application } from 'express';
 import { Counter, register } from 'prom-client';
+import * as http from 'http';
 
 export class MetricsServer {
   private readonly app: Application;
@@ -9,7 +10,7 @@ export class MetricsServer {
     confirmPaymentCounter: Counter;
     confirmPaymentFailCounter: Counter;
   };
-  private server: any; // Type de server défini plus bas
+  private server!: http.Server; // Ajout du point d'exclamation
   private readonly port: number;
 
   constructor(port = 5099) {
@@ -56,45 +57,55 @@ export class MetricsServer {
     this.metrics.confirmPaymentFailCounter.inc();
   }
 
-  getFormattedMetrics() {
-    return register.metrics();
+getFormattedMetrics(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      register.metrics().then(metricsData => {
+        resolve(metricsData);
+      }).catch(error => {
+        reject(error);
+      });
+    });
   }
 
-  setupRoutes() {
-    this.app.get('/metrics', async (req, res) => {
-      try {
+  setupRoutes(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.app.get('/metrics', async(req, res) => {
         res.set('Content-Type', register.contentType);
         const metricsData = await this.getFormattedMetrics();
         res.end(metricsData);
-      } catch (error) {
-        console.error('Error while getting metrics:', error);
-        res.status(500).end('Internal Server Error');
-      }
-    });
+      });
 
-    this.app.post('/authorize/success', (req, res) => {
-      this.authorizeSuccess();
-      res.send('Authorization successful');
-    });
+      this.app.post('/authorize/success', (req, res) => {
+        this.authorizeSuccess();
+        res.send('Authorization successful');
+      });
 
-    this.app.post('/authorize/failure', (req, res) => {
-      this.authorizeFailure();
-      res.send('Authorization failed');
-    });
+      this.app.post('/authorize/failure', (req, res) => {
+        this.authorizeFailure();
+        res.send('Authorization failed');
+      });
 
-    this.app.post('/confirm/payment/success', (req, res) => {
-      this.confirmPaymentSuccess();
-      res.send('Payment confirmation successful');
-    });
+      this.app.post('/confirm/payment/success', (req, res) => {
+        this.confirmPaymentSuccess();
+        res.send('Payment confirmation successful');
+      });
 
-    this.app.post('/confirm/payment/failure', (req, res) => {
-      this.confirmPaymentFailure();
-      res.send('Payment confirmation failed');
+      this.app.post('/confirm/payment/failure', (req, res) => {
+        this.confirmPaymentFailure();
+        res.send('Payment confirmation failed');
+      });
+
+      this.app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+        console.error('Error in request:', err);
+        res.status(500).send('Internal Server Error');
+      });
+
+      resolve();
     });
   }
 
-  startServer() {
-    return new Promise<void>((resolve, reject) => {
+  startServer(): Promise<void> {
+    return new Promise((resolve, reject) => {
       this.server = this.app.listen(this.port, () => {
         console.log(`Server listening on port ${this.port}`);
         resolve();
@@ -105,5 +116,24 @@ export class MetricsServer {
       });
     });
   }
+
+  stopServer(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.server) {
+        this.server.close((err: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            console.log('Server stopped');
+            resolve();
+          }
+        });
+      } else {
+        resolve(); // Si le serveur n'est pas défini, considérez-le comme déjà arrêté
+      }
+    });
+  }
 }
+
+
 
