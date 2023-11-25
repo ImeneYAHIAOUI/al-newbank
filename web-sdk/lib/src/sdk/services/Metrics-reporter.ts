@@ -12,7 +12,7 @@ export class MetricsReporter {
       const response = await axios.post(`${this.baseURL}${endpoint}`);
       console.log(response.data);
     } catch (error) {
-      console.error(`Error sending POST request to ${endpoint}:`, (error as Error).message || error);
+      console.error(`Error encountered while sending metrics to the server - ${this.baseURL}${endpoint} -: ${error instanceof Error ? error.message : error}`);
     }
   }
 }

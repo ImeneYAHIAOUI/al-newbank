@@ -75,7 +75,6 @@ constructor(loadBalancerHost: string, metricsReporter: MetricsReporter) {
   private encrypteCreditCard(paymentInfo: PaymentInfoDTO, publicKey: string) {
     this.validateCardInfo(paymentInfo);
 
-
     const cardInfo = {
       cardNumber: paymentInfo.cardNumber,
       expirationDate: paymentInfo.expirationDate,
@@ -99,12 +98,13 @@ constructor(loadBalancerHost: string, metricsReporter: MetricsReporter) {
                 const publicKey = await this.getPublicKey(token);
                 const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
                 const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
-                     this.metricsReporter.sendPostRequest('/authorize/success')
+                this.metricsReporter.sendPostRequest('/authorize/success')
                 return result;
             } catch (error) {
                 this.metricsReporter.sendPostRequest('/authorize/failure')
                 console.error('Authorization failed:', error);
-                throw error;}
+                throw error;
+            }
 
   }
   async confirmPayment(transactionId: string, token: string){

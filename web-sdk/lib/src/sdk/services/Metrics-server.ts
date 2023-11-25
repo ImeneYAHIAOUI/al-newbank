@@ -107,7 +107,7 @@ getFormattedMetrics(): Promise<string> {
   startServer(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.server = this.app.listen(this.port, () => {
-        console.log(`Server listening on port ${this.port}`);
+        console.log(`Metrics server listening on port ${this.port}`);
         resolve();
       });
 
@@ -129,7 +129,7 @@ getFormattedMetrics(): Promise<string> {
           }
         });
       } else {
-        resolve(); // Si le serveur n'est pas défini, considérez-le comme déjà arrêté
+        resolve();
       }
     });
   }

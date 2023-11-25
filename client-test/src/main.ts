@@ -6,6 +6,8 @@ import { MetricsReporter } from "@teamb/newbank-sdk/dist/sdk/services/Metrics-re
 import { MetricsServer } from "@teamb/newbank-sdk/dist/sdk/services/Metrics-server";
 async function main() {
     const loadBalancerHost = 'localhost:80';
+            console.log('Server has started successfddully.');
+
     const [ , ,cardNumber, cvv, expiryDate, token,port] = process.argv;
 
     // Access command line arguments
