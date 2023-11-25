@@ -1,5 +1,5 @@
 import express, { Application } from 'express';
-import { Counter, register } from 'prom-client';
+import { Counter, Histogram, register } from 'prom-client';
 import * as http from 'http';
 
 export class MetricsServer {
@@ -9,12 +9,16 @@ export class MetricsServer {
     authorizeFailCounter: Counter;
     confirmPaymentCounter: Counter;
     confirmPaymentFailCounter: Counter;
+    responseTimeAuthorizationHistogram: Histogram;
+    responseTimeConfirmationHistogram: Histogram;
+
   };
   private server!: http.Server;
   private readonly port: number;
 
   constructor(port = 5099) {
     this.app = express();
+        this.app.use(express.json());
     this.metrics = this.initializeMetrics();
     this.setupRoutes();
     this.port = port;
@@ -38,9 +42,19 @@ export class MetricsServer {
         name: 'confirm_payment_failure_total',
         help: 'Total number of failed payment confirmations',
       }),
+    responseTimeConfirmationHistogram: new Histogram({
+      name: 'response_time_confirmation_milliseconds',
+      help: 'HTTP response time in milliseconds',
+      buckets: [15.0,50.0, 100.0,200.0, 300.0,400.0, 500.0,600.0 ,750.0, 1000.0, 1300.0, 1500.0, 2000.0, 3000.0, 4000.0, 5000.0],
+    }),
+      responseTimeAuthorizationHistogram: new Histogram({
+          name: 'response_time_authorization_milliseconds',
+          help: 'HTTP response time in milliseconds',
+          buckets: [15.0,50.0, 100.0,200.0, 300.0,400.0, 500.0,600.0, 750.0, 1000.0, 1300.0, 1500.0, 2000.0, 3000.0, 4000.0, 5000.0],
+        }),
+
     };
   }
-
   authorizeSuccess() {
     this.metrics.authorizeCounter.inc();
   }
@@ -79,6 +93,10 @@ getFormattedMetrics(): Promise<string> {
         this.authorizeSuccess();
         res.send('Authorization successful');
       });
+        this.app.post('/stop', async (req, res) => {
+            await this.stopServer();
+            res.send('Server stopped');
+          });
 
       this.app.post('/authorize/failure', (req, res) => {
         this.authorizeFailure();
@@ -94,6 +112,17 @@ getFormattedMetrics(): Promise<string> {
         this.confirmPaymentFailure();
         res.send('Payment confirmation failed');
       });
+      this.app.post('/confirm/time', (req, res) => {
+        const responseTime = req.body.responseTime;
+        this.metrics.responseTimeConfirmationHistogram.observe(responseTime);
+        res.send('Payment confirmation successful');
+      });
+      this.app.post('/authorize/time', (req, res) => {
+              const responseTime = req.body.responseTime;
+              this.metrics.responseTimeAuthorizationHistogram.observe(responseTime);
+              res.send('Payment authorization successful');
+            });
+
 
       this.app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
         console.error('Error in request:', err);
@@ -117,7 +146,7 @@ getFormattedMetrics(): Promise<string> {
     });
   }
 
-  stopServer(): Promise<void> {
+  async stopServer(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.server) {
         this.server.close((err: any) => {

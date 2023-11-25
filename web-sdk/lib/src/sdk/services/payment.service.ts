@@ -5,15 +5,14 @@ import * as crypto from 'crypto';
 import {PaymentDto} from "../dto/payment.dto";
 import {AuthorizeDto} from "../dto/authorise.dto";
 import { GatewayConfirmationProxyService } from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
-import { MetricsReporter } from './Metrics-reporter';
+import { performance } from 'perf_hooks';
+
 export class PaymentService {
   private readonly gatewayProxyService;
   private readonly gatewayConfirmationProxyService;
-  private readonly metricsReporter ;
-constructor(loadBalancerHost: string, metricsReporter: MetricsReporter) {
+constructor(loadBalancerHost: string) {
   this.gatewayProxyService = new GatewayProxyService(loadBalancerHost);
   this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService('localhost:5070');
-  this.metricsReporter = metricsReporter;
 }
 
 
@@ -95,13 +94,19 @@ constructor(loadBalancerHost: string, metricsReporter: MetricsReporter) {
 
   async authorize(paymentInfo: PaymentInfoDTO,token: string) {
        try {
+           const startTime = performance.now();
                 const publicKey = await this.getPublicKey(token);
                 const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
                 const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
-                this.metricsReporter.sendPostRequest('/authorize/success')
+                     const endTime = performance.now();
+
+                 const timeElapsed = endTime - startTime;
+                 console.debug('time authorization :', timeElapsed);
+                 await axios.post('http://localhost:6906/authorize/time', { responseTime: timeElapsed });
+                await axios.post('http://localhost:6906/authorize/success');
                 return result;
             } catch (error) {
-                await this.metricsReporter.sendPostRequest('/authorize/failure');
+                 await axios.post('http://localhost:6906/authorize/failure');
                 console.error('Authorization failed:', error);
                 throw error;
             }
@@ -110,11 +115,19 @@ constructor(loadBalancerHost: string, metricsReporter: MetricsReporter) {
   async confirmPayment(transactionId: string, token: string){
     console.debug('payment confirmation request sent');
     try{
+    const startTime = performance.now();
      const result=await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
-     this.metricsReporter.sendPostRequest('/confirm/payment/success')
+     const endTime = performance.now();
+
+     const timeElapsed = endTime - startTime;
+     console.debug('time confirmation :', timeElapsed);
+
+     await axios.post('http://localhost:6906/confirm/time', { responseTime: timeElapsed });
+
+     await axios.post('http://localhost:6906/confirm/payment/success');
      return result;
     } catch (error) {
-      await this.metricsReporter.sendPostRequest('/confirm/payment/failure');
+     await axios.post('http://localhost:6906/confirm/payment/failure');
       console.error('Payment confirmation failed:', error);
       throw error;
     }
