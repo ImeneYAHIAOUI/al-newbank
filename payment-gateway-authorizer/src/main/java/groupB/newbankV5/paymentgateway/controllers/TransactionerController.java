@@ -75,7 +75,7 @@ public class TransactionerController {
     public ResponseEntity<Long> getConfirmedTransaction(@PathVariable("id") Long id ) throws InvalidTokenException,
             ApplicationNotFoundException {
         log.info("\u001B[32m getting confirmed transactions\u001B[0m");
-        long number = transactionFinder.getConfirmedTransaction(id);
+        long number = transactionFinder.getAuthorizedTransaction(id);
         return ResponseEntity.status(200).body(number);
     }
     @GetMapping("/transactions/authorized/{id}")
