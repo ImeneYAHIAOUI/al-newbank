@@ -69,7 +69,7 @@ export class GatewayProxyService {
         },
       };
       const response = await axios.post(
-          `${this._gatewayBaseUrl}${this._gatewayPath}confirmPayment/${transactionId}`,
+          `${this._gatewayBaseUrl}${this._gatewayPath}confirmPayment/${transactionId}`,{},
           httpOptions,
       );
       return response.data;

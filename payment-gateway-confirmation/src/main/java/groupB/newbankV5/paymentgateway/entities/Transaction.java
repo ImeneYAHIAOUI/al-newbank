@@ -25,9 +25,16 @@ public class Transaction implements Serializable {
     private CardType creditCardType;
     private CreditCard creditCard;
     private String bank;
-
+    private Long merchantId;
     public TransactionStatus getStatus() {
         return status;
+    }
+    public Long getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Long merchantId) {
+        this.merchantId = merchantId;
     }
 
     public BankAccount getRecipient() {

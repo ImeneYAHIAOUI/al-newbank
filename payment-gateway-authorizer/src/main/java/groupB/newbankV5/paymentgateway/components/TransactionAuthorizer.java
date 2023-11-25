@@ -11,10 +11,7 @@ import groupB.newbankV5.paymentgateway.entities.*;
 import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.exceptions.CCNException;
 import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;
-import groupB.newbankV5.paymentgateway.interfaces.IMockBank;
-import groupB.newbankV5.paymentgateway.interfaces.IPaymentProcessor;
-import groupB.newbankV5.paymentgateway.interfaces.IRSA;
-import groupB.newbankV5.paymentgateway.interfaces.ITransactionProcessor;
+import groupB.newbankV5.paymentgateway.interfaces.*;
 
 import groupB.newbankV5.paymentgateway.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +28,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 @Service
-public class TransactionAuthorizer implements ITransactionProcessor {
+public class TransactionAuthorizer implements ITransactionProcessor, ITransactionFinder {
 
     private static final Logger log = Logger.getLogger(TransactionAuthorizer.class.getName());
     private final CreditCardNetworkProxy creditCardNetworkProxy;
@@ -51,7 +48,14 @@ public class TransactionAuthorizer implements ITransactionProcessor {
         this.kafkaProducerService = kafkaProducerService;
     }
 
-
+    @Override
+    public long getAuthorizedTransaction(Long merchantId) throws InvalidTokenException, ApplicationNotFoundException {
+        long confirmedTransactionsCount = transactionRepository.findByStatus(TransactionStatus.AUTHORIZED)
+                .stream()
+                .filter(transaction -> merchantId.equals(transaction.getMerchantId()))
+                .count();
+        return confirmedTransactionsCount;
+    }
     @Override
     public Transaction processPayment(String token, BigDecimal amount, String cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
@@ -70,6 +74,7 @@ public class TransactionAuthorizer implements ITransactionProcessor {
         transaction.setId(UUID.randomUUID());
         transaction.setExternal(true);
         transaction.setCreditCardType(ccnResponseDto.getCardType());
+        transaction.setMerchantId(merchant.getId());
         CreditCard card = new CreditCard(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv());
         transaction.setCreditCard(card);
         transaction.setSender(new BankAccount(ccnResponseDto.getAccountIBAN(),ccnResponseDto.getAccountBIC()));
@@ -81,5 +86,6 @@ public class TransactionAuthorizer implements ITransactionProcessor {
         transactionRepository.save(transaction);
         return transaction;
     }
+
 
 }

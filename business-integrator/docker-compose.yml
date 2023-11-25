@@ -5,6 +5,8 @@ services:
     restart: always
     image: "newbank/business-integrator"
     container_name: "business-integrator-service"
+    mem_limit: 1g
+    cpus: 2
     env_file:
       - .env
     ports:

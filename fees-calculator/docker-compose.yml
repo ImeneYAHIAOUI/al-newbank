@@ -4,6 +4,8 @@ services:
   fees-calculator-service:
     image: "newbank/fees-calculator"
     container_name: "fees-calculator-service"
+    cpus: 2
+
     restart: always
     env_file:
       - .env

@@ -5,16 +5,16 @@ import * as crypto from 'crypto';
 import {PaymentDto} from "../dto/payment.dto";
 import {AuthorizeDto} from "../dto/authorise.dto";
 import { GatewayConfirmationProxyService } from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
-
+import { performance } from 'perf_hooks';
 
 export class PaymentService {
   private readonly gatewayProxyService;
   private readonly gatewayConfirmationProxyService;
+constructor(loadBalancerHost: string) {
+  this.gatewayProxyService = new GatewayProxyService(loadBalancerHost);
+  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService('localhost:5070');
+}
 
-  constructor(loadBalancerHost: string) {
-    this.gatewayProxyService = new GatewayProxyService(loadBalancerHost);
-    this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService('localhost:5070');
-  }
 
   validateCardInfo(paymentInfo: PaymentInfoDTO): void {
     if (
@@ -74,7 +74,6 @@ export class PaymentService {
   private encrypteCreditCard(paymentInfo: PaymentInfoDTO, publicKey: string) {
     this.validateCardInfo(paymentInfo);
 
-
     const cardInfo = {
       cardNumber: paymentInfo.cardNumber,
       expirationDate: paymentInfo.expirationDate,
@@ -94,13 +93,44 @@ export class PaymentService {
   }
 
   async authorize(paymentInfo: PaymentInfoDTO,token: string) {
-    const publicKey = await this.getPublicKey(token);
-    const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
-    return await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
+       try {
+           const startTime = performance.now();
+                const publicKey = await this.getPublicKey(token);
+                const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
+                const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
+                     const endTime = performance.now();
+
+                 const timeElapsed = endTime - startTime;
+                 console.debug('time authorization :', timeElapsed);
+                 await axios.post('http://localhost:6906/authorize/time', { responseTime: timeElapsed });
+                await axios.post('http://localhost:6906/authorize/success');
+                return result;
+            } catch (error) {
+                 await axios.post('http://localhost:6906/authorize/failure');
+                console.error('Authorization failed:', error);
+                throw error;
+            }
+
   }
   async confirmPayment(transactionId: string, token: string){
     console.debug('payment confirmation request sent');
-    return await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
+    try{
+    const startTime = performance.now();
+     const result=await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
+     const endTime = performance.now();
+
+     const timeElapsed = endTime - startTime;
+     console.debug('time confirmation :', timeElapsed);
+
+     await axios.post('http://localhost:6906/confirm/time', { responseTime: timeElapsed });
+
+     await axios.post('http://localhost:6906/confirm/payment/success');
+     return result;
+    } catch (error) {
+     await axios.post('http://localhost:6906/confirm/payment/failure');
+      console.error('Payment confirmation failed:', error);
+      throw error;
+    }
   }
 
   async pay(paymentInfo: PaymentInfoDTO, token: string) {
