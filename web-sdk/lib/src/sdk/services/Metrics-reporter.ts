@@ -10,7 +10,7 @@ export class MetricsReporter {
   async sendPostRequest(endpoint: string) {
     try {
       const response = await axios.post(`${this.baseURL}${endpoint}`);
-      console.log(response.data);
+      console.debug(response.data);
     } catch (error) {
       console.error(`Error encountered while sending metrics to the server - ${this.baseURL}${endpoint} -: ${error instanceof Error ? error.message : error}`);
     }

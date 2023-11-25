@@ -101,7 +101,7 @@ constructor(loadBalancerHost: string, metricsReporter: MetricsReporter) {
                 this.metricsReporter.sendPostRequest('/authorize/success')
                 return result;
             } catch (error) {
-                this.metricsReporter.sendPostRequest('/authorize/failure')
+                await this.metricsReporter.sendPostRequest('/authorize/failure');
                 console.error('Authorization failed:', error);
                 throw error;
             }
@@ -114,7 +114,7 @@ constructor(loadBalancerHost: string, metricsReporter: MetricsReporter) {
      this.metricsReporter.sendPostRequest('/confirm/payment/success')
      return result;
     } catch (error) {
-      this.metricsReporter.sendPostRequest('/confirm/payment/failure')
+      await this.metricsReporter.sendPostRequest('/confirm/payment/failure');
       console.error('Payment confirmation failed:', error);
       throw error;
     }
