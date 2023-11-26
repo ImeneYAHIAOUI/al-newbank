@@ -1,6 +1,6 @@
 ---
 id: adrs-adr003
-title: 'ADR003: Retry Mechanism for payment calls '
+title: 'ADR003: Retry Mechanism for payment calls in sdk '
 description: >
    Architecture Decision Record (ADR) to implement retry Mechanism for payment calls in sdk
 ---
