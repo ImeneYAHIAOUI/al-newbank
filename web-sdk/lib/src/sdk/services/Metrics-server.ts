@@ -18,7 +18,7 @@ export class MetricsServer {
 
   constructor(port = 5099) {
     this.app = express();
-        this.app.use(express.json());
+    this.app.use(express.json());
     this.metrics = this.initializeMetrics();
     this.setupRoutes();
     this.port = port;

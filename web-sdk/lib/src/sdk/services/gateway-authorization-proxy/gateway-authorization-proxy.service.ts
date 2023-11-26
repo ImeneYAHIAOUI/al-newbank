@@ -1,7 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
-
 import * as retry from 'retry';
-
 import { HttpStatus } from '@nestjs/common';
 import { MerchantDTO } from '../../dto/merchant.dto';
 import { ApplicationDto } from '../../dto/application.dto';
@@ -10,11 +8,14 @@ import { ApplicationNotFound } from '../../exceptions/application-not-found.exce
 import { InternalServerError } from '../../exceptions/internal-server.exception';
 import { UnauthorizedError } from '../../exceptions/unauthorized.exception';
 import {AuthorizeDto} from "../../dto/authorise.dto";
+import {RetrySettings} from "../Retry-settings";
 export class GatewayAuthorizationProxyService {
   private readonly _gatewayBaseUrl: string;
   private readonly _gatewayPath = '/api/gateway/';
-  constructor(load_balancer_host: string) {
+  private readonly retrySettings: RetrySettings
+  constructor(load_balancer_host: string,  retrySettings: RetrySettings) {
     this._gatewayBaseUrl = `http://${load_balancer_host}`;
+    this.retrySettings = retrySettings;
   }
    async getPublicKey( token: string): Promise<string> {
       try {
@@ -40,11 +41,11 @@ export class GatewayAuthorizationProxyService {
     }
 async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promise<AuthorizeDto> {
     const operation = retry.operation({
-      retries: 2,
-      factor: 2,
-      minTimeout: 1000,
-      maxTimeout: 3000,
-      randomize: true,
+      retries: this.retrySettings.retries,
+      factor: this.retrySettings.factor,
+      minTimeout: this.retrySettings.minTimeout,
+      maxTimeout: this.retrySettings.maxTimeout,
+      randomize: this.retrySettings.randomize,
     });
 
     let lastError: Error | undefined;
@@ -71,7 +72,7 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
             console.error(`Retry attempt ${currentAttempt} failed. Retrying...`);
             return;
           }
-console.error(`All retry attempts failed. Last error: ${lastError?.message}`);
+           console.error(`All retry attempts failed. Last error: ${lastError?.message}`);
           if (isAxiosError(lastError) && lastError.response) {
 
             if (lastError.response.status === HttpStatus.UNAUTHORIZED) {

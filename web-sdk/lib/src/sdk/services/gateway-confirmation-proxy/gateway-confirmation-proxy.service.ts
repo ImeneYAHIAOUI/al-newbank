@@ -8,20 +8,25 @@ import { ApplicationNotFound } from '../../exceptions/application-not-found.exce
 import {AuthorizeDto} from "../../dto/authorise.dto";
 import { InternalServerError } from '../../exceptions/internal-server.exception';
 import { UnauthorizedError } from '../../exceptions/unauthorized.exception';
+import {RetrySettings} from "../Retry-settings";
+
 export class GatewayConfirmationProxyService {
   private readonly _gatewayBaseUrl: string;
+   private readonly retrySettings: RetrySettings
+
   private readonly _gatewayPath = '/api/gateway-confirmation';
-  constructor(gateway_confirmation_host: string) {
+  constructor(gateway_confirmation_host: string,retrySettings: RetrySettings) {
     this._gatewayBaseUrl = `http://${gateway_confirmation_host}`;
+    this.retrySettings = retrySettings;
   }
  
   async confirmPayment(transactionId: string, token: string): Promise<String> {
         const operation = retry.operation({
-          retries: 2,
-          factor: 2,
-          minTimeout: 1000,
-          maxTimeout: 3000,
-          randomize: true,
+          retries: this.retrySettings.retries,
+          factor: this.retrySettings.factor,
+          minTimeout: this.retrySettings.minTimeout,
+          maxTimeout: this.retrySettings.maxTimeout,
+          randomize: this.retrySettings.randomize,
         });
         let lastError: Error | undefined;
         return new Promise<String>((resolve, reject) => {

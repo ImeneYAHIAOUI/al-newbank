@@ -6,13 +6,15 @@ import {PaymentDto} from "../dto/payment.dto";
 import {AuthorizeDto} from "../dto/authorise.dto";
 import { GatewayConfirmationProxyService } from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
 import { performance } from 'perf_hooks';
+import {RetrySettings} from "./Retry-settings";
 
 export class PaymentService {
   private readonly gatewayAuthorizationProxyService;
   private readonly gatewayConfirmationProxyService;
-constructor(loadBalancerHost: string) {
-  this.gatewayAuthorizationProxyService = new GatewayAuthorizationProxyService(loadBalancerHost);
-  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService('localhost:5070');
+
+constructor(loadBalancerHost: string,retrySettings: RetrySettings) {
+  this.gatewayAuthorizationProxyService = new GatewayAuthorizationProxyService(loadBalancerHost,retrySettings);
+  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService('localhost:5070',retrySettings);
 }
 
 
