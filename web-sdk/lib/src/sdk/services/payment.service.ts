@@ -1,4 +1,4 @@
-import { GatewayProxyService } from './gateway-proxy/gateway-proxy.service';
+import { GatewayAuthorizationProxyService } from './gateway-authorization-proxy/gateway-authorization-proxy.service';
 import { PaymentInfoDTO } from '../dto/payment-info.dto';
 import axios from 'axios';
 import * as crypto from 'crypto';
@@ -6,13 +6,15 @@ import {PaymentDto} from "../dto/payment.dto";
 import {AuthorizeDto} from "../dto/authorise.dto";
 import { GatewayConfirmationProxyService } from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
 import { performance } from 'perf_hooks';
+import {RetrySettings} from "./Retry-settings";
 
 export class PaymentService {
-  private readonly gatewayProxyService;
+  private readonly gatewayAuthorizationProxyService;
   private readonly gatewayConfirmationProxyService;
-constructor(loadBalancerHost: string) {
-  this.gatewayProxyService = new GatewayProxyService(loadBalancerHost);
-  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService('localhost:5070');
+
+constructor(loadBalancerHost: string,retrySettings: RetrySettings) {
+  this.gatewayAuthorizationProxyService = new GatewayAuthorizationProxyService(loadBalancerHost,retrySettings);
+  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService('localhost:5070',retrySettings);
 }
 
 
@@ -46,7 +48,7 @@ constructor(loadBalancerHost: string) {
 
 
   async getPublicKey(token: string): Promise<string> {
-    return await this.gatewayProxyService.getPublicKey(token);
+    return await this.gatewayAuthorizationProxyService.getPublicKey(token);
   }
 
 
@@ -61,11 +63,9 @@ constructor(loadBalancerHost: string) {
         amount: amount,
       };
       console.debug('payment request sent');
-      const auth : AuthorizeDto = await this.gatewayProxyService.processPayment(payment, token);
+      const auth : AuthorizeDto = await this.gatewayAuthorizationProxyService.authorizePaymentWithRetry(payment, token);
       console.debug('payment authorized');
       return auth;
-
-
     } catch (error: any) {
       throw new Error('Error processing card information: ' + error.message);
     }
