@@ -57,7 +57,3 @@ After :
 ### Disadvantages:
 1. Increased complexity in terms of coordination between services.
 2. Both services communicate with the same database, which may affect database performance and introduce a bottleneck in database transactions.
-
-## Follow-up
-
-Monitoring of this decision will be conducted through continuous performance monitoring, availability checks, and user feedback. Adjustments to the architecture may be made as necessary.
