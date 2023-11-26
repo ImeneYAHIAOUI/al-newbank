@@ -12,8 +12,7 @@ identifying bottlenecks, and detecting potential errors. We also need a centrali
 
 ## Decision
 
-We have decided to integrate a metrics collection feature into our payment SDK, which will send these metrics to a centralized Prometheus server. 
-We  use Prometheus metric exposition format on a dedicated API endpoint within the SDK.
+We have decided to integrate a metrics collection feature into our  SDK, which will send these metrics to a centralized Prometheus server. The SDK  enables the creation of this server .
 
 ## Considered Alternatives
 * Custom Metric Storage: We considered a custom solution for payment metric storage but acknowledged its potential limitations compared to the robust features of Prometheus. While custom solutions offer tailored development, they might lack Prometheus' real-time visualization capabilities. Developing additional services for data retrieval and customization might be needed in a custom approach.
