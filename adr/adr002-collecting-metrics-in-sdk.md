@@ -24,7 +24,6 @@ Pros:
 * Ease of integration with Prometheus.
 * Utilizing Prometheus allows for real-time visualization of metrics.
 * Prometheus is known for its scalability, making it well-suited for handling increasing volumes of metrics as the system expands.
-* Ability to quickly detect and resolve payment-related issues.
   
 Cons:
 
