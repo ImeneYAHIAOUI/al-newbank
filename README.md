@@ -2,13 +2,13 @@
 
 This project aims to design a cashless banking system that also supports online transaction management for partner merchants. It includes designing a Software Development Kit (SDK) to facilitate debit and credit card payments on merchants' websites.
 
-Steps to run :
+* Steps to run :
 Execute `build-all.sh` script to Load dependencies, compile if necessary, prepare the environment and build the docker containers.
 Execute `start-all.sh` script start-all.sh start the services.
 ## Newbank-Merchant SDK:
 The Newbank-Merchant SDK streamlines integration with our payment system, providing developers with a clear interface to interact with payment functionalities, specifically designed for use with npm.
 
-*Retry policiers
+* Retry policiers
 
 Payment calls will be retried using an exponential backoff strategy. The RetrySettings class provides a convenient way to configure retry behavior :
 
