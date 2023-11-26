@@ -1,10 +1,10 @@
 version: '3.8'
 
 services:
-  payment-gateway-service:
+  payment-gateway-authorizer-service:
     restart: always
-    image: "newbank/payment-gateway"
-    container_name: "payment-gateway-service"
+    image: "newbank/payment-gateway-authorizer"
+    container_name: "payment-gateway-authorizer-service"
     env_file:
       - .env
     ports:
@@ -22,10 +22,10 @@ services:
     networks:
       - spring-newbank-network
 
-  payment-gateway-service-2:
+  payment-gateway-authorizer-service-2:
     restart: always
-    image: "newbank/payment-gateway"
-    container_name: "payment-gateway-service-2"
+    image: "newbank/payment-gateway-authorizer"
+    container_name: "payment-gateway-authorizer-service-2"
     env_file:
       - .env
     ports:
@@ -83,10 +83,9 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
-      - payment-gateway-service
+      - payment-gateway-authorizer-service
     networks:
       - spring-newbank-network
-
 networks:
   spring-newbank-network:
     external: true

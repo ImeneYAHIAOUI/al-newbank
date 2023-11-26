@@ -1,13 +1,13 @@
 {
   "name": "client-test",
-  "version": "1.0.0",
+  "version": "1.1.41",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@teamb/newbank-sdk": "^1.1.38",
+    "@teamb/newbank-sdk": "^1.1.44",
     "axios": "^1.6.0",
     "csv-parser": "^3.0.0",
     "node": "^21.1.0"
