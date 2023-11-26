@@ -27,6 +27,8 @@ Pros:
 Cons:
 
 * Additional complexity in the SDK for metrics collection and exposition.
+* Potential Network Latency: Sending metrics from the SDK to a centralized Prometheus server introduces network communication. Depending on the network conditions, there could be potential latency issues in metric transmission, impacting real-time monitoring
+* Dependency on  Promotheus servrr: Relying on a centralized Prometheus server introduces a dependency. Any disruptions or outages in the Prometheus server may temporarily impact the ability to collect and analyze metrics
 
 
 ## Additional Documentation
