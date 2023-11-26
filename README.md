@@ -8,6 +8,17 @@ Execute `start-all.sh` script start-all.sh start the services.
 ## Newbank-Merchant SDK:
 The Newbank-Merchant SDK streamlines integration with our payment system, providing developers with a clear interface to interact with payment functionalities, specifically designed for use with npm.
 
+*Retry policiers
+
+Payment calls will be retried using an exponential backoff strategy. The RetrySettings class provides a convenient way to configure retry behavior :
+
+- `retries`: The maximum number of retry attempts. Default is `3`.
+- `factor`: The exponential factor to determine the delay between retries. Default is `2`.
+- `minTimeout`: The minimum time (in milliseconds) to wait before the first retry. Default is `1000`.
+- `maxTimeout`: The maximum time (in milliseconds) between two retry attempts. Default is `3000`.
+- `randomize`: A boolean indicating whether to randomize the timeouts. Default is `true`.
+
+
 * Prerequisites:
 
 Download and install Node.js and npm from here.
