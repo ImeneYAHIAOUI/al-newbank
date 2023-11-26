@@ -31,5 +31,5 @@ Cons:
 
 
 ## Additional Documentation
-[Prometheus Metric Exposition Documentatio]([https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/after.png](https://prometheus.io/docs/instrumenting/exposition_formats/)https://prometheus.io/docs/instrumenting/exposition_formats/) 
+[Prometheus Metric Exposition Documentation](https://prometheus.io/docs/instrumenting/exposition_formats/) 
 
