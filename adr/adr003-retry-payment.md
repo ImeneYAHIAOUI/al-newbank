@@ -19,7 +19,18 @@ We will implement a retry mechanism for payment calls to address transient failu
 After considering the options, we have decided to implement the exponential backoff strategy. This decision is based on the understanding that transient failures may occur due to temporary spikes in payment service load. Exponential backoff allows us to gracefully handle such situations by increasing the time between retries, reducing the load on the payment service during peak times.
 
 ## Consequences
-* Payment calls will be retried using an exponential backoff strategy with a maximum of 3 retry attempts.
+* Payment calls will be retried using an exponential backoff strategy, and clients can configure the retry mechanism with default values:
+
+     `retries : 3`
+  
+     ` factor: 2`
+
+     ` minTimeout: 1000`
+  
+     ` maxTimeout: 3000`
+  
+     ` randomize: true`
+
 * Failed payment calls and retry attempts are logged
 * Retry attempts are not considered as metrics; only failed payments are. 
 * The system will be more resilient to transient failures, reducing the impact of payment service fluctuations on overall system reliability.
