@@ -2,7 +2,7 @@
 id: adrs-adr003
 title: 'ADR003: Retry Mechanism for payment calls '
 description: >
-   Architecture Decision Record (ADR) to implement retry Mechanism for payment calls in sdk'
+   Architecture Decision Record (ADR) to implement retry Mechanism for payment calls in sdk
 ---
 ## Context
 Our system relies on payment services (payment gateway authorizer and payment gateway confirmation) for critical functionality, and we have observed intermittent failures during peak usage times. These failures appear to be transient and are likely due to increased load on payment services. To ensure the reliability of our sdk, we need to make a decision on how to handle these transient failures.
