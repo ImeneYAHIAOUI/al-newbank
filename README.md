@@ -13,9 +13,13 @@ The Newbank-Merchant SDK streamlines integration with our payment system, provid
 Payment calls will be retried using an exponential backoff strategy. The RetrySettings class provides a convenient way to configure retry behavior :
    
    `retries`: The maximum number of retry attempts. Default is `3`.
+   
    `factor`: The exponential factor to determine the delay between retries. Default is `2`.
+   
    `minTimeout`: The minimum time (in milliseconds) to wait before the first retry. Default is `1000`.
+   
    `maxTimeout`: The maximum time (in milliseconds) between two retry attempts. Default is `3000`.
+   
    `randomize`: A boolean indicating whether to randomize the timeouts. Default is `true`.
 
 
