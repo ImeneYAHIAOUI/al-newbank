@@ -1,6 +1,6 @@
 ---
 id: adrs-adr002
-title: 'ADR002: Mitigation of Single Point of Failure for Payment Gateway'
+title: 'ADR002: Collection and Sending of Merchant Payment Metrics to Prometheus in the SDK'
 description: >
    Architecture Decision Record (ADR) to Collect and Send of Merchant Payment Metrics to Prometheus in the SDK
 ---
@@ -16,7 +16,7 @@ We have decided to integrate a metrics collection feature into our payment SDK, 
 We  use Prometheus metric exposition format on a dedicated API endpoint within the SDK.
 
 ## Considered Alternatives
-
+Custom Metric Storage: We considered building a custom solution for storing and analyzing payment metrics. However, it might not provide the robust features of Prometheus.
 
 ## Consequences
 Pros:
