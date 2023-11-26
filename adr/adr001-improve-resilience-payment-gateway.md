@@ -17,10 +17,10 @@ This configuration poses potential risks to availability and resilience.
 The decision involves dividing the service into two separate services with clearly defined responsibilities:
 
 1. **Authorizer Service:**
-   - Responsible for the initial processing of transactions.
+   - Responsible for the initial authorization of transactions.
 
 2. **Confirmation Service:**
-   - Responsible for triggering fund settlement after authorization.
+   - Responsible for confirming transaction after authorization.
 
 This division into two services aims to reduce the risk of system failure in case of issues with one of the services. The separation of responsibilities also facilitates maintenance, scalability, and more granular issue resolution.
 
@@ -57,6 +57,7 @@ After :
 
 ### Disadvantages:
 1. Increased complexity in terms of coordination between services.
+2. Both services communicate with the same database, which may affect database performance and introduce a bottleneck in database transactions.
 
 ## Follow-up
 
