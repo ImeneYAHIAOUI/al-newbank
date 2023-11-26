@@ -18,7 +18,7 @@ We will implement a retry mechanism for payment calls to address transient failu
 ##  Decision Rationale
 After considering the options, we have decided to implement the exponential backoff strategy. This decision is based on the understanding that transient failures may occur due to temporary spikes in payment service load. Exponential backoff allows us to gracefully handle such situations by increasing the time between retries, reducing the load on the payment service during peak times.
 
-![Example ](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/retry.png)
+![Example](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/retry.png)
 
 ## Consequences
 * Payment calls will be retried using an exponential backoff strategy, and clients can configure the retry mechanism with default values:
