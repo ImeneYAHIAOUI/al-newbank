@@ -51,9 +51,9 @@ After :
 ## Consequences
 
 ### Advantages:
-1. Reduction of SPOF.
-2. Improved resilience and availability.
-3. Ease of maintenance and scalability.
+1. Reduction of SPOF: Division into two services reduces the risk of system failure, enhancing overall reliability.
+2. Improved resilience and availability: Enhanced system resilience ensures continuous operation, even in the face of service-specific issues.
+3. Ease of maintenance and scalability: Clearly defined responsibilities allow for more efficient maintenance, scalability, and targeted updates.
 
 ### Disadvantages:
 1. Increased complexity in terms of coordination between services.
