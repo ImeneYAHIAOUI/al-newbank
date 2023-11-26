@@ -22,6 +22,7 @@ Pros:
 
 * Centralization of payment metrics for global analysis.
 * Ease of integration with Prometheus.
+* Utilizing Prometheus allows for real-time visualization of metrics.
 * Ability to quickly detect and resolve payment-related issues.
   
 Cons:
