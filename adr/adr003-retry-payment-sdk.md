@@ -39,3 +39,4 @@ After considering the options, we have decided to implement the exponential back
 * The system will be more resilient to transient failures, reducing the impact of payment service fluctuations on overall system reliability.
   
 ## Additional Documentation
+[Exponential backoff](https://advancedweb.hu/how-to-implement-an-exponential-backoff-retry-strategy-in-javascript/)
