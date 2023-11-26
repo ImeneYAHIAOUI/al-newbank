@@ -7,8 +7,8 @@ description: >
 
 ## Context
 
-We need to collect metrics related to payments made by merchants using the SDK we provide. These metrics are crucial for monitoring system performance, 
-identifying bottlenecks, and detecting potential errors. We also need a centralized way to store and visualize these metrics.
+Merchants need to collect metrics related to payments made using the SDK we provide. These metrics are crucial for monitoring system performance, 
+identifying bottlenecks, and detecting potential errors. they also need a centralized way to store and visualize these metrics.
 
 ## Decision
 
