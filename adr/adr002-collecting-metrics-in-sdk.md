@@ -16,7 +16,7 @@ We have decided to integrate a metrics collection feature into our payment SDK, 
 We  use Prometheus metric exposition format on a dedicated API endpoint within the SDK.
 
 ## Considered Alternatives
-* Custom Metric Storage: We considered a custom solution for payment metric storage but acknowledged its potential limitations compared to the robust features of Prometheus. While custom solutions offer tailored development, they might lack Prometheus' real-time visualization capabilities. Developing additional services for data retrieval and customization might be needed in a custom approach. The choice between a custom solution and Prometheus depends on project priorities, weighing customization needs against Prometheus' established real-time monitoring features.
+* Custom Metric Storage: We considered a custom solution for payment metric storage but acknowledged its potential limitations compared to the robust features of Prometheus. While custom solutions offer tailored development, they might lack Prometheus' real-time visualization capabilities. Developing additional services for data retrieval and customization might be needed in a custom approach.
 
 ## Consequences
 Pros:
