@@ -84,6 +84,7 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - payment-gateway-authorizer-service
+      - payment-gateway-authorizer-service-2
     networks:
       - spring-newbank-network
 networks:
