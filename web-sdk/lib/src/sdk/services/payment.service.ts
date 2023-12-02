@@ -14,7 +14,7 @@ export class PaymentService {
 
 constructor(loadBalancerHost: string,retrySettings: RetrySettings) {
   this.gatewayAuthorizationProxyService = new GatewayAuthorizationProxyService(loadBalancerHost,retrySettings);
-  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService('localhost:5070',retrySettings);
+  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService(loadBalancerHost,retrySettings);
 }
 
 

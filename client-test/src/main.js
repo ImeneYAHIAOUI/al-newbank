@@ -38,16 +38,31 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // main.ts
 var newbank_sdk_1 = require("@teamb/newbank-sdk");
+var Retry_settings_1 = require("@teamb/newbank-sdk/dist/sdk/services/Retry-settings");
+var newbank_sdk_2 = require("@teamb/newbank-sdk");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var loadBalancerHost, _a, cardNumber, cvv, expiryDate, token, paymentService, paymentInfo, response, confirm_1, paymentService, paymentInfo, response, tokeni, confirm_2;
+        var loadBalancerHost, retrySettings, _a, cardNumber, cvv, expiryDate, token, port, getBackendStatus, backendStatus, paymentService, paymentInfo, response, confirm_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     loadBalancerHost = 'localhost:80';
-                    _a = process.argv, cardNumber = _a[2], cvv = _a[3], expiryDate = _a[4], token = _a[5];
-                    if (!(cardNumber && cvv && expiryDate)) return [3 /*break*/, 3];
-                    paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost, 6904);
+                    retrySettings = new Retry_settings_1.RetrySettings({
+                        retries: 2,
+                        factor: 2,
+                        minTimeout: 1000,
+                        maxTimeout: 3000,
+                        randomize: true,
+                    });
+                    console.log('Server has started successfddully.');
+                    _a = process.argv, cardNumber = _a[2], cvv = _a[3], expiryDate = _a[4], token = _a[5], port = _a[6];
+                    getBackendStatus = new newbank_sdk_2.GetBackendStatus(retrySettings);
+                    return [4 /*yield*/, getBackendStatus.getBackendStatus(token)];
+                case 1:
+                    backendStatus = _b.sent();
+                    console.log("backend status: ".concat(JSON.stringify(backendStatus, null, 2)));
+                    if (!(cardNumber && cvv && expiryDate)) return [3 /*break*/, 4];
+                    paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost, retrySettings);
                     paymentInfo = {
                         cardNumber: cardNumber,
                         cvv: cvv,
@@ -56,32 +71,14 @@ function main() {
                     };
                     response = void 0;
                     return [4 /*yield*/, paymentService.authorize(paymentInfo, token)];
-                case 1:
+                case 2:
                     response = _b.sent();
                     return [4 /*yield*/, paymentService.confirmPayment(response.transactionId, token)];
-                case 2:
+                case 3:
                     confirm_1 = _b.sent();
                     console.log(confirm_1);
-                    return [3 /*break*/, 6];
-                case 3:
-                    paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost, 6904);
-                    paymentInfo = {
-                        cardNumber: "6176011619984148",
-                        cvv: "994",
-                        expirationDate: "11/2025",
-                        amount: '1',
-                    };
-                    response = void 0;
-                    tokeni = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOZXdCYW5rIiwic3ViIjoiQVBJIEtleSIsImV4cCI6MTcwMDY1ODE3MywiaWQiOjIsIm5hbWUiOiJjb29raWVfZmFjdG9yeV9hcHBfODE4MTcwZTQiLCJlbWFpbCI6ImNvb2tpZS5mYWN0b3J5LmFwcDM3ODVAZ21haWwuY29tIiwidXJsIjoiaHR0cDovL2Nvb2tpZV9mYWN0b3J5X2FwcF84MTgxNzBlNC5jb20iLCJkZXNjcmlwdGlvbiI6IkNvb2tpZSBGYWN0b3J5IEFwcCAtIDNmMGVkZDY3IiwiZGF0ZU9mSXNzdWUiOjE3MDA2NTQ1NzMyMzl9.1dANJuFn-U-g0vynRVaLcLA8glMCDo93KNrjGnkOVCU";
-                    return [4 /*yield*/, paymentService.authorize(paymentInfo, tokeni)];
-                case 4:
-                    response = _b.sent();
-                    return [4 /*yield*/, paymentService.confirmPayment(response.transactionId, tokeni)];
-                case 5:
-                    confirm_2 = _b.sent();
-                    console.log(confirm_2);
-                    _b.label = 6;
-                case 6: return [2 /*return*/];
+                    _b.label = 4;
+                case 4: return [2 /*return*/];
             }
         });
     });

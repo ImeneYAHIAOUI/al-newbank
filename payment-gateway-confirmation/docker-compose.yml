@@ -20,6 +20,56 @@ services:
       - REDIS_HOST2=gateway-db2
     networks:
       - spring-newbank-network
+  
+  payment-gateway-confirmation-service-2:
+    restart: always
+    image: "newbank/payment-gateway-confirmation"
+    container_name: "payment-gateway-confirmation-service-2"
+    env_file:
+      - .env
+    ports:
+      - "5071:8080"
+    depends_on:
+      - gateway-db1
+      - gateway-db2
+    environment:
+      - CCN_WITH_PORT=${CCN_SERVICE}:8080
+      - PAYMENT_WITH_PORT=${PAYMENTPROCESSOR_SERVICE}:8080
+      - EXTERNALBANK_WITH_PORT=${EXTERNAL_BANK_SERVICE}:8080
+      - REDIS_HOST1=gateway-db1
+      - REDIS_HOST2=gateway-db2
+    networks:
+      - spring-newbank-network
+
+  gateway-db1:
+    image: redis
+    container_name: "gateway-db1"
+    ports:
+      - "6378:6379"
+    networks:
+      - spring-newbank-network
+
+  gateway-db2:
+    image: redis
+    container_name: "gateway-db2"
+    expose:
+      - "6379:6379"
+    networks:
+      - spring-newbank-network
+
+  redis-exporter-1:
+    image: oliver006/redis_exporter
+    ports:
+      - 9121:9121
+    environment:
+      REDIS_ADDR: "gateway-db1:6379"
+
+  redis-exporter-2:
+    image: oliver006/redis_exporter
+    ports:
+      - 9120:9121
+    environment:
+      REDIS_ADDR: "gateway-db2:6379"
 
 networks:
   spring-newbank-network:
