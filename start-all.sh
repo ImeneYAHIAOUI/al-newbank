@@ -14,8 +14,8 @@ docker compose -f docker-compose.yml up -d
 docker compose -f monitoring/docker-compose.yml up -d
 
 docker compose --env-file ./.env \
-          --file payment-gateway-authorizer/docker-compose.yml\
           --file payment-gateway-confirmation/docker-compose.yml\
+          --file payment-gateway-authorizer/docker-compose.yml\
           --file fees-calculator/docker-compose.yml\
           --file customer-care/docker-compose.yml \
           --file external-bank/docker-compose.yml \
