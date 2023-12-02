@@ -94,19 +94,12 @@ constructor(loadBalancerHost: string,retrySettings: RetrySettings) {
 
   async authorize(paymentInfo: PaymentInfoDTO,token: string) {
        try {
-           const startTime = performance.now();
                 const publicKey = await this.getPublicKey(token);
                 const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
                 const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
-                     const endTime = performance.now();
 
-                 const timeElapsed = endTime - startTime;
-                 console.debug('time authorization :', timeElapsed);
-                 await axios.post('http://localhost:6906/authorize/time', { responseTime: timeElapsed });
-                await axios.post('http://localhost:6906/authorize/success');
                 return result;
             } catch (error) {
-                 await axios.post('http://localhost:6906/authorize/failure');
                 console.error('Authorization failed:', error);
                 throw error;
             }
@@ -115,19 +108,12 @@ constructor(loadBalancerHost: string,retrySettings: RetrySettings) {
   async confirmPayment(transactionId: string, token: string){
     console.debug('payment confirmation request sent');
     try{
-    const startTime = performance.now();
      const result=await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
-     const endTime = performance.now();
 
-     const timeElapsed = endTime - startTime;
-     console.debug('time confirmation :', timeElapsed);
 
-     await axios.post('http://localhost:6906/confirm/time', { responseTime: timeElapsed });
 
-     await axios.post('http://localhost:6906/confirm/payment/success');
      return result;
     } catch (error) {
-     await axios.post('http://localhost:6906/confirm/payment/failure');
       console.error('Payment confirmation failed:', error);
       throw error;
     }
