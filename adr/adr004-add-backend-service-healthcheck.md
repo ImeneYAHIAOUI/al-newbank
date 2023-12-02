@@ -8,8 +8,10 @@ description: >
 Our Sdk clients need to know the status of the backend services to ensure the reliability of their applications. We need to provide a way to check the status of the backend services.
 
 ## Decision
-We have decided to implement a new service in the backend that will call a prometheus endpoint to check the status of the backend services. this service will be called by the sdk clients to check the status of the backend services.
-Since this service will be called by all the sdk clients, we will implement a cache of 5 seconds to avoid overloading the prometheus endpoint.
-in addition to sending an up and down status, we will also send a "Partial Outage" status if the service is up but malfunctioning.
+To address this need, we have decided to implement a new service within the backend infrastructure. This service will be responsible for querying a Prometheus endpoint to determine the status of backend services.
+
+Given the potential high frequency of requests from various SDK clients, we have opted for a cache-aside strategy with a duration of 5 seconds to minimize the load on the Prometheus endpoint.
+
+Additionally, the healthcheck service will send not only the  "Up" or "Down" status but also  a "Partial Outage" status if a service is up but malfunctioning.
 
 
