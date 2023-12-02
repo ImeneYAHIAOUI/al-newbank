@@ -36,6 +36,7 @@
         <module>payment-settlement</module>
         <module>fees-calculator</module>
         <module>transactions-service</module>
+        <module>status-reporter</module>
     </modules>
     
     <dependencyManagement>

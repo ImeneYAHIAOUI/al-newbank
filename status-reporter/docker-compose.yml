@@ -1,0 +1,22 @@
+version: '3.1'
+services:
+
+  status-reporter:
+    image: "newbank/status-reporter"
+    container_name: "status-reporter"
+    mem_limit: 1g
+    cpus: 2
+    ports:
+      - "6000:8080"
+
+    networks:
+      - spring-newbank-network
+    environment:
+      - PROMETHEUS_WITH_PORT=${PROMETHEUS_SERVICE}:9090
+
+
+
+
+networks:
+  spring-newbank-network:
+    external: true

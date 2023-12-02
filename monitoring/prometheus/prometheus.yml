@@ -5,23 +5,31 @@ scrape_configs:
     static_configs:
       - targets: ['host.docker.internal:5003']
         labels:
-          application: 'CustomerCare Application'
+          application: 'CustomerCare'
 
-  - job_name: "paymentGatewayMetrics1"
+  - job_name: "paymentAuthorizeMetrics1"
     metrics_path: '/actuator/prometheus'
     scrape_interval: 500ms
     static_configs:
       - targets: ['host.docker.internal:5060']
         labels:
-          application: 'PaymentGateway Application'
+          application: 'PaymentGateway Authorizer 1'
 
-  - job_name: "paymentGatewayMetrics2"
+  - job_name: "paymentAuthorizerMetrics2"
     metrics_path: '/actuator/prometheus'
     scrape_interval: 500ms
     static_configs:
       - targets: ['host.docker.internal:5061']
         labels:
-          application: 'PaymentGateway Application'
+          application: 'PaymentGateway Authorizer 2'
+
+  - job_name: "paymentConfirmationMetrics"
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 500ms
+    static_configs:
+      - targets: [ 'host.docker.internal:5070' ]
+        labels:
+          application: 'Payment confirmation'
 
   - job_name: "paymentServiceMetrics"
     metrics_path: '/actuator/prometheus'
@@ -29,7 +37,7 @@ scrape_configs:
     static_configs:
       - targets: ['host.docker.internal:5004']
         labels:
-          application: 'PaymentProcessor Application'
+          application: 'PaymentProcessor'
 
   - job_name: "paymentSettlementMetrics"
     metrics_path: '/actuator/prometheus'
@@ -37,7 +45,7 @@ scrape_configs:
     static_configs:
       - targets: ['host.docker.internal:5008']
         labels:
-          application: 'PaymentSettlement Application'
+          application: 'PaymentSettlement'
 
   - job_name: "feeCalculatorMetrics"
     metrics_path: '/actuator/prometheus'
@@ -45,7 +53,7 @@ scrape_configs:
     static_configs:
       - targets: ['host.docker.internal:5005']
         labels:
-          application: 'FeeCalculator Application'
+          application: 'FeeCalculator'
 
   - job_name: "transactionServiceMetrics"
     metrics_path: '/actuator/prometheus'
@@ -53,7 +61,7 @@ scrape_configs:
     static_configs:
       - targets: ['host.docker.internal:4999']
         labels:
-          application: 'TransactionService Application'
+          application: 'TransactionService'
 
   - job_name: "redis-exporter-1"
     metrics_path: "/scrape"

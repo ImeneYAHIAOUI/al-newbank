@@ -8,6 +8,8 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - spring-newbank-network
 
   grafana:
     image: grafana/grafana:9.5.2
@@ -17,3 +19,9 @@ services:
     restart: unless-stopped
     volumes:
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - spring-newbank-network
+
+networks:
+   spring-newbank-network:
+     external: true
