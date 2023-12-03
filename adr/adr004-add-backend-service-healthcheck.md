@@ -4,6 +4,9 @@ title: "ADR004: Add Backend Service Status"
 description: >
   Architecture Decision Record (ADR) to implement a status retrieval for backend services
 ---
+
+*Status: [Final]*
+
 ## Background
 
 Our SDK as is, doesn't perform any healthcheck before sending requests to the backend services. It is only dealing with errors as they arise, and the status of the service being requested is not provided nor clear to the end user of the SDK.
@@ -14,7 +17,9 @@ The context for this ADR is to address the client need to retrieve the status of
 
 ## Decision
 
-To address this need, we have decided to provide the client with an API to interact with a newly created backend service : **Status Reporter**. This service will be responsible for querying our internal Prometheus server to determine the status of backend services.
+To address this need, we have decided to : 
+- Create a new service : **Status Reporter**. This service will be responsible for querying our internal Prometheus server to determine the status of backend services.
+- Provide the client with an API to interact with the newly created backend service.
 
 As our prometheus is configured to scrape all services for their metrics, the uptime is already provided with additional useful information to the **Status Reporter**.
 
