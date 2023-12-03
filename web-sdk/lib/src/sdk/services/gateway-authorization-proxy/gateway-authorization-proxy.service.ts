@@ -11,7 +11,7 @@ import {AuthorizeDto} from "../../dto/authorise.dto";
 import {RetrySettings} from "../Retry-settings";
 export class GatewayAuthorizationProxyService {
   private readonly _gatewayBaseUrl: string;
-  private readonly _gatewayPath = '/api/gateway/';
+  private readonly _gatewayPath = '/api/gateway_authorization/';
   private readonly retrySettings: RetrySettings
   constructor(load_balancer_host: string,  retrySettings: RetrySettings) {
     this._gatewayBaseUrl = `http://${load_balancer_host}`;

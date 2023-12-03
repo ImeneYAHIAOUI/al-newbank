@@ -16,7 +16,6 @@ async function main() {
                                               maxTimeout: 3000,
                                               randomize: true,
                                             });
-    console.log('Server has started successfddully.');
 
     const [ , ,cardNumber, cvv, expiryDate, token,port] = process.argv;
     const getBackendStatus = new GetBackendStatus(retrySettings);

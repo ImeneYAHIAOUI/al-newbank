@@ -9,7 +9,7 @@ docker network create $network
 
 echo "starting all"
 
-docker compose -f docker-compose.yml up -d
+docker compose -f kafka/docker-compose.yml up -d
 
 docker compose -f monitoring/docker-compose.yml up -d
 
@@ -26,5 +26,6 @@ docker compose --env-file ./.env \
           --file transactions-service/docker-compose.yml \
           --file analytics-service/docker-compose.yml \
           --file status-reporter/docker-compose.yml   up -d
+
                
 echo "All services started."

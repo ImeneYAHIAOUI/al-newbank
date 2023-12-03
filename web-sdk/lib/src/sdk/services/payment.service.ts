@@ -1,11 +1,9 @@
-import { GatewayAuthorizationProxyService } from './gateway-authorization-proxy/gateway-authorization-proxy.service';
-import { PaymentInfoDTO } from '../dto/payment-info.dto';
-import axios from 'axios';
+import {GatewayAuthorizationProxyService} from './gateway-authorization-proxy/gateway-authorization-proxy.service';
+import {PaymentInfoDTO} from '../dto/payment-info.dto';
 import * as crypto from 'crypto';
 import {PaymentDto} from "../dto/payment.dto";
 import {AuthorizeDto} from "../dto/authorise.dto";
-import { GatewayConfirmationProxyService } from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
-import { performance } from 'perf_hooks';
+import {GatewayConfirmationProxyService} from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
 import {RetrySettings} from "./Retry-settings";
 
 export class PaymentService {
@@ -108,11 +106,7 @@ constructor(loadBalancerHost: string,retrySettings: RetrySettings) {
   async confirmPayment(transactionId: string, token: string){
     console.debug('payment confirmation request sent');
     try{
-     const result=await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
-
-
-
-     return result;
+      return await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
     } catch (error) {
       console.error('Payment confirmation failed:', error);
       throw error;

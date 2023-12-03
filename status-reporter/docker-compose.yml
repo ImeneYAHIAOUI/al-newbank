@@ -13,6 +13,7 @@ services:
       - spring-newbank-network
     environment:
       - PROMETHEUS_WITH_PORT=${PROMETHEUS_SERVICE}:9090
+      - BUSINESSINTEGRATOR_WITH_PORT=${BUSINESSINTEGRATOR_SERVICE}:8080
 
 
 

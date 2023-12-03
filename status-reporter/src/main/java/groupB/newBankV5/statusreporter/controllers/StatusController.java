@@ -1,12 +1,15 @@
 package groupB.newBankV5.statusreporter.controllers;
 
-import groupB.newBankV5.statusreporter.components.IServiceStatusRetriever;
+import groupB.newBankV5.statusreporter.exceptions.ApplicationNotFoundException;
+import groupB.newBankV5.statusreporter.exceptions.InvalidTokenException;
+import groupB.newBankV5.statusreporter.interfaces.IServiceStatusRetriever;
 import groupB.newBankV5.statusreporter.controllers.dto.ServiceStatusDto;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,8 +37,10 @@ public class StatusController {
 
     @Timed(value = "up_check", description = "Up Check Indicator")
     @GetMapping("/healthcheck")
-    public ResponseEntity<List<ServiceStatusDto>> healthcheck() {
-        List<ServiceStatusDto> serviceStatus = serviceStatusRetriever.retrieveServiceStatus().stream()
+    public ResponseEntity<List<ServiceStatusDto>> healthcheck(@RequestHeader("Authorization") String authorizationHeader ) throws InvalidTokenException, ApplicationNotFoundException {
+        // Remove the "Bearer " prefix
+        String token = authorizationHeader.substring(7);
+        List<ServiceStatusDto> serviceStatus = serviceStatusRetriever.retrieveServiceStatus(token).stream()
                 .map(ServiceStatusDto::ServiceStatusDtoFactory)
                 .toList();
         return ResponseEntity.ok(serviceStatus);
