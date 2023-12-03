@@ -39,6 +39,10 @@ Description: Implementing Change Data Capture (CDC) using an event-based approac
 
 Description: Implementing CronJob services to periodically poll and process data changes, mimicking an asynchronous CDC pattern.
 
+#### High-level view of the architecture and the interactions : 
+
+![CronArchitecture](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/cron-architecture.png)
+
 #### Pros:
 - Simplicity: CronJob services are straightforward and easier to implement 
 - Light resource usage: Scheduled jobs consume less resources usage by only running periodically at specified intervals.
@@ -46,7 +50,3 @@ Description: Implementing CronJob services to periodically poll and process data
 #### Cons:
 - Complexity in keeping track of last changes: Maintaining accurate timestamps or tracking mechanisms can be complex, potentially leading to inaccuracies in metrics.
 - Scalability concerns with huge inserts and selects: As data grows, the solution might struggle to handle large amounts of data inserts and selects, impacting performance.
-
-#### High-level view of the architecture and the interactions : 
-
-![CDCArchitecture](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/cron-architecture.png)
