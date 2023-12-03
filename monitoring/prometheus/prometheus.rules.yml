@@ -1,0 +1,177 @@
+groups:
+  - name: newbank_alerts
+    rules:
+      - alert: HighErrorRateCustomerCare
+        expr: sum(rate(http_server_requests_errors_total{job="customerCareMetrics"}[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          job: customerCareMetrics
+        annotations:
+            summary: "High error rate on customerCareMetrics"
+
+      - alert: HighErrorRatePaymentAuthorize1
+        expr: sum(rate(http_server_requests_errors_total{job="paymentAuthorizeMetrics1"}[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          job: paymentAuthorizeMetrics1
+        annotations:
+          summary: "High error rate on paymentAuthorizeMetrics1"
+
+      - alert: HighErrorRatePaymentAuthorize2
+        expr: sum(rate(http_server_requests_errors_total{job="paymentAuthorizerMetrics2"}[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          job: paymentAuthorizerMetrics2
+        annotations:
+          summary: "High error rate on paymentAuthorizerMetrics2"
+
+      - alert: HighErrorRatePaymentConfirmation
+        expr: sum(rate(http_server_requests_errors_total{job="paymentConfirmationMetrics"}[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          job: paymentConfirmationMetrics
+        annotations:
+          summary: "High error rate on paymentConfirmationMetrics"
+
+      - alert: HighErrorRatePaymentService
+        expr: sum(rate(http_server_requests_errors_total{job="paymentServiceMetrics"}[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          job: paymentServiceMetrics
+        annotations:
+          summary: "High error rate on paymentServiceMetrics"
+
+      - alert: HighErrorRatePaymentSettlement
+        expr: sum(rate(http_server_requests_errors_total{job="paymentSettlementMetrics"}[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          job: paymentSettlementMetrics
+        annotations:
+          summary: "High error rate on paymentSettlementMetrics"
+
+      - alert: HighErrorRateFeeCalculator
+        expr: sum(rate(http_server_requests_errors_total{job="feeCalculatorMetrics"}[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          job: feeCalculatorMetrics
+        annotations:
+          summary: "High error rate on feeCalculatorMetrics"
+
+      - alert: HighErrorRateTransactionService
+        expr: sum(rate(http_server_requests_errors_total{job="transactionServiceMetrics"}[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          job: transactionServiceMetrics
+        annotations:
+          summary: "High error rate on transactionServiceMetrics"
+
+      - alert: HighErrorRateRedisExporter1
+        expr: sum(rate(redis_exporter_scrapes_total{job="redis-exporter-1"}[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          job: redis-exporter-1
+        annotations:
+          summary: "High error rate on redis-exporter-1"
+
+      - alert: HighErrorRateRedisExporter2
+        expr: sum(rate(redis_exporter_scrapes_total{job="redis-exporter-2"}[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          job: redis-exporter-2
+        annotations:
+          summary: "High error rate on redis-exporter-2"
+          
+      - alert: HighLatencyPaymentAuthorize2
+        expr: histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{job="paymentAuthorizerMetrics2"}[5m])) by (le)) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          job: paymentAuthorizerMetrics2
+        annotations:
+          summary: "High latency on paymentAuthorizerMetrics2"
+          description: "95th percentile latency exceeded 0.5 seconds for the last 5 minutes."
+
+      - alert: HighLatencyPaymentConfirmation
+        expr: histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{job="paymentConfirmationMetrics"}[5m])) by (le)) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          job: paymentConfirmationMetrics
+        annotations:
+          summary: "High latency on paymentConfirmationMetrics"
+          description: "95th percentile latency exceeded 0.5 seconds for the last 5 minutes."
+
+      - alert: HighLatencyPaymentService
+        expr: histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{job="paymentServiceMetrics"}[5m])) by (le)) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          job: paymentServiceMetrics
+        annotations:
+          summary: "High latency on paymentServiceMetrics"
+          description: "95th percentile latency exceeded 0.5 seconds for the last 5 minutes."
+
+      - alert: HighLatencyPaymentSettlement
+        expr: histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{job="paymentSettlementMetrics"}[5m])) by (le)) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          job: paymentSettlementMetrics
+        annotations:
+          summary: "High latency on paymentSettlementMetrics"
+          description: "95th percentile latency exceeded 0.5 seconds for the last 5 minutes."
+
+      - alert: HighLatencyFeeCalculator
+        expr: histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{job="feeCalculatorMetrics"}[5m])) by (le)) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          job: feeCalculatorMetrics
+        annotations:
+          summary: "High latency on feeCalculatorMetrics"
+          description: "95th percentile latency exceeded 0.5 seconds for the last 5 minutes."
+
+      - alert: HighLatencyTransactionService
+        expr: histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{job="transactionServiceMetrics"}[5m])) by (le)) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          job: transactionServiceMetrics
+        annotations:
+          summary: "High latency on transactionServiceMetrics"
+          description: "95th percentile latency exceeded 0.5 seconds for the last 5 minutes."
+
+      - alert: HighLatencyRedisExporter1
+        expr: histogram_quantile(0.95, sum(rate(redis_exporter_scrapes_duration_seconds_bucket{job="redis-exporter-1"}[5m])) by (le)) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          job: redis-exporter-1
+        annotations:
+          summary: "High latency on redis-exporter-1"
+          description: "95th percentile latency exceeded 0.5 seconds for the last 5 minutes."
+
+      - alert: HighLatencyRedisExporter2
+        expr: histogram_quantile(0.95, sum(rate(redis_exporter_scrapes_duration_seconds_bucket{job="redis-exporter-2"}[5m])) by (le)) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          job: redis-exporter-2
+        annotations:
+          summary: "High latency on redis-exporter-2"
+          description: "95th percentile latency exceeded 0.5 seconds for the last 5 minutes."
+
+          
+
+
+

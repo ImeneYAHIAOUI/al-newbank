@@ -1,6 +1,19 @@
 version: '3.7'
 
 services:
+
+  alertmanager:
+    image: prom/alertmanager:v0.23.0
+    container_name: alertmanager
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager:/config
+      - alertmanager-data:/data
+    command: --config.file=/config/alertmanager.yml --log.level=debug
+    networks:
+      - spring-newbank-network
   prometheus:
     image: prom/prometheus:v2.44.0
     container_name: prometheus
@@ -8,6 +21,7 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus.rules.yml:/etc/prometheus/prometheus.rules.yml
     networks:
       - spring-newbank-network
 
@@ -25,3 +39,6 @@ services:
 networks:
    spring-newbank-network:
      external: true
+
+volumes:
+    alertmanager-data:
