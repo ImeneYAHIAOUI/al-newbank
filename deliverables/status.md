@@ -1,21 +1,14 @@
 * What was done :
-  - We addressed the Single Point of Failure (SPOF) in our payment gateway by dividing it into two separate services (one for authorization and one for confirmation).
-    
-  - A retry mechanism was incorporated into the SDK, utilizing an exponential backoff strategy, and retry settings were made available to merchant developers.
-  
-  - A MVP feature to track payment metrics (authorized,confirmed,failed transactions) for the merchant was implemented.
- 
-  - Respective adrs were created.
+  - A new service was created to provide the status of the backend services based on prometheus. The API to interact with it was added to the sdk. A prometheus alert manager was also put in place for internal alerts.
+  - We revisited the metric sending strategy and we are deciding on wether to implement an event-sourcing based CDC pattern or to create CronJob Services to mimic an async CDC pattern.
+  - Respective ADRS were created.
 
 * What is planned :
-    - Integrating a backpressure mechanism into the SDK to strengthen the resilience of the gateway services and inform the clients using the sdk. 
- 
-    - Exploring (functional and architectural) enhancements to the current metric sending strategy, and assessing the potential integration of an applicative cache within the SDK.
- 
-    - Improving error handling in the SDK by giving more readable output to the client (potentially through a RAML format).
- 
-* Issues : The exact requirements for implementing service status are not fully comprehended : performing health checks before calling the api's ? exposing a status interface in the sdk ?
+  - Implement one of the two solutions for the sending metrics.
+  - Implement back pressure to handle peak times from the SDK side.
+  - Revisit the resilience aspects of our architecture  
 
-* Risks : Consequently, due to the issues faced, uncertainty exists regarding whether the implemented features align **excatly** with the described needs overhall, which would require further enhancement and changes to adjust to the functional needs
+* Issues : We are facing difficulties configuring the kafka connectors for a POC of the CDC pattern.
+* Risks : Delay on the non functional aspect of resilience as client-side backpressure is not put in place yet
 
 * RYG flag : green
