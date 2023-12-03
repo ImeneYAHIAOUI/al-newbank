@@ -10,9 +10,10 @@ export class PaymentService {
   private readonly gatewayAuthorizationProxyService;
   private readonly gatewayConfirmationProxyService;
 
-constructor(loadBalancerHost: string,retrySettings: RetrySettings) {
-  this.gatewayAuthorizationProxyService = new GatewayAuthorizationProxyService(loadBalancerHost,retrySettings);
-  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService(loadBalancerHost,retrySettings);
+constructor(retrySettings: RetrySettings) {
+  const config = require('./config');
+  this.gatewayAuthorizationProxyService = new GatewayAuthorizationProxyService(config.load_balancer_host,retrySettings);
+  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService(config.load_balancer_host,retrySettings);
 }
 
 

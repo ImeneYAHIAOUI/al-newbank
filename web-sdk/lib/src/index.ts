@@ -1,4 +1,10 @@
-export { PaymentService } from './sdk/services/payment.service';
-export { GetBackendStatus } from './sdk/services/get-backend-status';
+export { NewbankSdk } from './sdk/newbank-sdk';
+export { MerchantDTO } from './sdk/dto/merchant.dto';
+export { ApplicationDto } from './sdk/dto/application.dto';
+export { BankAccountDTO } from './sdk/dto/bank-account.dto';
+export { AuthorizeDto } from './sdk/dto/authorise.dto';
 export { RetrySettings } from './sdk/services/Retry-settings';
-export { MetricsServer } from './sdk/services/Metrics-server';
+export { InternalServerError } from './sdk/exceptions/internal-server.exception';
+export { UnauthorizedError } from './sdk/exceptions/unauthorized.exception';
+export { ApplicationNotFound } from './sdk/exceptions/application-not-found.exception';
+export { MerchantAlreadyExists } from './sdk/exceptions/merchant-already-exists.exception';

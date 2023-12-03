@@ -14,7 +14,7 @@ export class GatewayAuthorizationProxyService {
   private readonly _gatewayPath = '/api/gateway_authorization/';
   private readonly retrySettings: RetrySettings
   constructor(load_balancer_host: string,  retrySettings: RetrySettings) {
-    this._gatewayBaseUrl = `http://${load_balancer_host}`;
+    this._gatewayBaseUrl = `${load_balancer_host}`;
     this.retrySettings = retrySettings;
   }
    async getPublicKey( token: string): Promise<string> {

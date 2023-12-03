@@ -16,7 +16,7 @@ export class GatewayConfirmationProxyService {
 
   private readonly _gatewayPath = '/api/gateway-confirmation';
   constructor(load_balancer_host: string,retrySettings: RetrySettings) {
-    this._gatewayBaseUrl = `http://${load_balancer_host}`;
+    this._gatewayBaseUrl = `${load_balancer_host}`;
     this.retrySettings = retrySettings;
   }
  

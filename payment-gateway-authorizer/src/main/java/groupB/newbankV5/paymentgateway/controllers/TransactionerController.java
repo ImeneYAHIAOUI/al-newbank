@@ -33,7 +33,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(path = TransactionerController.BASE_URI, produces = APPLICATION_JSON_VALUE)
 public class TransactionerController {
     private static final Logger log = Logger.getLogger(TransactionerController.class.getName());
-    public static final String BASE_URI = "/api/gateway";
+    public static final String BASE_URI = "/api/gateway_authorization";
     private final IRSA crypto;
     private final ITransactionProcessor transactionProcessor;
     private final ITransactionFinder transactionFinder;
