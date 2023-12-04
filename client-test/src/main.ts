@@ -1,7 +1,7 @@
 // main.ts
 import {NewbankSdk, RetrySettings} from "@teamb/newbank-sdk";
-import {PaymentInfoDTO} from "@teamb/newbank-sdk/dist/sdk/dto/payment-info.dto";
-import {AuthorizeDto} from "@teamb/newbank-sdk/dist/sdk/dto/authorise.dto";
+import {PaymentInfoDTO} from "@teamb/newbank-sdk";
+import {AuthorizeDto} from "@teamb/newbank-sdk";
 
 
 

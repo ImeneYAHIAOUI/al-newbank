@@ -3,6 +3,7 @@ export { MerchantDTO } from './sdk/dto/merchant.dto';
 export { ApplicationDto } from './sdk/dto/application.dto';
 export { BankAccountDTO } from './sdk/dto/bank-account.dto';
 export { AuthorizeDto } from './sdk/dto/authorise.dto';
+export { PaymentInfoDTO } from './sdk/dto/payment-info.dto';
 export { RetrySettings } from './sdk/services/Retry-settings';
 export { InternalServerError } from './sdk/exceptions/internal-server.exception';
 export { UnauthorizedError } from './sdk/exceptions/unauthorized.exception';
