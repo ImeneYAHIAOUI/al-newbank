@@ -16,8 +16,8 @@ async function main() {
 
     const [ , ,cardNumber, cvv, expiryDate, token,port] = process.argv;
     const newbankSdk = new NewbankSdk(token, retrySettings);
-    const backendStatus = await newbankSdk.getBackendStatus();
-    console.log(`backend status: ${JSON.stringify(backendStatus, null, 2)}`);
+    //const backendStatus = await newbankSdk.getBackendStatus();
+    //console.log(backend status: ${JSON.stringify(backendStatus, null, 2)});
     if ( cardNumber && cvv && expiryDate) {
         const paymentInfo: PaymentInfoDTO = {
             cardNumber: cardNumber,
@@ -26,10 +26,18 @@ async function main() {
             amount: '500',
         };
         let response: AuthorizeDto;
+        const authorizePromises = [];
+        for (let i = 0; i < 20; i++) {
+            response = await newbankSdk.authorizePayment(paymentInfo);
+            authorizePromises.push(response);
+       }
 
-        response = await newbankSdk.authorizePayment(paymentInfo);
-        const confirm = await newbankSdk.confirmPayment(response.transactionId);
+       for (let i = 0; i < 20; i++) {
+        const confirm = await newbankSdk.confirmPayment(authorizePromises[i].transactionId);
         console.log(confirm);
+
+
+    }
     }
 }
 
