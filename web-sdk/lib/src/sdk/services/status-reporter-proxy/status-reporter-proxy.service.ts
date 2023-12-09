@@ -8,8 +8,6 @@ import {ApplicationNotFound} from "../../exceptions/application-not-found.except
 import {InternalServerError} from "../../exceptions/internal-server.exception";
 import {BackendStatusDto} from "../../dto/backend-status.dto";
 
-
-
 export class StatusReporterProxyService {
 
 
@@ -17,12 +15,35 @@ export class StatusReporterProxyService {
     private readonly retrySettings: RetrySettings
 
     private readonly _statusReportePath = '/api/status/healthcheck';
+    private readonly _statusAvailibilityPath = '/api/status/availability?serviceName=';
+
     private readonly config;
     constructor( retrySettings: RetrySettings) {
         this.config = require('../config');
         this.statusReporteUrl = this.config.status_reporter_host;
         this.retrySettings = retrySettings;
     }
+
+    private async checkAvailability(serviceName : string): Promise<boolean> {
+        return new Promise<boolean>(async (resolve, reject) => {
+            try {
+                const response = await axios.get(`${this.statusReporteUrl}${this._statusAvailibilityPath}${serviceName}`,);
+                resolve(response.data);
+            }catch (error: any) {
+                console.error('Error in checkAvailability:', error);
+                reject(false);
+            }
+        });
+    }
+
+    public async isServiceAvailable(serviceName: string){
+        const isServiceAvailable = await this.checkAvailability(serviceName);
+        if (!isServiceAvailable) {
+          console.error('Service is not available.');
+          throw new Error('Service is not available.');
+        }
+    }
+
 
     async reportStatus( token: string): Promise<BackendStatusDto> {
         const operation = retry.operation({

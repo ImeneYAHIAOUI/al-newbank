@@ -7,10 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@teamb/newbank-sdk": "^1.2.14",
+    "@teamb/newbank-sdk": "^1.2.28",
     "axios": "^1.6.0",
     "csv-parser": "^3.0.0",
-    "node": "^21.1.0"
+    "i": "^0.3.7",
+    "node": "^21.1.0",
+    "npm": "^10.2.5"
   },
   "keywords": [],
   "author": "",
