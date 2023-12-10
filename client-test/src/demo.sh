@@ -124,5 +124,5 @@ echo ""
 
 
 
-ts-node main.ts "$cardNumber" "$cvv" "$expiryDate" "$apiKey" "6906"
+ts-node retry.ts "$cardNumber" "$cvv" "$expiryDate" "$apiKey" "6906"
 
