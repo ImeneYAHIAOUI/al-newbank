@@ -1,14 +1,16 @@
 * What was done :
-  - A new service was created to provide the status of the backend services based on prometheus. The API to interact with it was added to the sdk. A prometheus alert manager was also put in place for internal alerts.
-  - We revisited the metric sending strategy and we are deciding on wether to implement an event-sourcing based CDC pattern or to create CronJob Services to mimic an async CDC pattern.
-  - Respective ADRS were created.
+  - For business metrics, we  chose the first solution—implementing an event-sourcing based Change Data Capture (CDC) pattern.
+  - A Basic circuit breaker is implemented in the SDK side to only send requests to the backend system  when the system is in an open state.
+  - A rate limiter was added in the load balancer behind which are our backend service.
 
 * What is planned :
-  - Implement one of the two solutions for the sending metrics.
-  - Implement back pressure to handle peak times from the SDK side.
-  - Revisit the resilience aspects of our architecture  
+  - The SDK receives service statuses in JSON format. For next week, we are planning to deliver a client solution that enables them to display the statuses through a dashboard, utilizing platforms such as Grafana or others.
+  - Implementing a Timeout Pattern to prevent indefinite blocking in case of issues.
+  - Add a clear documentation with compelling usecase driven scenarios to showcase examples of using our SDK to the merchants.
 
-* Issues : We are facing difficulties configuring the kafka connectors for a POC of the CDC pattern.
-* Risks : Delay on the non functional aspect of resilience as client-side backpressure is not put in place yet
+
+* Issues : No issues this week.
+
+* Risks :  We need to be cautious not to exhaust all our credits on cloud.
 
 * RYG flag : green
