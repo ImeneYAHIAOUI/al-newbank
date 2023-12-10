@@ -26,4 +26,3 @@ While the Timeout Pattern offers significant advantages, it is essential to cons
 
 2. **Handling Timeout Events:** Implementing robust mechanisms for handling timeout events to provide meaningful feedback to users and log relevant information for diagnostics.
 
-3. **Communication and Coordination:** Communicating the introduction of timeout mechanisms to relevant stakeholders and coordinating any necessary changes or adjustments in their systems or workflows.
