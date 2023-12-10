@@ -2,6 +2,7 @@
 import {NewbankSdk, RetrySettings} from "@teamb/newbank-sdk";
 import {PaymentInfoDTO} from "@teamb/newbank-sdk";
 import {AuthorizeDto} from "@teamb/newbank-sdk";
+
 import {UnauthorizedError} from "@teamb/newbank-sdk";
 
 async function main() {
@@ -23,17 +24,24 @@ async function main() {
             amount: '500',
         };
         let response: AuthorizeDto;
-        try {
-            response = await newbankSdk.authorizePayment(paymentInfo);
-            const confirm = await newbankSdk.confirmPayment(response.transactionId);
-            console.log(confirm);
-        } catch (error: any) {
-           if(error instanceof UnauthorizedError){
-              console.error('Authorization failed:', error.message);
-           }
-           return;
+        const authorizePromises = [];
+        for (let i = 0; i < 20; i++) {
+                try {
+                    response = await newbankSdk.authorizePayment(paymentInfo);
+                    authorizePromises.push(response);
+
+                } catch (error: any) {
+                   if(error instanceof UnauthorizedError){
+                      console.error('Authorization failed:', error.message);
+                   }
+                }
         }
 
+       for (let i = 0; i < authorizePromises.length; i++) {
+        const confirm = await newbankSdk.confirmPayment(authorizePromises[i].transactionId);
+        console.log(confirm);
+        }
     }
 }
+
 main();

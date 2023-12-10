@@ -6,6 +6,7 @@ import {AuthorizeDto} from "../dto/authorise.dto";
 import {GatewayConfirmationProxyService} from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
 import {RetrySettings} from "./Retry-settings";
 import { StatusReporterProxyService } from './status-reporter-proxy/status-reporter-proxy.service';
+import { UnauthorizedError } from '../exceptions/unauthorized.exception';
 
 export class PaymentService {
   private readonly gatewayAuthorizationProxyService;
@@ -57,8 +58,6 @@ constructor(retrySettings: RetrySettings) {
   async processPayment(encryptedCardInfo: string, token: string,
      amount: string
   )   {
-    try {
-
       const payment : PaymentDto = {
         encryptedCard: encryptedCardInfo,
         amount: amount,
@@ -67,9 +66,6 @@ constructor(retrySettings: RetrySettings) {
       const auth : AuthorizeDto = await this.gatewayAuthorizationProxyService.authorizePaymentWithRetry(payment, token);
       console.debug('payment authorized');
       return auth;
-    } catch (error: any) {
-      throw new Error('Error processing card information: ' + error.message);
-    }
   }
 
   private encrypteCreditCard(paymentInfo: PaymentInfoDTO, publicKey: string) {
@@ -105,6 +101,7 @@ constructor(retrySettings: RetrySettings) {
                 throw error;
         }
   }
+  
   async confirmPayment(transactionId: string, token: string){
     console.debug('payment confirmation request sent');
     try{
