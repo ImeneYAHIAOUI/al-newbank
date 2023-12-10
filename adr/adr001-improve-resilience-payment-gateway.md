@@ -5,7 +5,7 @@ description: >
    Architecture Decision Record (ADR) to Mitigate the Single Point of Failure (SPOF) in the payment gateway servive
 ---
 
-Status: [Final]
+*Status: [Final]*
 
 ## Context
 
