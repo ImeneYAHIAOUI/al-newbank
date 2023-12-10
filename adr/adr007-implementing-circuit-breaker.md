@@ -5,6 +5,8 @@ description: >
   Architecture Decision Record (ADR) to Implement a circuit breaker on the client side (SDK)
 ---
 
+*Status: [Final]*
+
 ## Context:
 
 The current SDK lacks a proactive mechanism to assess the health of backend services before initiating requests. There is a need to introduce a mechanism that prevents unnecessary service calls during disruptions.
