@@ -20,7 +20,7 @@ Implement the Timeout Pattern to set time limits for interactions with backend s
 * Improved system responsiveness by avoiding prolonged waits for unresponsive services.
 * Mitigation of potential performance bottlenecks due to indefinite blocking during service calls.
   
-## Architectural Implications
+## Architectural solution proposed
 
 1. **Promises for Asynchronous Operations:** Ensure that all asynchronous operations, such as service calls, are wrapped in promises to facilitate the implementation of the Timeout Pattern.
 
