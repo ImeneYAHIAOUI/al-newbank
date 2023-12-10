@@ -45,9 +45,9 @@ This phased approach ensures minimal congnitive overload, allows for end to end 
 **Payment Gateway Architecture: Before and After Splitting :**
 
 Before :
-![Architecture Before](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/spof-before.png)
+![Architecture Before](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/spof-before.svg)
 After :
-![Architecture After](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/spof-after.png)
+![Architecture After](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/spof-after.svg)
 
 ## Consequences
 
