@@ -11,6 +11,7 @@ echo "starting all"
 
 docker compose -f kafka/docker-compose.yml up -d
 
+
 docker compose -f monitoring/docker-compose.yml up -d
 
 docker compose --env-file ./.env \
