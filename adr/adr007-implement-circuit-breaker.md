@@ -14,7 +14,7 @@ unnecessary service calls during disruptions.
 
 To enhance the resilience of the system and benefit from the health checks established in the status reporter service, a decision has been made to introduce a circuit breaker,
  which will be designed to check the availability of backend services before each request, ensuring that the SDK only interacts with services that are in a healthy state. 
-In cases of unavailability, the SDK will directly inform the client that the service is not accessible without making a retry mechanism.
+In cases of unavailability, the SDK will directly inform the client that the service is not accessible.
 
 ## Consequences:
 
