@@ -15,8 +15,8 @@ async function main() {
 
     const [ , ,cardNumber, cvv, expiryDate, token,port] = process.argv;
     const newbankSdk = new NewbankSdk(token, retrySettings);
-    //const backendStatus = await newbankSdk.getBackendStatus();
-    //console.log(`backend status: ${JSON.stringify(backendStatus, null, 2)}`);
+    const backendStatus = await newbankSdk.getBackendStatus();
+    console.log(`backend status: ${JSON.stringify(backendStatus, null, 2)}`);
     if ( cardNumber && cvv && expiryDate) {
         const paymentInfo: PaymentInfoDTO = {
             cardNumber: cardNumber,
