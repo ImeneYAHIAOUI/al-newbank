@@ -35,5 +35,3 @@ While the Timeout Pattern offers significant advantages, it is essential to cons
 
 1. **Configurability:** Ensuring that the timeout values are configurable and adjustable based on different service requirements and environmental conditions.
 
-2. **Handling Timeout Events:** Implementing robust mechanisms for handling timeout events to provide meaningful feedback to users and log relevant information for diagnostics.
-
