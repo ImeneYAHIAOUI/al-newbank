@@ -27,7 +27,7 @@ Implement the Timeout Pattern to set time limits for interactions with backend s
 2. **Timeout Mechanism:** Develop a reusable timeout function or module that can be easily applied to different asynchronous operations across the codebase.
 
 3. **Timeout Configuration:**
-    - **Service-Specific Configurations:** Explore the option of allowing configurable timeouts for each service individually. This would involve maintaining a configuration file or database to associate specific services with their respective timeout values.
+    - **Service-Specific Configurations:** Explore the option of allowing configurable timeouts for each service individually. This would involve maintaining a configuration file to associate specific services with their respective timeout values.
     - **Global Timeout:** Alternatively, consider having a global, fixed timeout for all services if uniform response times are acceptable.
 
 ## Risks and Considerations
