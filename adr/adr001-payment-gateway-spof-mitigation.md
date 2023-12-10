@@ -1,8 +1,8 @@
 ---
 id: adrs-adr001
-title: 'ADR001: Mitigation of Single Point of Failure for Payment Gateway'
+title: 'ADR001: Mitigation of Single Point of Failure : Payment Gateway'
 description: >
-   Architecture Decision Record (ADR) to Mitigate the Single Point of Failure (SPOF) in the payment gateway servive
+   Architecture Decision Record (ADR) to Mitigate the Single Point of Failure (SPOF) represented by the Payment Gateway Servive
 ---
 
 *Status: [Final]*
