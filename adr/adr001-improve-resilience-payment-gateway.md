@@ -23,7 +23,7 @@ The decision is to divide the service into two separate services with clearly de
 
 This division into two services aims to reduce the risk of system failure in case of issues with one of the services. The separation of responsibilities also facilitates maintenance, scalability, and more granular issue resolution.
 
-### Architecture Change using Strangler Fig Pattern:
+**Architecture Change using Strangler Fig Pattern:**
 
 The adoption of the Strangler Fig Pattern will guide the implementation of this architectural change which involves gradually replacing parts of the existing payment gateway with the new services. 
 Here is how we will go about it : 
@@ -42,7 +42,7 @@ Here is how we will go about it :
 
 This phased approach ensures minimal congnitive overload, allows for end to end testing, and facilitates a smooth transition from the monolithic payment gateway to the split services for authorization and confirmation.
 
-### Payment Gateway Architecture: Before and After Splitting :
+**Payment Gateway Architecture: Before and After Splitting :**
 
 Before :
 ![Architecture Before](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/before.png)
