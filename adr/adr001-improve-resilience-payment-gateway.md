@@ -45,15 +45,15 @@ This phased approach ensures minimal congnitive overload, allows for end to end 
 **Payment Gateway Architecture: Before and After Splitting :**
 
 Before :
-![Architecture Before](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/before.png)
+![Architecture Before](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/spof-before.png)
 After :
-![Architecture After](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/after.png)
+![Architecture After](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/spof-after.png)
 
 ## Consequences
 
 ### Advantages:
-1. Reduction of SPOF and improve of availability: Division into two services reduces the risk of system failure, enhancing overall reliability.
-3. Ease of maintenance and scalability: Clearly defined responsibilities allow for more efficient maintenance, scalability, and targeted updates.
+1. Reduction of SPOF and improve of availability: Dividing the PaymentGateway Service into two services reduces the risk of system failure, enhancing overall reliability.
+3. Ease of maintenance and scalability: Clearly defined responsibilities of authorization and confirmation services allow for more efficient maintenance, scalability, and targeted updates.
 
 ### Disadvantages:
 1. Increased complexity in terms of coordination between services.
