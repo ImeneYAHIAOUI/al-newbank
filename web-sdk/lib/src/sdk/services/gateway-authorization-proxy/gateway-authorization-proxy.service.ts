@@ -68,30 +68,27 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
           resolve(response.data);
         } catch (error: any) {
           lastError = error;
-          if (operation.retry(lastError)) {
-            console.error(`Retry attempt ${currentAttempt} failed. Retrying...`);
-            return;
-          }
-           console.error(`All retry attempts failed. Last error: ${lastError?.message}`);
           if (isAxiosError(lastError) && lastError.response) {
-
             if (lastError.response.status === HttpStatus.UNAUTHORIZED) {
-              console.error(lastError.response);
-              console.error(`Unauthorized access`);
-              reject(new UnauthorizedError(lastError.message));
+              reject(new UnauthorizedError(lastError.response.data.details));
+              return;
             } else if (lastError.response.status === HttpStatus.NOT_FOUND) {
-              console.error(lastError.response);
-              console.error(`Application not found`);
               reject(new ApplicationNotFound());
+              return;
             } else if (lastError.response.status === HttpStatus.INTERNAL_SERVER_ERROR) {
-              console.error(lastError.response);
-              reject(new InternalServerError(lastError.message));
+              reject(new InternalServerError(lastError.response));
+            }else if (lastError.response.status === HttpStatus.TOO_MANY_REQUESTS) {
+               console.error(`the service is currently experiencing high demand.`);
             }
           } else {
             const errorMessage = `Error while processing payment: ${lastError?.message}`;
-            console.error(errorMessage);
             reject(new Error(errorMessage));
           }
+          if (operation.retry(lastError)) {
+             console.error(`Retry attempt ${currentAttempt} failed. Retrying...`);
+             return;
+          }
+          console.error(`All retry attempts failed. Last error: ${lastError?.message}`);
         }
       });
     });

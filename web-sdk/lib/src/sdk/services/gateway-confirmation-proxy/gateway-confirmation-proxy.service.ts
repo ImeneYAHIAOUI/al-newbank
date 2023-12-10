@@ -58,7 +58,7 @@ export class GatewayConfirmationProxyService {
                           } else if (lastError.response.status === HttpStatus.NOT_FOUND) {
                             console.error(lastError.response);
                             console.error(`Application not found`);
-                            reject(new ApplicationNotFound());
+                            reject(new ApplicationNotFound(lastError.response));
                           } else if (lastError.response.status === HttpStatus.INTERNAL_SERVER_ERROR) {
                             console.error(lastError.response);
                             reject(new InternalServerError(lastError.message));

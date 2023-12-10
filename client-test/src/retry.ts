@@ -25,7 +25,7 @@ async function main() {
         };
         let response: AuthorizeDto;
         const authorizePromises = [];
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 20; i++) {
                 try {
                     response = await newbankSdk.authorizePayment(paymentInfo);
                     authorizePromises.push(response);
