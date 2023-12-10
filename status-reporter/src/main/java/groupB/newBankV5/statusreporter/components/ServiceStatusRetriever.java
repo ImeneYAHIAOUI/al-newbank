@@ -61,4 +61,10 @@ public class ServiceStatusRetriever implements IServiceStatusRetriever {
         return ServiceStatuses;
     }
 
+    public boolean checkServiceAvailability(String serviceName){
+            return this.retrieveStatusFromPrometheus().stream()
+                    .filter(serviceStatus -> serviceStatus.getServiceName().contains(serviceName))
+                    .anyMatch(serviceStatus -> serviceStatus.getServiceStatus().equalsIgnoreCase("up"));
+        }
+
 }

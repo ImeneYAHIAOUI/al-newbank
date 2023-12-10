@@ -10,4 +10,7 @@ public interface IServiceStatusRetriever {
     List<ServiceStatus> retrieveServiceStatus(String tokien) throws InvalidTokenException, ApplicationNotFoundException;
 
     List<ServiceStatus> retrieveStatusFromPrometheus();
-}
+
+    boolean checkServiceAvailability(String serviceName);
+
+    }

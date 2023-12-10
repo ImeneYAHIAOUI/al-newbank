@@ -38,31 +38,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // main.ts
 var newbank_sdk_1 = require("@teamb/newbank-sdk");
-var Retry_settings_1 = require("@teamb/newbank-sdk/dist/sdk/services/Retry-settings");
-var newbank_sdk_2 = require("@teamb/newbank-sdk");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var loadBalancerHost, retrySettings, _a, cardNumber, cvv, expiryDate, token, port, getBackendStatus, backendStatus, paymentService, paymentInfo, response, confirm_1;
+        var retrySettings, _a, cardNumber, cvv, expiryDate, token, port, newbankSdk, paymentInfo, response, confirm_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    loadBalancerHost = 'localhost:80';
-                    retrySettings = new Retry_settings_1.RetrySettings({
+                    retrySettings = new newbank_sdk_1.RetrySettings({
                         retries: 2,
                         factor: 2,
                         minTimeout: 1000,
                         maxTimeout: 3000,
                         randomize: true,
                     });
-                    console.log('Server has started successfddully.');
                     _a = process.argv, cardNumber = _a[2], cvv = _a[3], expiryDate = _a[4], token = _a[5], port = _a[6];
-                    getBackendStatus = new newbank_sdk_2.GetBackendStatus(retrySettings);
-                    return [4 /*yield*/, getBackendStatus.getBackendStatus(token)];
-                case 1:
-                    backendStatus = _b.sent();
-                    console.log("backend status: ".concat(JSON.stringify(backendStatus, null, 2)));
-                    if (!(cardNumber && cvv && expiryDate)) return [3 /*break*/, 4];
-                    paymentService = new newbank_sdk_1.PaymentService(loadBalancerHost, retrySettings);
+                    newbankSdk = new newbank_sdk_1.NewbankSdk(token, retrySettings);
+                    if (!(cardNumber && cvv && expiryDate)) return [3 /*break*/, 3];
                     paymentInfo = {
                         cardNumber: cardNumber,
                         cvv: cvv,
@@ -70,15 +61,15 @@ function main() {
                         amount: '500',
                     };
                     response = void 0;
-                    return [4 /*yield*/, paymentService.authorize(paymentInfo, token)];
-                case 2:
+                    return [4 /*yield*/, newbankSdk.authorizePayment(paymentInfo)];
+                case 1:
                     response = _b.sent();
-                    return [4 /*yield*/, paymentService.confirmPayment(response.transactionId, token)];
-                case 3:
+                    return [4 /*yield*/, newbankSdk.confirmPayment(response.transactionId)];
+                case 2:
                     confirm_1 = _b.sent();
                     console.log(confirm_1);
-                    _b.label = 4;
-                case 4: return [2 /*return*/];
+                    _b.label = 3;
+                case 3: return [2 /*return*/];
             }
         });
     });

@@ -5,16 +5,18 @@ import {PaymentDto} from "../dto/payment.dto";
 import {AuthorizeDto} from "../dto/authorise.dto";
 import {GatewayConfirmationProxyService} from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
 import {RetrySettings} from "./Retry-settings";
+import { StatusReporterProxyService } from './status-reporter-proxy/status-reporter-proxy.service';
 import { UnauthorizedError } from '../exceptions/unauthorized.exception';
 
 export class PaymentService {
   private readonly gatewayAuthorizationProxyService;
   private readonly gatewayConfirmationProxyService;
-
+  private readonly statusReporterProxyService;
+  private readonly config = require('./config');
 constructor(retrySettings: RetrySettings) {
-  const config = require('./config');
-  this.gatewayAuthorizationProxyService = new GatewayAuthorizationProxyService(config.load_balancer_host,retrySettings);
-  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService(config.load_balancer_host,retrySettings);
+  this.statusReporterProxyService = new StatusReporterProxyService(retrySettings);
+  this.gatewayAuthorizationProxyService = new GatewayAuthorizationProxyService(this.config.load_balancer_host,retrySettings);
+  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService(this.config.load_balancer_host,retrySettings);
 }
 
 
@@ -89,24 +91,21 @@ constructor(retrySettings: RetrySettings) {
 
   async authorize(paymentInfo: PaymentInfoDTO,token: string) {
        try {
-                const publicKey = await this.getPublicKey(token);
-                const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
-                const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
-
-                return result;
-            } catch (error) {
-                if (error instanceof Error) {
-                   throw new UnauthorizedError( error.message);
-                }else{
-                  throw error;
-                }
-
-            }
-
+          await this.statusReporterProxyService.isServiceAvailable(this.config.service_authorizer_name);
+          const publicKey = await this.getPublicKey(token);
+          const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
+          const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
+          return result;
+          } catch (error) {
+                console.error('Authorization failed:', error);
+                throw error;
+        }
   }
+  
   async confirmPayment(transactionId: string, token: string){
     console.debug('payment confirmation request sent');
     try{
+      await this.statusReporterProxyService.isServiceAvailable(this.config.service_confirmation_name);
       return await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
     } catch (error) {
       console.error('Payment confirmation failed:', error);
