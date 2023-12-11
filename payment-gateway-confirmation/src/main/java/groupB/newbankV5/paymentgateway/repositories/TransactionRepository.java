@@ -3,12 +3,16 @@ package groupB.newbankV5.paymentgateway.repositories;
 import groupB.newbankV5.paymentgateway.entities.Transaction;
 import groupB.newbankV5.paymentgateway.entities.TransactionStatus;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -25,40 +29,67 @@ public class TransactionRepository {
         this.redisTemplate1 = redisTemplate1;
         this.redisTemplate2 = redisTemplate2;
     }
-    public List<Transaction> findByStatus(TransactionStatus status) {
-        List<Transaction> transactionsFromTemplate1 = findByStatusInTemplate(redisTemplate1, status.toString());
-        List<Transaction> transactionsFromTemplate2 = findByStatusInTemplate(redisTemplate2, status.toString());
-        transactionsFromTemplate1.addAll(transactionsFromTemplate2);
-        return transactionsFromTemplate1;
-    }
-    private List<Transaction> findByStatusInTemplate(RedisTemplate<String, Transaction> redisTemplate, String status) {
-        return redisTemplate.keys("*")
-                .stream()
-                .map(redisTemplate.opsForValue()::get)
-                .filter(transaction -> transaction != null && status.equals(transaction.getStatus()))
-                .collect(Collectors.toList());
-    }
 
     public void save(Transaction transaction) {
         UUID id = transaction.getId();
         int hashCode = id.hashCode();
-
+        String key = transaction.toString();
         if (hashCode % 2 == 0) {
-            redisTemplate1.opsForValue().set(id.toString(), transaction);
+            deleteById(redisTemplate1, transaction.getId());
+            redisTemplate1.opsForValue().set(key, transaction);
         } else {
-            redisTemplate2.opsForValue().set(id.toString(), transaction);
+            deleteById(redisTemplate2, transaction.getId());
+            redisTemplate2.opsForValue().set(key, transaction);
         }
     }
+
+
+    public List<Transaction> findByStatus(TransactionStatus status) {
+        List<Transaction> transactions = findByStatus(redisTemplate1, status);
+        transactions.addAll(findByStatus(redisTemplate2, status));
+        return transactions;
+    }
+
+    public List<Transaction> findByStatus(RedisTemplate<String, Transaction> redisTemplate, TransactionStatus status){
+        List<Transaction> transactions = new ArrayList<>();
+        String pattern = "*\"status\": \"" + status + "\"*";
+        List<String> keys = scanKeys(pattern, redisTemplate);
+        for(String key : keys) {
+            Transaction t = redisTemplate.opsForValue().get(key);
+            transactions.add(t);
+        }
+        return transactions;
+    }
+
+    public List<String> scanKeys(String pattern, RedisTemplate<String, Transaction> redisTemplate) {
+        return redisTemplate.execute((RedisCallback<List<String>>) connection -> {
+            return connection.scan(ScanOptions.scanOptions().match(pattern).build())
+                    .stream()
+                    .map(keyBytes -> new String(keyBytes, StandardCharsets.UTF_8))
+                    .collect(Collectors.toList());
+        });
+    }
+
 
     public Transaction findById(UUID id) {
         int hashCode = id.hashCode();
-
         if (hashCode % 2 == 0) {
-            return redisTemplate1.opsForValue().get(id.toString());
+            return findById(redisTemplate1, id);
         } else {
-            return redisTemplate2.opsForValue().get(id.toString());
+            return findById(redisTemplate2, id);
         }
     }
 
+    public Transaction findById(RedisTemplate<String, Transaction> redisTemplate, UUID id){
+        String pattern = "*\"id\": \"" + id + "\"*";
+        Optional<String> key = scanKeys(pattern, redisTemplate).stream().findAny();
+        return key.map(s -> redisTemplate.opsForValue().get(s)).orElse(null);
 
+    }
+
+    public void deleteById(RedisTemplate<String, Transaction> redisTemplate, UUID id) {
+        String pattern = "*\"id\": \"" + id + "\"*";
+        Optional<String> key = scanKeys(pattern, redisTemplate).stream().findAny();
+        key.ifPresent(redisTemplate::delete);
+    }
 }

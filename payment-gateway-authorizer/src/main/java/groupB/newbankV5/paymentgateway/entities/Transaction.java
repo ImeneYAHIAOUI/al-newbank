@@ -1,5 +1,7 @@
 package groupB.newbankV5.paymentgateway.entities;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
@@ -26,6 +28,27 @@ public class Transaction implements Serializable {
     private CreditCard creditCard;
     private String bank;
     private Long merchantId;
+
+    @Override
+    public String toString() {
+        return "{\n" +
+                "  \"id\": \"" + id + "\",\n" +
+                "  \"recipient\": " + recipient + ",\n" +
+                "  \"sender\": " + sender + ",\n" +
+                "  \"time\": " + time + ",\n" +
+                "  \"authorizationToken\": \"" + authorizationToken + "\",\n" +
+                "  \"amount\": " + amount + ",\n" +
+                "  \"fees\": " + fees + ",\n" +
+                "  \"status\": \"" + status + "\",\n" +
+                "  \"creditCardType\": " + creditCardType + ",\n" +
+                "  \"creditCard\": " + creditCard + ",\n" +
+                "  \"bank\": \"" + bank + "\",\n" +
+                "  \"merchantId\": " + merchantId + ",\n" +
+                "  \"external\": " + isExternal + "\n" +
+                "}";
+    }
+
+
     public TransactionStatus getStatus() {
         return status;
     }
@@ -36,6 +59,7 @@ public class Transaction implements Serializable {
     public void setMerchantId(Long merchantId) {
         this.merchantId = merchantId;
     }
+
     public BankAccount getRecipient() {
         return recipient;
     }
@@ -150,4 +174,5 @@ public class Transaction implements Serializable {
     public void setBank(String bank) {
         this.bank = bank;
     }
+
 }

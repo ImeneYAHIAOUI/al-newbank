@@ -1,6 +1,9 @@
 package groupB.newbankV5.paymentgateway.entities;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -48,4 +51,14 @@ public class CreditCard implements Serializable {
     public void setCvv(String cvv) {
         this.cvv = cvv;
     }
+
+    @Override
+    public String toString() {
+        return "{\n" +
+                "  \"cardNumber\": \"" + cardNumber + "\",\n" +
+                "  \"expiryDate\": \"" + expiryDate + "\",\n" +
+                "  \"cvv\": \"" + cvv + "\"\n" +
+                "}";
+    }
+
 }
