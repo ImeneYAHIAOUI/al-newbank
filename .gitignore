@@ -57,3 +57,11 @@ HELP.md
 /web-sdk/lib/dist/
 node_modules/class-validator/cjs/decorator/common/NotEquals.js.map
 *.map
+
+#env files
+.env
+*/.env
+
+transactions-service/.env
+metrics-service/.env
+

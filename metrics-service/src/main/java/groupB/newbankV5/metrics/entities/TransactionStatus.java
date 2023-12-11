@@ -5,24 +5,26 @@ public enum TransactionStatus {
     FEES_CALCULATED("FEES_CALCULATED"),
     SETTLED("SETTLED"),
 
-    PENDING("PENDING"),
+    CONFIRMED("CONFIRMED"),
+
+    PENDING_SETTLEMENT("PENDING_SETTLEMENT"),
 
     FAILED("FAILED")
     ;
 
-    private String authorized;
-    TransactionStatus(String authorized) {
-        this.authorized = authorized;
+    private String value;
+    TransactionStatus(String value) {
+        this.value = value;
     }
 
     TransactionStatus() {
     }
 
-    public String getAuthorized() {
-        return authorized;
+    public String getValue() {
+        return value;
     }
 
-    public void setAuthorized(String authorized) {
-        this.authorized = authorized;
+    public void setValue(String value) {
+        this.value = value;
     }
 }

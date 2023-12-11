@@ -1,7 +1,6 @@
-package groupB.newbankV5.anaytics.controllers;
+package groupB.newbankV5.metrics.controllers;
 
-import groupB.newbankV5.anaytics.controllers.dto.ErrorDTO;
-import groupB.newbankV5.metrics.controllers.MetricsController;
+import groupB.newbankV5.metrics.controllers.dto.ErrorDTO;
 import groupB.newbankV5.metrics.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.metrics.exceptions.InvalidTokenException;
 import groupB.newbankV5.metrics.exceptions.MerchantNotFoundException;
@@ -38,6 +37,15 @@ public class GlobalControllerAdvice {
         ErrorDTO errorDTO = new ErrorDTO();
         errorDTO.setError(e.getMessage());
         errorDTO.setDetails("Invalid token provided");
+        return errorDTO;
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDTO handleExceptions(IllegalArgumentException e) {
+        ErrorDTO errorDTO = new ErrorDTO();
+        errorDTO.setError(e.getMessage());
+        errorDTO.setDetails("Invalid request");
         return errorDTO;
     }
 }

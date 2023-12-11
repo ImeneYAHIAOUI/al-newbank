@@ -27,14 +27,17 @@ services:
 
   grafana:
     image: grafana/grafana:9.5.2
+
     container_name: grafana
     ports:
-      - "3000:3000"
+      - "3800:3000"
     restart: unless-stopped
     volumes:
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
     networks:
       - spring-newbank-network
+
+
 
 networks:
    spring-newbank-network:

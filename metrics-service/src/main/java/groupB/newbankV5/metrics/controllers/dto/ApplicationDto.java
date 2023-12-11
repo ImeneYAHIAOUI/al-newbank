@@ -1,7 +1,5 @@
 package groupB.newbankV5.metrics.controllers.dto;
 
-import groupB.newbankV5.metrics.controllers.dto.MerchantDto;
-
 
 public class ApplicationDto {
 

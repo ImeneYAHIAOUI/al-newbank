@@ -6,4 +6,6 @@ public enum TransactionStatus {
     CONFIRMED,
     FEES_CALCULATED,
     SETTLED,
+
+    FAILED
 }

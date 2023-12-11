@@ -1,7 +1,7 @@
 import {AuthorizeDto} from "../../dto/authorise.dto";
 import {RetrySettings} from "../Retry-settings";
 import * as retry from 'retry';
-import axios, {AxiosRequestConfig, isAxiosError} from "axios";
+import axios, {AxiosRequestConfig} from "axios";
 import {HttpStatus} from "@nestjs/common";
 import {UnauthorizedError} from "../../exceptions/unauthorized.exception";
 import {ApplicationNotFound} from "../../exceptions/application-not-found.exception";
@@ -97,4 +97,8 @@ export class StatusReporterProxyService {
         });
     }
 
+}
+
+function isAxiosError(error: any): error is { isAxiosError: boolean; response: any } {
+    return error.isAxiosError === true && error.response !== undefined;
 }

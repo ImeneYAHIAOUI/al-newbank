@@ -1,4 +1,6 @@
 // main.ts
+import express from 'express';
+import bodyParser from 'body-parser';
 import {NewbankSdk, RetrySettings} from "@teamb/newbank-sdk";
 import {PaymentInfoDTO} from "@teamb/newbank-sdk";
 import {AuthorizeDto} from "@teamb/newbank-sdk";
@@ -15,6 +17,19 @@ async function main() {
 
     const [ , ,cardNumber, cvv, expiryDate, token,port] = process.argv;
     const newbankSdk = new NewbankSdk(token, retrySettings);
+    const app = express();
+    app.use(bodyParser.json());
+
+    app.get('/', async (req, res) => {
+        res.json({message: 'Hello World!'});
+    });
+    app.get('/backend-status', async (req, res) => {
+        const backendStatus = await newbankSdk.getBackendStatus();
+        res.json(backendStatus);
+    });
+
+
+
     if ( cardNumber && cvv && expiryDate) {
         const paymentInfo: PaymentInfoDTO = {
             cardNumber: cardNumber,
@@ -35,5 +50,17 @@ async function main() {
         }
 
     }
+
+
+    const server = app.listen(port || 6906, () => {
+        console.log(`Server is running on port ${port || 6906}`);
+    });
+
+    process.on('SIGINT', () => {
+        server.close(() => {
+            console.log('Server closed');
+            process.exit(0);
+        });
+    });
 }
 main();

@@ -53,8 +53,8 @@ public class ServiceStatusRetriever implements IServiceStatusRetriever {
 
         List<ServiceStatus> ServiceStatuses = targetRulesMap.entrySet().stream()
                 .map(entry -> {
-                    String health = Objects.equals(entry.getKey().getHealth(), "down") ? "down" : entry.getValue().stream()
-                            .anyMatch(rule -> Objects.equals(rule.getState(), "firing")) ? "degraded" : "up";
+                    int health = Objects.equals(entry.getKey().getHealth(), "down") ? 2 : entry.getValue().stream()
+                            .anyMatch(rule -> Objects.equals(rule.getState(), "firing")) ? 3 : 1;
                     return new ServiceStatus(entry.getKey().getLabels().getApplication(), health);
                 }).toList();
 
@@ -64,7 +64,7 @@ public class ServiceStatusRetriever implements IServiceStatusRetriever {
     public boolean checkServiceAvailability(String serviceName){
             return this.retrieveStatusFromPrometheus().stream()
                     .filter(serviceStatus -> serviceStatus.getServiceName().contains(serviceName))
-                    .anyMatch(serviceStatus -> serviceStatus.getServiceStatus().equalsIgnoreCase("up"));
+                    .allMatch(serviceStatus -> serviceStatus.getServiceStatus() == 1);
         }
 
 }

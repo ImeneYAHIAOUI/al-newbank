@@ -1,32 +1,22 @@
 package groupB.newbankV5.metrics.entities;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Entity
+@Document(collection = "transactions")
 public class Transaction {
 
     @Id
     private String id;
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "BIC", column = @Column(name = "recipient_BIC")),
-            @AttributeOverride(
-                    name = "IBAN", column = @Column(name = "recipient_IBAN"))
-    })
+
     private BankAccount recipient;
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "BIC", column = @Column(name = "sender_BIC")),
-            @AttributeOverride(
-                    name = "IBAN", column = @Column(name = "sender_IBAN"))
-    })
+
     private BankAccount sender;
     private Boolean isExternal;
 
@@ -38,27 +28,19 @@ public class Transaction {
     private TransactionStatus status;
     private CardType creditCardType;
 
+    private CreditCard creditCard;
+
 
 
     public TransactionStatus getStatus() {
         return status;
     }
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "BIC", column = @Column(name = "recipient_BIC")),
-            @AttributeOverride(
-                    name = "IBAN", column = @Column(name = "recipient_IBAN"))
-    })
+
     public BankAccount getRecipient() {
         return recipient;
     }
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "BIC", column = @Column(name = "sender_BIC")),
-            @AttributeOverride(
-                    name = "IBAN", column = @Column(name = "sender_IBAN"))
-    })
+
     public BankAccount getSender() {
         return sender;
     }

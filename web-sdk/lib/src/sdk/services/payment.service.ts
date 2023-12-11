@@ -5,6 +5,9 @@ import {PaymentDto} from "../dto/payment.dto";
 import {AuthorizeDto} from "../dto/authorise.dto";
 import {GatewayConfirmationProxyService} from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
 import {RetrySettings} from "./Retry-settings";
+import {RequestDto} from "../dto/request.dto";
+import {MetricsProxy} from "./metrics-proxy/metrics-proxy";
+
 import { StatusReporterProxyService } from './status-reporter-proxy/status-reporter-proxy.service';
 import { UnauthorizedError } from '../exceptions/unauthorized.exception';
 
@@ -14,6 +17,7 @@ export class PaymentService {
   private readonly statusReporterProxyService;
   private readonly config = require('./config');
 constructor(retrySettings: RetrySettings) {
+
   this.statusReporterProxyService = new StatusReporterProxyService(retrySettings);
   this.gatewayAuthorizationProxyService = new GatewayAuthorizationProxyService(this.config.load_balancer_host,retrySettings);
   this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService(this.config.load_balancer_host,retrySettings);
@@ -49,9 +53,9 @@ constructor(retrySettings: RetrySettings) {
   }
 
 
-  async getPublicKey(token: string): Promise<string> {
-    return await this.gatewayAuthorizationProxyService.getPublicKey(token);
-  }
+   async getPublicKey(token: string): Promise<string> {
+     return await this.gatewayAuthorizationProxyService.getPublicKey(token);
+   }
 
 
 
@@ -90,7 +94,9 @@ constructor(retrySettings: RetrySettings) {
   }
 
   async authorize(paymentInfo: PaymentInfoDTO,token: string) {
+
        try {
+
           await this.statusReporterProxyService.isServiceAvailable(this.config.service_authorizer_name);
           const publicKey = await this.getPublicKey(token);
           const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
@@ -104,7 +110,9 @@ constructor(retrySettings: RetrySettings) {
   
   async confirmPayment(transactionId: string, token: string){
     console.debug('payment confirmation request sent');
+
     try{
+
       await this.statusReporterProxyService.isServiceAvailable(this.config.service_confirmation_name);
       return await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
     } catch (error) {
