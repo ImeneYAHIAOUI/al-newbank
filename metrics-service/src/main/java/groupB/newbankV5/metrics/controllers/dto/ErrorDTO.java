@@ -1,4 +1,4 @@
-package groupB.newbankV5.anaytics.controllers.dto;
+package groupB.newbankV5.metrics.controllers.dto;
 
 public class ErrorDTO {
     private String error;

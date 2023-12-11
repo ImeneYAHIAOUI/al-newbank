@@ -20,7 +20,7 @@ export class GatewayConfirmationProxyService {
     this.retrySettings = retrySettings;
   }
  
-  async confirmPayment(transactionId: string, token: string): Promise<String> {
+   confirmPayment(transactionId: string, token: string): Promise<String> {
         const operation = retry.operation({
           retries: this.retrySettings.retries,
           factor: this.retrySettings.factor,

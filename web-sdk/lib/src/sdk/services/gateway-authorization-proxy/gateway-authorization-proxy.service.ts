@@ -17,15 +17,15 @@ export class GatewayAuthorizationProxyService {
     this._gatewayBaseUrl = `${load_balancer_host}`;
     this.retrySettings = retrySettings;
   }
-   async getPublicKey( token: string): Promise<string> {
+    async getPublicKey(token: string): Promise<string> {
       try {
         const headers = {
           Authorization: `Bearer ${token}`,
         };
 
         const response = await axios.get(
-          `${this._gatewayBaseUrl}${this._gatewayPath}applications/public-key`,
-            { headers },
+            `${this._gatewayBaseUrl}${this._gatewayPath}applications/public-key`,
+            {headers},
         );
         return response.data;
       } catch (error: any) {

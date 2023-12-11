@@ -63,6 +63,8 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
         ApplicationDto application = businessIntegratorProxy.validateToken(token);
         MerchantDto merchant = application.getMerchant();
         CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
+
+
         log.info("\u001B[32mSending payment authorization request to CCN\u001B[0m");
         CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
                 new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv(), amount)
