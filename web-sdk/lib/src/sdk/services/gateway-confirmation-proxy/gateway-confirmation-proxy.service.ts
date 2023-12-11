@@ -9,15 +9,19 @@ import {AuthorizeDto} from "../../dto/authorise.dto";
 import { InternalServerError } from '../../exceptions/internal-server.exception';
 import { UnauthorizedError } from '../../exceptions/unauthorized.exception';
 import {RetrySettings} from "../Retry-settings";
+import {MetricsProxy} from "../metrics-proxy/metrics-proxy";
+import {RequestDto} from "../../dto/request.dto";
 
 export class GatewayConfirmationProxyService {
   private readonly _gatewayBaseUrl: string;
    private readonly retrySettings: RetrySettings
+    private readonly metricsProxy: MetricsProxy;
 
   private readonly _gatewayPath = '/api/gateway-confirmation';
   constructor(load_balancer_host: string,retrySettings: RetrySettings) {
     this._gatewayBaseUrl = `${load_balancer_host}`;
     this.retrySettings = retrySettings;
+    this.metricsProxy = new MetricsProxy(retrySettings)
   }
  
    confirmPayment(transactionId: string, token: string): Promise<String> {
@@ -29,6 +33,9 @@ export class GatewayConfirmationProxyService {
           randomize: this.retrySettings.randomize,
         });
         let lastError: Error | undefined;
+
+       const start = new Date().getTime();
+
         return new Promise<String>((resolve, reject) => {
           operation.attempt(async (currentAttempt) => {
             try {
@@ -41,8 +48,14 @@ export class GatewayConfirmationProxyService {
 
                const response = await axios.post(`${this._gatewayBaseUrl}${this._gatewayPath}/${transactionId}`,httpOptions,);
               resolve(response.data);
+                const end = new Date().getTime();
+                const time = end - start;
+                const request : RequestDto = new RequestDto(new Date().toISOString(), time, 'SUCCESS', 'Payment confirmed');
+                await this.metricsProxy.sendRequestResult(request, token);
             } catch (error: any) {
               lastError = error;
+                const end = new Date().getTime()
+                const time = end - start;
 
                         if (operation.retry(lastError)) {
                           console.error(`Retry attempt ${currentAttempt} failed. Retrying...`);
@@ -68,6 +81,10 @@ export class GatewayConfirmationProxyService {
                           console.error(errorMessage);
                           reject(new Error(errorMessage));
                         }
+                const request : RequestDto = new RequestDto(new Date().toISOString(), time, 'FAILED', 'Payment confirmation failed');
+                await this.metricsProxy.sendRequestResult(request, token);
+
+
                       }
           });
         });

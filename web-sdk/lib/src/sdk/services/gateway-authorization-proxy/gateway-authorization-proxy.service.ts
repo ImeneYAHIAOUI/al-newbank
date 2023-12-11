@@ -9,13 +9,17 @@ import { InternalServerError } from '../../exceptions/internal-server.exception'
 import { UnauthorizedError } from '../../exceptions/unauthorized.exception';
 import {AuthorizeDto} from "../../dto/authorise.dto";
 import {RetrySettings} from "../Retry-settings";
+import {MetricsProxy} from "../metrics-proxy/metrics-proxy";
+import {RequestDto} from "../../dto/request.dto";
 export class GatewayAuthorizationProxyService {
   private readonly _gatewayBaseUrl: string;
   private readonly _gatewayPath = '/api/gateway_authorization/';
-  private readonly retrySettings: RetrySettings
+  private readonly retrySettings: RetrySettings;
+  private readonly metricsProxy: MetricsProxy;
   constructor(load_balancer_host: string,  retrySettings: RetrySettings) {
     this._gatewayBaseUrl = `${load_balancer_host}`;
     this.retrySettings = retrySettings;
+    this.metricsProxy = new MetricsProxy(retrySettings)
   }
     async getPublicKey(token: string): Promise<string> {
       try {
@@ -49,6 +53,7 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
     });
 
     let lastError: Error | undefined;
+    const start = new Date().getTime();
 
     return new Promise<AuthorizeDto>((resolve, reject) => {
       operation.attempt(async (currentAttempt) => {
@@ -66,8 +71,14 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
             httpOptions,
           );
           resolve(response.data);
+          const end = new Date().getTime();
+          const time = end - start;
+          const request : RequestDto = new RequestDto(new Date().toISOString(), time, 'SUCCESS', 'Payment authorized');
+          await this.metricsProxy.sendRequestResult(request, token);
         } catch (error: any) {
           lastError = error;
+          const end = new Date().getTime();
+          const time = end - start;
           if (operation.retry(lastError)) {
             console.error(`Retry attempt ${currentAttempt} failed. Retrying...`);
             return;
@@ -92,6 +103,8 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
             console.error(errorMessage);
             reject(new Error(errorMessage));
           }
+          const request : RequestDto = new RequestDto(new Date().toISOString(), time, 'FAILED', 'Payment authorization failed');
+          await this.metricsProxy.sendRequestResult(request, token);
         }
       });
     });

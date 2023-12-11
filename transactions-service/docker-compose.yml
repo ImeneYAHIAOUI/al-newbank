@@ -8,22 +8,12 @@ services:
     cpus: 2
     ports:
       - "4999:8080"
-    depends_on:
-      - transaction-rationale-db
     networks:
       - spring-newbank-network
     environment:
-      - POSTGRES_HOST=transaction-rationale-db:5432
+      - POSTGRES_HOST=${POSTGRES_HOST}
 
-  transaction-rationale-db:
-      image: postgres:15.2
-      container_name: "transaction-rationale-db"
-      environment:
-        - POSTGRES_PASSWORD=postgrespass
-        - POSTGRES_USER=postgresuser
-        - POSTGRES_DB=transaction-db
-      networks:
-        - spring-newbank-network
+
 
 
 networks:

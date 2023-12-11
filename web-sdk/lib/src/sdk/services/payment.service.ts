@@ -11,13 +11,11 @@ import {MetricsProxy} from "./metrics-proxy/metrics-proxy";
 export class PaymentService {
   private readonly gatewayAuthorizationProxyService;
   private readonly gatewayConfirmationProxyService;
-    private readonly metricsProxy: MetricsProxy;
 
 constructor(retrySettings: RetrySettings) {
   const config = require('./config');
   this.gatewayAuthorizationProxyService = new GatewayAuthorizationProxyService(config.load_balancer_host,retrySettings);
   this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService(config.load_balancer_host,retrySettings);
-  this.metricsProxy = new MetricsProxy(retrySettings);
 
 }
 
@@ -98,40 +96,25 @@ constructor(retrySettings: RetrySettings) {
 
   async authorize(paymentInfo: PaymentInfoDTO,token: string) {
 
-       const start = new Date().getTime();
        try {
                 const publicKey = await this.getPublicKey(token);
                 const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
                 const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
-                const end = new Date().getTime();
-                const time = end - start;
-                const request : RequestDto = new RequestDto(new Date().toISOString(), time, 'SUCCESS', 'Payment authorized');
-                await this.metricsProxy.sendRequestResult(request, token);
                 return result;
             } catch (error) {
                 console.error('Authorization failed:', error);
-                const end = new Date().getTime();
-                const time = end - start;
-                const request : RequestDto = new RequestDto(new Date().toISOString(), time, 'FAILED', 'Payment authorization failed');
-                await this.metricsProxy.sendRequestResult(request, token);
                 throw error;
             }
 
   }
   async confirmPayment(transactionId: string, token: string){
     console.debug('payment confirmation request sent');
-    const start = new Date().getTime();
+
     try{
-      const end = new Date().getTime();
-      const time = end - start;
-        const request : RequestDto = new RequestDto(new Date().toISOString(), time, 'SUCCESS', 'Payment confirmed');
-        await this.metricsProxy.sendRequestResult(request, token);
+
       return await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
     } catch (error) {
       console.error('Payment confirmation failed:', error);
-        const end = new Date().getTime();
-        const time = end - start;
-        const request : RequestDto = new RequestDto(new Date().toISOString(), time, 'FAILED', 'Payment confirmation failed');
       throw error;
     }
   }
