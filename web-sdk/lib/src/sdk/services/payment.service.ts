@@ -15,8 +15,8 @@ export class PaymentService {
   private readonly config = require('./config');
 constructor(retrySettings: RetrySettings) {
   this.statusReporterProxyService = new StatusReporterProxyService(retrySettings);
-  this.gatewayAuthorizationProxyService = new GatewayAuthorizationProxyService(this.config.load_balancer_host,retrySettings);
-  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService(this.config.load_balancer_host,retrySettings);
+  this.gatewayAuthorizationProxyService = new GatewayAuthorizationProxyService(this.config.load_balancer_host,retrySettings, this.statusReporterProxyService);
+  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService(this.config.load_balancer_host,retrySettings, this.statusReporterProxyService);
 }
 
 
@@ -91,7 +91,6 @@ constructor(retrySettings: RetrySettings) {
 
   async authorize(paymentInfo: PaymentInfoDTO,token: string) {
        try {
-          await this.statusReporterProxyService.isServiceAvailable(this.config.service_authorizer_name);
           const publicKey = await this.getPublicKey(token);
           const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
           const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
@@ -105,7 +104,6 @@ constructor(retrySettings: RetrySettings) {
   async confirmPayment(transactionId: string, token: string){
     console.debug('payment confirmation request sent');
     try{
-      await this.statusReporterProxyService.isServiceAvailable(this.config.service_confirmation_name);
       return await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
     } catch (error) {
       console.error('Payment confirmation failed:', error);

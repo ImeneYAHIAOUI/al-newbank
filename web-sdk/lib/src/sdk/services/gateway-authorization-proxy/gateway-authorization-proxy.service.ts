@@ -9,13 +9,17 @@ import { InternalServerError } from '../../exceptions/internal-server.exception'
 import { UnauthorizedError } from '../../exceptions/unauthorized.exception';
 import {AuthorizeDto} from "../../dto/authorise.dto";
 import {RetrySettings} from "../Retry-settings";
+import { StatusReporterProxyService } from '../status-reporter-proxy/status-reporter-proxy.service';
 export class GatewayAuthorizationProxyService {
   private readonly _gatewayBaseUrl: string;
   private readonly _gatewayPath = '/api/gateway_authorization/';
   private readonly retrySettings: RetrySettings
-  constructor(load_balancer_host: string,  retrySettings: RetrySettings) {
+  private readonly config = require('./../config');
+  private readonly statusReporterProxyService: StatusReporterProxyService;
+  constructor(load_balancer_host: string,  retrySettings: RetrySettings, statusReporterProxyService: StatusReporterProxyService) {
     this._gatewayBaseUrl = `${load_balancer_host}`;
     this.retrySettings = retrySettings;
+    this.statusReporterProxyService = statusReporterProxyService;
   }
    async getPublicKey( token: string): Promise<string> {
       try {
@@ -59,6 +63,8 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
               Authorization: `Bearer ${token}`,
             },
           };
+
+          await this.statusReporterProxyService.isServiceAvailable(this.config.service_authorizer_name); 
 
           const response = await axios.post(
             `${this._gatewayBaseUrl}${this._gatewayPath}authorize`,

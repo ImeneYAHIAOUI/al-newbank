@@ -9,15 +9,18 @@ import {AuthorizeDto} from "../../dto/authorise.dto";
 import { InternalServerError } from '../../exceptions/internal-server.exception';
 import { UnauthorizedError } from '../../exceptions/unauthorized.exception';
 import {RetrySettings} from "../Retry-settings";
+import { StatusReporterProxyService } from '../status-reporter-proxy/status-reporter-proxy.service';
 
 export class GatewayConfirmationProxyService {
   private readonly _gatewayBaseUrl: string;
-   private readonly retrySettings: RetrySettings
-
+  private readonly retrySettings: RetrySettings
+  private readonly config = require('./../config');
+  private readonly statusReporterProxyService: StatusReporterProxyService;
   private readonly _gatewayPath = '/api/gateway-confirmation';
-  constructor(load_balancer_host: string,retrySettings: RetrySettings) {
+  constructor(load_balancer_host: string,retrySettings: RetrySettings, statusReporterProxyService: StatusReporterProxyService) {
     this._gatewayBaseUrl = `${load_balancer_host}`;
     this.retrySettings = retrySettings;
+    this.statusReporterProxyService = statusReporterProxyService;
   }
  
   async confirmPayment(transactionId: string, token: string): Promise<String> {
@@ -29,6 +32,8 @@ export class GatewayConfirmationProxyService {
           randomize: this.retrySettings.randomize,
         });
         let lastError: Error | undefined;
+
+
         return new Promise<String>((resolve, reject) => {
           operation.attempt(async (currentAttempt) => {
             try {
@@ -38,6 +43,7 @@ export class GatewayConfirmationProxyService {
                   Authorization: `Bearer ${token}`,
                 },
               };
+              await this.statusReporterProxyService.isServiceAvailable(this.config.service_confirmation_name); 
 
                const response = await axios.post(`${this._gatewayBaseUrl}${this._gatewayPath}/${transactionId}`,httpOptions,);
               resolve(response.data);
