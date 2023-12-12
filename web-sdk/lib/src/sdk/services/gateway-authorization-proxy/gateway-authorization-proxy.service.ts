@@ -9,6 +9,8 @@ import { InternalServerError } from '../../exceptions/internal-server.exception'
 import { UnauthorizedError } from '../../exceptions/unauthorized.exception';
 import {AuthorizeDto} from "../../dto/authorise.dto";
 import {RetrySettings} from "../Retry-settings";
+import { StatusReporterProxyService } from '../status-reporter-proxy/status-reporter-proxy.service';
+
 import {MetricsProxy} from "../metrics-proxy/metrics-proxy";
 import {RequestDto} from "../../dto/request.dto";
 export class GatewayAuthorizationProxyService {
@@ -16,11 +18,15 @@ export class GatewayAuthorizationProxyService {
   private readonly _gatewayPath = '/api/gateway_authorization/';
   private readonly retrySettings: RetrySettings;
   private readonly metricsProxy: MetricsProxy;
-  constructor(load_balancer_host: string,  retrySettings: RetrySettings) {
+  private readonly config = require('./../config');
+  private readonly statusReporterProxyService: StatusReporterProxyService;
+  constructor(load_balancer_host: string,  retrySettings: RetrySettings, statusReporterProxyService: StatusReporterProxyService) {
     this._gatewayBaseUrl = `${load_balancer_host}`;
     this.retrySettings = retrySettings;
     this.metricsProxy = new MetricsProxy(retrySettings)
+    this.statusReporterProxyService = statusReporterProxyService;
   }
+
     async getPublicKey(token: string): Promise<string> {
       try {
         const headers = {
@@ -64,6 +70,8 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
               Authorization: `Bearer ${token}`,
             },
           };
+
+          await this.statusReporterProxyService.isServiceAvailable(this.config.service_authorizer_name); 
 
           const response = await axios.post(
             `${this._gatewayBaseUrl}${this._gatewayPath}authorize`,
