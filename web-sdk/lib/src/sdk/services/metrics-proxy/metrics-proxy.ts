@@ -81,7 +81,8 @@ export class MetricsProxy {
     }
 
 
-    async sendRequestResult(requestDto: RequestDto, token: string) {
+    
+    /*async sendRequestResult(requestDto: RequestDto, token: string) {
 
         const operation = retry.operation({
             retries: this.retrySettings.retries,
@@ -134,7 +135,23 @@ export class MetricsProxy {
             });
         });
 
+    }*/
+
+    async sendRequestResult(requestDto: RequestDto, token: string){
+        try {
+            const httpOptions: AxiosRequestConfig = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+
+            await axios.post(`${this.metricsUrl}${this._metricsPath}/request`, requestDto, httpOptions);
+        } catch (error: any) {
+            console.error(`Error while processing request: ${error.message}`);
+        }
     }
+
 }
 function isAxiosError(error: any): error is { isAxiosError: boolean; response: any } {
     return error.isAxiosError === true && error.response !== undefined;

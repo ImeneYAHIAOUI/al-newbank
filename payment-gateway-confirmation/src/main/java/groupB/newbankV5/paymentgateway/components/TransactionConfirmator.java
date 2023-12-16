@@ -14,6 +14,12 @@ import groupB.newbankV5.paymentgateway.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
 @Service
@@ -25,6 +31,10 @@ public class TransactionConfirmator implements ITransactionConfirmation, ITransa
     private final IMockBank mockBankProxy;
 
     private final KafkaProducerService kafkaProducerService;
+
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final long TIMEOUT_MS = 1000;
+
 
     @Autowired
     public TransactionConfirmator(TransactionRepository transactionRepository, IPaymentProcessor paymentProcessor, MockBankProxy mockBankProxy, KafkaProducerService kafkaProducerService) {
@@ -43,27 +53,30 @@ public class TransactionConfirmator implements ITransactionConfirmation, ITransa
     }
 
     @Override
-    public String confirmPayment(UUID transactionId) {
-        Transaction transaction = transactionRepository.findById(transactionId);
-        if (transaction != null && transaction.getStatus().equals(TransactionStatus.AUTHORIZED)) {
-            transaction.setStatus(TransactionStatus.CONFIRMED);
-            transactionRepository.save(transaction);
+    public String confirmPayment(UUID transactionId) throws ExecutionException, InterruptedException, TimeoutException {
+        Future<String> future = executorService.submit(() -> {
+                Transaction transaction = transactionRepository.findById(transactionId);
+            if (transaction != null && transaction.getStatus().equals(TransactionStatus.AUTHORIZED)) {
+                transaction.setStatus(TransactionStatus.CONFIRMED);
+                transactionRepository.save(transaction);
 
-            CreditCard usedCreditCard = transaction.getCreditCard();
-            if(transaction.getBank().equals("NewBank")) {
-                log.info("\u001B[32msend fund reservation request\u001B[0m");
-                paymentProcessor.reserveFunds(transaction);
+                CreditCard usedCreditCard = transaction.getCreditCard();
+                if(transaction.getBank().equals("NewBank")) {
+                    log.info("\u001B[32msend fund reservation request\u001B[0m");
+                    paymentProcessor.reserveFunds(transaction);
+                }
+                else
+                    mockBankProxy.reserveFunds(transaction.getAmount(), usedCreditCard.getCardNumber(), usedCreditCard.getExpiryDate(), usedCreditCard.getCvv());
+                transaction.setStatus(TransactionStatus.PENDING_SETTLEMENT);
+                transactionRepository.save(transaction);
+                kafkaProducerService.sendMessage(transaction);
+                return "Payment confirmed";
             }
-            else
-                mockBankProxy.reserveFunds(transaction.getAmount(), usedCreditCard.getCardNumber(), usedCreditCard.getExpiryDate(), usedCreditCard.getCvv());
-            transaction.setStatus(TransactionStatus.PENDING_SETTLEMENT);
-            transactionRepository.save(transaction);
-            kafkaProducerService.sendMessage(transaction);
-            return "Payment confirmed";
-        }
-        if (transaction == null)
-            return "Transaction not found, try again";
-        return "Payment already confirmed";
+            if (transaction == null)
+                return "Transaction not found, try again";
+            return "Payment already confirmed";
+                });
+        return future.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
     }
 

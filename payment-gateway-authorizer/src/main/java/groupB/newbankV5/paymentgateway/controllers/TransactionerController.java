@@ -2,16 +2,17 @@ package groupB.newbankV5.paymentgateway.controllers;
 
 import groupB.newbankV5.paymentgateway.controllers.dto.AuthorizeDto;
 import groupB.newbankV5.paymentgateway.controllers.dto.PaymentDto;
+import groupB.newbankV5.paymentgateway.entities.Transaction;
+import groupB.newbankV5.paymentgateway.entities.TransactionStatus;
 import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.exceptions.CCNException;
 import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;
 import groupB.newbankV5.paymentgateway.interfaces.IRSA;
 import groupB.newbankV5.paymentgateway.interfaces.ITransactionFinder;
 import groupB.newbankV5.paymentgateway.interfaces.ITransactionProcessor;
+import groupB.newbankV5.paymentgateway.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.crypto.BadPaddingException;
@@ -23,9 +24,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -38,11 +40,15 @@ public class TransactionerController {
     private final ITransactionProcessor transactionProcessor;
     private final ITransactionFinder transactionFinder;
 
+    private final TransactionRepository transactionRepository;
+
     @Autowired
-    public TransactionerController(ITransactionProcessor transactionProcessor,IRSA crypto, ITransactionFinder transactionFinder) {
+    public TransactionerController(ITransactionProcessor transactionProcessor,IRSA crypto, ITransactionFinder transactionFinder,
+            TransactionRepository transactionRepository) {
         this.transactionProcessor = transactionProcessor;
         this.crypto=crypto;
         this.transactionFinder=transactionFinder;
+        this.transactionRepository = transactionRepository;
     }
 
 //    @PostMapping("/process")
@@ -53,9 +59,10 @@ public class TransactionerController {
 //    }
 
     @PostMapping("authorize")
-    public ResponseEntity<AuthorizeDto> processPayment(@RequestBody PaymentDto paymentDetails, @RequestHeader("Authorization") String authorizationHeader ) throws InvalidTokenException,
-            ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException,
-            NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, InvalidKeySpecException {
+    public ResponseEntity<AuthorizeDto> processPayment(@RequestBody PaymentDto paymentDetails, @RequestHeader("Authorization") String authorizationHeader )
+            throws InvalidTokenException, ApplicationNotFoundException, CCNException, NoSuchPaddingException,
+            IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException,
+            InvalidKeySpecException, ExecutionException, InterruptedException, TimeoutException {
         log.info("\u001B[32mProcessing payment request\u001B[0m");
         // Remove the "Bearer " prefix
         String token = authorizationHeader.substring(7);
@@ -65,6 +72,8 @@ public class TransactionerController {
         AuthorizeDto authorizeDto = new AuthorizeDto(transactionId);
         return ResponseEntity.status(200).body(authorizeDto);
     }
+
+
     @GetMapping("applications/public-key")
     public ResponseEntity<String> getAesKey(HttpServletRequest request, @RequestHeader("Authorization") String authorizationHeader) throws NoSuchAlgorithmException, ApplicationNotFoundException, InvalidKeySpecException {
         String token = authorizationHeader.substring(7);
@@ -85,5 +94,12 @@ public class TransactionerController {
         long number = transactionFinder.getAuthorizedTransaction(id);
         return ResponseEntity.status(200).body(number);
     }
+
+    @GetMapping
+    public ResponseEntity<List<Transaction>> findTransactions(){
+        return ResponseEntity.ok().body(transactionRepository.
+                findByStatus(TransactionStatus.AUTHORIZED));
+    }
+
 
 }

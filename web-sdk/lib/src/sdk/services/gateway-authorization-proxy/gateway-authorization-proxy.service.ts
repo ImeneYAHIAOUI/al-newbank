@@ -75,8 +75,8 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
 
           const response = await axios.post(
             `${this._gatewayBaseUrl}${this._gatewayPath}authorize`,
-            encryptedCardInfo,
-            httpOptions,
+            encryptedCardInfo,{
+            ...httpOptions, timeout: this.retrySettings.maxTimeout,}
           );
           resolve(response.data);
           const end = new Date().getTime();
@@ -88,7 +88,7 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
           const end = new Date().getTime();
           const time = end - start;
           if (operation.retry(lastError)) {
-            console.error(`Retry attempt ${currentAttempt} failed. Retrying...`);
+            console.error(`Retry attempt ${currentAttempt}, error is ${lastError?.message} failed. Retrying...`);
             return;
           }
            console.error(`All retry attempts failed. Last error: ${lastError?.message}`);
@@ -111,11 +111,6 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
           }
           const request : RequestDto = new RequestDto(new Date().toISOString(), time, 'FAILED', 'Payment authorization failed');
           await this.metricsProxy.sendRequestResult(request, token);
-          if (operation.retry(lastError)) {
-             console.error(`Retry attempt ${currentAttempt} failed. Retrying...`);
-             return;
-          }
-          console.error(`All retry attempts failed. Last error: ${lastError?.message}`);
         }
       });
     });

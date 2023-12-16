@@ -25,6 +25,13 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
 @Service
@@ -37,6 +44,10 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
     private final IRSA rsa;
 
     private final KafkaProducerService kafkaProducerService;
+
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final long TIMEOUT_MS = 1000;
+
 
     @Autowired
     public TransactionAuthorizer(
@@ -57,37 +68,46 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
         return confirmedTransactionsCount;
     }
     @Override
-    public Transaction processPayment(String token, BigDecimal amount, String cryptedCreditCard) throws InvalidTokenException,
-            ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
-            BadPaddingException, InvalidKeyException, InvalidKeySpecException {
-        ApplicationDto application = businessIntegratorProxy.validateToken(token);
-        MerchantDto merchant = application.getMerchant();
-        CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
+    public Transaction processPayment(String token, BigDecimal amount, String cryptedCreditCard)
+            throws InvalidTokenException, ApplicationNotFoundException, CCNException, NoSuchPaddingException,
+            IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException,
+            InvalidKeySpecException, ExecutionException, InterruptedException, TimeoutException {
 
+        Future<Transaction> future = executorService.submit(() -> {
 
-        log.info("\u001B[32mSending payment authorization request to CCN\u001B[0m");
-        CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
-                new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv(), amount)
-        );
-        if (!ccnResponseDto.isApproved()) {
-            throw new CCNException("\u001B[31mPayment not authorized\u001B[0m");
+            ApplicationDto application = businessIntegratorProxy.validateToken(token);
+            MerchantDto merchant = application.getMerchant();
+            CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
+
+            log.info("\u001B[32mSending payment authorization request to CCN\u001B[0m");
+            CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
+                    new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv(), amount)
+            );
+            if (!ccnResponseDto.isApproved()) {
+                throw new CCNException("\u001B[31mPayment not authorized\u001B[0m");
+            }
+            Transaction transaction = new Transaction(merchant.getBankAccount(), ccnResponseDto.getAuthToken(), amount);
+            transaction.setId(UUID.randomUUID());
+            transaction.setExternal(true);
+            transaction.setCreditCardType(ccnResponseDto.getCardType());
+            transaction.setMerchantId(merchant.getId());
+            CreditCard card = new CreditCard(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv());
+            transaction.setCreditCard(card);
+            transaction.setSender(new BankAccount(ccnResponseDto.getAccountIBAN(),ccnResponseDto.getAccountBIC()));
+            transaction.setRecipient(merchant.getBankAccount());
+            transaction.setStatus(TransactionStatus.AUTHORIZED);
+            transaction.setBank(ccnResponseDto.getBankName());
+            log.info("\u001B[32mPayment authorized\u001B[0m");
+
+            transactionRepository.save(transaction);
+
+            return transaction;
         }
-        Transaction transaction = new Transaction(merchant.getBankAccount(), ccnResponseDto.getAuthToken(), amount);
-        transaction.setId(UUID.randomUUID());
-        transaction.setExternal(true);
-        transaction.setCreditCardType(ccnResponseDto.getCardType());
-        transaction.setMerchantId(merchant.getId());
-        CreditCard card = new CreditCard(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv());
-        transaction.setCreditCard(card);
-        transaction.setSender(new BankAccount(ccnResponseDto.getAccountIBAN(),ccnResponseDto.getAccountBIC()));
-        transaction.setRecipient(merchant.getBankAccount());
-        transaction.setStatus(TransactionStatus.AUTHORIZED);
-        transaction.setBank(ccnResponseDto.getBankName());
-        log.info("\u001B[32mPayment authorized\u001B[0m");
+        );
+        return future.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
-        transactionRepository.save(transaction);
-        return transaction;
     }
+
 
 
 }

@@ -83,6 +83,7 @@ public class TransactionRepository {
     public Transaction findById(RedisTemplate<String, Transaction> redisTemplate, UUID id){
         String pattern = "*\"id\": \"" + id + "\"*";
         Optional<String> key = scanKeys(pattern, redisTemplate).stream().findAny();
+        System.out.println("key "+ key.get());
         return key.map(s -> redisTemplate.opsForValue().get(s)).orElse(null);
 
     }

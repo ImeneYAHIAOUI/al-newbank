@@ -37,46 +37,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // main.ts
-var express_1 = require("express");
-var body_parser_1 = require("body-parser");
 var newbank_sdk_1 = require("@teamb/newbank-sdk");
 var newbank_sdk_2 = require("@teamb/newbank-sdk");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var retrySettings, _a, cardNumber, cvv, expiryDate, token, port, newbankSdk, app, paymentInfo, response, confirm_1, error_1, server;
-        var _this = this;
+        var retrySettings, _a, cardNumber, cvv, expiryDate, token, port, newbankSdk, paymentInfo, response, confirm_1, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     retrySettings = new newbank_sdk_1.RetrySettings({
                         retries: 2,
                         factor: 2,
-                        minTimeout: 1000,
-                        maxTimeout: 3000,
-                        randomize: true,
+                        minTimeout: 10,
+                        maxTimeout: 15,
                     });
                     _a = process.argv, cardNumber = _a[2], cvv = _a[3], expiryDate = _a[4], token = _a[5], port = _a[6];
                     newbankSdk = new newbank_sdk_1.NewbankSdk(token, retrySettings);
-                    app = (0, express_1.default)();
-                    app.use(body_parser_1.default.json());
-                    app.get('/', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            res.json({ message: 'Hello World!' });
-                            return [2 /*return*/];
-                        });
-                    }); });
-                    app.get('/backend-status', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-                        var backendStatus;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0: return [4 /*yield*/, newbankSdk.getBackendStatus()];
-                                case 1:
-                                    backendStatus = _a.sent();
-                                    res.json(backendStatus);
-                                    return [2 /*return*/];
-                            }
-                        });
-                    }); });
                     if (!(cardNumber && cvv && expiryDate)) return [3 /*break*/, 5];
                     paymentInfo = {
                         cardNumber: cardNumber,
@@ -102,17 +78,7 @@ function main() {
                         console.error('Authorization failed:', error_1.message);
                     }
                     return [2 /*return*/];
-                case 5:
-                    server = app.listen(port || 6906, function () {
-                        console.log("Server is running on port ".concat(port || 6906));
-                    });
-                    process.on('SIGINT', function () {
-                        server.close(function () {
-                            console.log('Server closed');
-                            process.exit(0);
-                        });
-                    });
-                    return [2 /*return*/];
+                case 5: return [2 /*return*/];
             }
         });
     });

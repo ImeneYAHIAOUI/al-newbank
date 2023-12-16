@@ -16,6 +16,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -47,7 +49,8 @@ public class TransactionConfirmationController {
 
 
     @PostMapping("{transactionId}")
-    public ResponseEntity<String> confirmPayment(@PathVariable UUID transactionId) {
+    public ResponseEntity<String> confirmPayment(@PathVariable UUID transactionId)
+            throws ExecutionException, InterruptedException, TimeoutException {
         String resp = transactionProcessor.confirmPayment(transactionId);
         log.info("\u001B[32mPayment confirmed\u001B[0m");
         return ResponseEntity.status(202).body(resp);

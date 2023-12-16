@@ -98,8 +98,10 @@ constructor(retrySettings: RetrySettings) {
                 console.error('Authorization failed:', error);
                 throw error;
         }
-  }
+      
   
+  }
+    
   async confirmPayment(transactionId: string, token: string){
     console.debug('payment confirmation request sent');
     try{
