@@ -21,7 +21,7 @@ To proactively address the risk associated with potential network performance is
   
 ## Implementation Plan
 
-1. Timeout Configurations: Set timeout limits for Payment Gateway and CCN service based on response times, network latency, and acceptable system responsiveness.
+1. Timeout Configurations: Set timeout limits for Payment Gateway services and CCN service based on response times, network latency, and acceptable system responsiveness.
 2. SDK Integration: Add Timeout Pattern to the SDK. Developers using our SDK can pick their own timeout limit for the functions they use, preventing indefinite blocking.
 
 ## Risks and Considerations
