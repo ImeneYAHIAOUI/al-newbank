@@ -7,7 +7,7 @@ description: >
 
 ## Context:
 
-Within our backend architecture, the payment authorization process introduces a critical dependency chain. The Payment Gateway service orchestrates the authorization by interfacing with the Credit Card Network (CCN) service, which, in turn, communicates with the bank system. This intricate dependency structure poses a potential risk of network performance issues, leading to prolonged waits and indefinite blocking during service calls. Such challenges can significantly impact the overall responsiveness and reliability of the payment authorization process.
+Within our backend architecture, the payment authorization process introduces a critical dependency chain. The Payment Gateway service orchestrates the authorization by interfacing with the Credit Card Network (CCN) service, which, in turn, communicates with external bank system. This intricate dependency structure poses a potential risk of network performance issues, leading to prolonged waits and indefinite blocking during service calls. Such challenges can significantly impact the overall responsiveness and reliability of the payment authorization process.
 
 ## Decision:
 
