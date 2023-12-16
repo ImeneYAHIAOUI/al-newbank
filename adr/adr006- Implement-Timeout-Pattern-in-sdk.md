@@ -5,33 +5,25 @@ description: >
   Architecture Decision Record (ADR) to implement of Timeout Pattern
 ---
 
-*Status: [Open]*
-
 ## Context:
 
-There is a need to prevent indefinite blocking during service calls and enhance the overall responsiveness of the system.
+Within our backend architecture, the payment authorization process introduces a critical dependency chain. The Payment Gateway service orchestrates the authorization by interfacing with the Credit Card Network (CCN) service, which, in turn, communicates with the bank system. This intricate dependency structure poses a potential risk of network performance issues, leading to prolonged waits and indefinite blocking during service calls. Such challenges can significantly impact the overall responsiveness and reliability of the payment authorization system.
 
 ## Decision:
 
-Implement the Timeout Pattern to set time limits for interactions with backend services, ensuring timely responses and preventing indefinite blocking.
+To proactively address the risk associated with potential network performance issues and indefinite blocking during service calls, we propose the implementation of the Timeout Pattern. This strategic pattern involves setting time limits for the Payment Gateway and CCN service microservices. Also, to ensure comprehensive coverage, the Timeout Pattern will be integrated into the SDK, enabling clients to benefit from timely responses and preventing indefinite blocking at the client level.
 
 ## Consequences:
 
 * Improved system responsiveness by avoiding prolonged waits for unresponsive services.
 * Mitigation of potential performance bottlenecks due to indefinite blocking during service calls.
+* Enhacing Resilience against fluctuations in network conditions or temporary service unavailability.
   
-## Architectural solutions proposed
+## Implementation Plan
 
-1. **Promises for Asynchronous Operations:** Ensure that all asynchronous operations, such as service calls, are wrapped in promises to facilitate the implementation of the Timeout Pattern.
-
-2. **Timeout Mechanism:** Develop a reusable timeout function or module that can be easily applied to different asynchronous operations across the codebase.
-
-3. **Timeout Configuration:**
-    - **Service-Specific Configurations:** Explore the option of allowing configurable timeouts for each service individually. This would involve maintaining a configuration file to associate specific services with their respective timeout values.
-    - **Global Timeout:** Alternatively, consider having a global, fixed timeout for all services if uniform response times are acceptable.
+1. Timeout Configurations: Set timeout limits for Payment Gateway and CCN service based on response times, network latency, and acceptable system responsiveness.
+2. SDK Integration: Add Timeout Pattern to the SDK. Developers using our SDK can pick their own timeout limit for the functions they use, preventing indefinite blocking.
 
 ## Risks and Considerations
 While the Timeout Pattern offers significant advantages, it is essential to consider potential risks and challenges:
-
 1. **Configurability:** Ensuring that the timeout values are configurable and adjustable based on different service requirements and environmental conditions.
-
