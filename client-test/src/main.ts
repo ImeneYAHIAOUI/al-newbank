@@ -15,8 +15,9 @@ async function main() {
                                               randomize: true,
                                             });
 
+    const responseTimeout= 5000;
     const [ , ,cardNumber, cvv, expiryDate, token,port] = process.argv;
-    const newbankSdk = new NewbankSdk(token, retrySettings);
+    const newbankSdk = new NewbankSdk(token, retrySettings, responseTimeout);
     const app = express();
     app.use(bodyParser.json());
 

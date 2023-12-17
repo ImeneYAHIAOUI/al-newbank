@@ -12,8 +12,7 @@ import {RetrySettings} from "../Retry-settings";
 
 import { StatusReporterProxyService } from '../status-reporter-proxy/status-reporter-proxy.service';
 import { MetricsProxy } from '../metrics-proxy/metrics-proxy';
-import {RequestDto} from "../../dto/request.dto";
-
+import { RequestDto } from '../../dto/request.dto';
 
 export class GatewayConfirmationProxyService {
   private readonly metricsProxy: MetricsProxy;
@@ -54,7 +53,8 @@ export class GatewayConfirmationProxyService {
 
                const response = await axios.post(`${this._gatewayBaseUrl}${this._gatewayPath}/${transactionId}`,
                {
-                ...httpOptions, timeout: this.retrySettings.maxTimeout,});
+                ...httpOptions, timeout: this.config.maxTimeOut,}
+              );
               resolve(response.data);
                 const end = new Date().getTime();
                 const time = end - start;
@@ -66,7 +66,7 @@ export class GatewayConfirmationProxyService {
                 const time = end - start;
 
                         if (operation.retry(lastError)) {
-                          console.error(`Retry attempt ${currentAttempt}, error is ${lastError?.message} failed. Retrying...`);
+                          console.error(`Retry attempt ${currentAttempt} failed. Retrying...`);
                           return;
                         }
                         console.error(`All retry attempts failed. Last error: ${lastError?.message}`);

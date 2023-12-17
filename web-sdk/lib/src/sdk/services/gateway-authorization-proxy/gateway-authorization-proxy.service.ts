@@ -76,7 +76,7 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
           const response = await axios.post(
             `${this._gatewayBaseUrl}${this._gatewayPath}authorize`,
             encryptedCardInfo,{
-            ...httpOptions, timeout: this.retrySettings.maxTimeout,}
+            ...httpOptions, timeout: this.config.maxTimeOut,}
           );
           resolve(response.data);
           const end = new Date().getTime();
