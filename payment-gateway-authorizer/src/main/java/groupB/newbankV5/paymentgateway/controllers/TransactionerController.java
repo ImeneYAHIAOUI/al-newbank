@@ -36,8 +36,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(path = TransactionerController.BASE_URI, produces = APPLICATION_JSON_VALUE)
 public class TransactionerController {
     private static final Logger log = Logger.getLogger(TransactionerController.class.getName());
-    private int ErrorCode=200;
-    private boolean toggle= false;
+    private static int ErrorCode=200;
+    private static boolean toggle= false;
     public static final String BASE_URI = "/api/gateway_authorization";
     private final IRSA crypto;
     private final ITransactionProcessor transactionProcessor;
@@ -78,7 +78,7 @@ public class TransactionerController {
                 HttpStatus httpStatus = HttpStatus.valueOf(ErrorCode);
                 return ResponseEntity.status(httpStatus).body(null);
             } catch (IllegalArgumentException e) {
-                return ResponseEntity.status(200).body(null);
+                return ResponseEntity.status(500).body(null);
             }
         }else {
             log.info("\u001B[32mProcessing payment request\u001B[0m");
