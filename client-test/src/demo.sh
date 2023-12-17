@@ -120,13 +120,17 @@ echo -e "\033[0;34mID Application:\033[0m \033[0;32m$ApplicationId\033[0m"
 apiKey=$(echo "$response" | grep -o '"apiKey":"[^"]*' | cut -d'"' -f4)
 echo -e "\033[0;34mAPI Key:\033[0m \033[0;32m$apiKey\033[0m"
 echo ""
+url="http://localhost/api/gateway_authorization/simulate?errorCode="
+ERROR_CODE=200
 
+response=$(curl -s -X POST "${url}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}')
 
+ts-node main.ts "$cardNumber" "$cvv" "$expiryDate" "$apiKey" "6906"
 
 url="http://localhost/api/gateway_authorization/simulate?errorCode="
 ERROR_CODE=500
 
-curl -X POST "${url}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}'
+response=$(curl  -s -X POST "${url}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}')
 
 ts-node main.ts "$cardNumber" "$cvv" "$expiryDate" "$apiKey" "6906"
 

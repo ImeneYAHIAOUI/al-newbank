@@ -23,7 +23,8 @@ docker compose --env-file ./.env \
           --file business-integrator/docker-compose.yml \
           --file payment-settlement/docker-compose.yml\
           --file payment-processor/docker-compose.yml\
-          --file transactions-service/docker-compose.yml  up -d
+          --file transactions-service/docker-compose.yml \
+          --file status-reporter/docker-compose.yml   up -d
 
                
 echo "All services started."
