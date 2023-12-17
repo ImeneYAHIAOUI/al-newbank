@@ -30,8 +30,7 @@ export class StatusReporterProxyService {
                 const response = await axios.get(`${this.statusReporteUrl}${this._statusAvailibilityPath}${serviceName}`,);
                 resolve(response.data);
             }catch (error: any) {
-                console.error('Error in checkAvailability:', error);
-                reject(false);
+                resolve(true);
             }
         });
     }

@@ -15,8 +15,9 @@ async function main() {
                                               randomize: true,
                                             });
 
+    const responseTimeout= 5000;
     const [ , ,cardNumber, cvv, expiryDate, token,port] = process.argv;
-    const newbankSdk = new NewbankSdk(token, retrySettings);
+    const newbankSdk = new NewbankSdk(token, retrySettings, responseTimeout);
     const app = express();
     app.use(bodyParser.json());
 
@@ -50,17 +51,5 @@ async function main() {
         }
 
     }
-
-
-    const server = app.listen(port || 6906, () => {
-        console.log(`Server is running on port ${port || 6906}`);
-    });
-
-    process.on('SIGINT', () => {
-        server.close(() => {
-            console.log('Server closed');
-            process.exit(0);
-        });
-    });
 }
 main();

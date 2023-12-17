@@ -76,7 +76,7 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
           const response = await axios.post(
             `${this._gatewayBaseUrl}${this._gatewayPath}authorize`,
             encryptedCardInfo,{
-            ...httpOptions, timeout: this.retrySettings.maxTimeout,}
+            ...httpOptions, timeout: this.config.maxTimeOut,}
           );
           resolve(response.data);
           const end = new Date().getTime();
@@ -85,13 +85,24 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
           await this.metricsProxy.sendRequestResult(request, token);
         } catch (error: any) {
           lastError = error;
+          let message = lastError?.message;
+          if (axios.isAxiosError(error)) {
+            const axiosError = error as AxiosError;
+            const status = axiosError.response?.status;
+            if(status == 408){
+              message = 'Request Timeout: The payment authorization request took too long to process';
+            }
+            else if(status ==500){
+              message = 'Internal Server Error: The service encountered an unexpected issue';
+            }
+        }
           const end = new Date().getTime();
           const time = end - start;
           if (operation.retry(lastError)) {
-            console.error(`Retry attempt ${currentAttempt}, error is ${lastError?.message} failed. Retrying...`);
+              console.error(`Retry attempt ${currentAttempt}, ${message}. Retrying...`);
             return;
           }
-           console.error(`All retry attempts failed. Last error: ${lastError?.message}`);
+           console.error(`All retry attempts failed. Last error: ${message}`);
 
           if (isAxiosError(lastError) && lastError.response) {
             if (lastError.response.status === HttpStatus.UNAUTHORIZED) {

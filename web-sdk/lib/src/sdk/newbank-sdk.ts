@@ -9,6 +9,9 @@ import {MetricsDto} from "./dto/metrics.dto";
 
 export class NewbankSdk {
 
+    private readonly config = require('./services/config');
+
+
     
 
     private readonly _retrySettings: RetrySettings;
@@ -17,14 +20,15 @@ export class NewbankSdk {
     private readonly _getBackendStatus: GetBackendStatus;
     private readonly _metricsServer: MetricsServer;
 
-    constructor(token: string,retrySettings: RetrySettings) {
+    constructor(token: string,retrySettings: RetrySettings, responseTimeout ?: number) {
+        this.config.maxTimeOut = responseTimeout || 4000;
         this._retrySettings = retrySettings;
         this._token = token;
         this._getBackendStatus = new GetBackendStatus(retrySettings);
         this._metricsServer = new MetricsServer(retrySettings);
         this._paymentService = new PaymentService(retrySettings);
     }
-    
+        
     public async authorizePayment(paymentInfo: PaymentInfoDTO): Promise<AuthorizeDto> {
         return await this._paymentService.authorize(paymentInfo, this._token);
         
