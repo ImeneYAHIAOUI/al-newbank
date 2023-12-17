@@ -1,6 +1,4 @@
 // main.ts
-import express from 'express';
-import bodyParser from 'body-parser';
 import {NewbankSdk, RetrySettings} from "@teamb/newbank-sdk";
 import {PaymentInfoDTO} from "@teamb/newbank-sdk";
 import {AuthorizeDto} from "@teamb/newbank-sdk";
@@ -18,18 +16,6 @@ async function main() {
     const responseTimeout= 5000;
     const [ , ,cardNumber, cvv, expiryDate, token,port] = process.argv;
     const newbankSdk = new NewbankSdk(token, retrySettings, responseTimeout);
-    const app = express();
-    app.use(bodyParser.json());
-
-    app.get('/', async (req, res) => {
-        res.json({message: 'Hello World!'});
-    });
-    app.get('/backend-status', async (req, res) => {
-        const backendStatus = await newbankSdk.getBackendStatus();
-        res.json(backendStatus);
-    });
-
-
 
     if ( cardNumber && cvv && expiryDate) {
         const paymentInfo: PaymentInfoDTO = {
@@ -44,9 +30,8 @@ async function main() {
             const confirm = await newbankSdk.confirmPayment(response.transactionId);
             console.log(confirm);
         } catch (error: any) {
-           if(error instanceof UnauthorizedError){
-              console.error('Authorization failed:', error.message);
-           }
+            console.log("NADDDDDIIIIMMMM");
+           console.log(error.message);
            return;
         }
 
