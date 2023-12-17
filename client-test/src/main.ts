@@ -50,17 +50,5 @@ async function main() {
         }
 
     }
-
-
-    const server = app.listen(port || 6906, () => {
-        console.log(`Server is running on port ${port || 6906}`);
-    });
-
-    process.on('SIGINT', () => {
-        server.close(() => {
-            console.log('Server closed');
-            process.exit(0);
-        });
-    });
 }
 main();

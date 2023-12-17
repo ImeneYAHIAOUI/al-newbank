@@ -127,7 +127,6 @@ response=$(curl -s -X POST "${url}${ERROR_CODE}" -H "Content-Type: application/j
 
 ts-node main.ts "$cardNumber" "$cvv" "$expiryDate" "$apiKey" "6906"
 
-url="http://localhost/api/gateway_authorization/simulate?errorCode="
 ERROR_CODE=500
 
 response=$(curl  -s -X POST "${url}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}')
