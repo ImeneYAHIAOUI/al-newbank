@@ -123,6 +123,10 @@ echo ""
 
 
 
+url="http://localhost/api/gateway_authorization/simulate?errorCode="
+ERROR_CODE=500
+
+curl -X POST "${url}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}'
 
 ts-node main.ts "$cardNumber" "$cvv" "$expiryDate" "$apiKey" "6906"
 

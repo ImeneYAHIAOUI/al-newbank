@@ -12,6 +12,7 @@ import groupB.newbankV5.paymentgateway.interfaces.ITransactionFinder;
 import groupB.newbankV5.paymentgateway.interfaces.ITransactionProcessor;
 import groupB.newbankV5.paymentgateway.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +36,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(path = TransactionerController.BASE_URI, produces = APPLICATION_JSON_VALUE)
 public class TransactionerController {
     private static final Logger log = Logger.getLogger(TransactionerController.class.getName());
+    private int ErrorCode=200;
+    private boolean toggle= false;
     public static final String BASE_URI = "/api/gateway_authorization";
     private final IRSA crypto;
     private final ITransactionProcessor transactionProcessor;
@@ -58,19 +61,37 @@ public class TransactionerController {
 //
 //    }
 
+    @PostMapping("simulate")
+    public ResponseEntity<String> activeToggle(@RequestParam int errorCode) {
+        ErrorCode = errorCode;
+        toggle = errorCode != 200;
+        return ResponseEntity.status(200).body("ok");
+    }
+
     @PostMapping("authorize")
     public ResponseEntity<AuthorizeDto> processPayment(@RequestBody PaymentDto paymentDetails, @RequestHeader("Authorization") String authorizationHeader )
             throws InvalidTokenException, ApplicationNotFoundException, CCNException, NoSuchPaddingException,
             IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException,
             InvalidKeySpecException, ExecutionException, InterruptedException, TimeoutException {
-        log.info("\u001B[32mProcessing payment request\u001B[0m");
-        // Remove the "Bearer " prefix
-        String token = authorizationHeader.substring(7);
-        UUID transactionId = transactionProcessor.processPayment(token,
-                paymentDetails.getAmount(),
-                paymentDetails.getEncryptedCard()).getId();
-        AuthorizeDto authorizeDto = new AuthorizeDto(transactionId);
-        return ResponseEntity.status(200).body(authorizeDto);
+        if(toggle){
+            try {
+                HttpStatus httpStatus = HttpStatus.valueOf(ErrorCode);
+                return ResponseEntity.status(httpStatus).body(null);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(200).body(null);
+            }
+        }else {
+            log.info("\u001B[32mProcessing payment request\u001B[0m");
+            // Remove the "Bearer " prefix
+            String token = authorizationHeader.substring(7);
+            UUID transactionId = transactionProcessor.processPayment(token,
+                    paymentDetails.getAmount(),
+                    paymentDetails.getEncryptedCard()).getId();
+            AuthorizeDto authorizeDto = new AuthorizeDto(transactionId);
+            return ResponseEntity.status(200).body(authorizeDto);
+        }
+
+
     }
 
 

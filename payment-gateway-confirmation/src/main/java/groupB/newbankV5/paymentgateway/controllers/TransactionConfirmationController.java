@@ -10,6 +10,7 @@ import groupB.newbankV5.paymentgateway.interfaces.ITransactionConfirmation;
 import groupB.newbankV5.paymentgateway.interfaces.ITransactionFinder;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -26,6 +27,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class TransactionConfirmationController {
     private static final Logger log = Logger.getLogger(TransactionConfirmationController.class.getName());
     public static final String BASE_URI = "/api/gateway-confirmation";
+    private int ErrorCode=200;
+    private boolean toggle= false;
     private final ITransactionConfirmation transactionProcessor;
     private final PaymentProcessorProxy paymentProcessorProxy;
     private final ITransactionFinder transactionFinder;
@@ -47,13 +50,28 @@ public class TransactionConfirmationController {
         return ResponseEntity.status(200).body(number);
     }
 
+    @PostMapping("simulate")
+    public void activeToggle(@RequestBody int errorCode) {
+        ErrorCode=errorCode;
+        toggle= errorCode != 200;
+    }
+
 
     @PostMapping("{transactionId}")
     public ResponseEntity<String> confirmPayment(@PathVariable UUID transactionId)
             throws ExecutionException, InterruptedException, TimeoutException {
+        if(toggle){
+            try {
+                HttpStatus httpStatus = HttpStatus.valueOf(ErrorCode);
+                return ResponseEntity.status(httpStatus).body(null);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(200).body(null);
+            }
+        }else {
         String resp = transactionProcessor.confirmPayment(transactionId);
         log.info("\u001B[32mPayment confirmed\u001B[0m");
         return ResponseEntity.status(202).body(resp);
+        }
     }
 
 }
