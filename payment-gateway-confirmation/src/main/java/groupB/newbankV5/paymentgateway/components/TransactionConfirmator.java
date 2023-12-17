@@ -33,7 +33,7 @@ public class TransactionConfirmator implements ITransactionConfirmation, ITransa
     private final KafkaProducerService kafkaProducerService;
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-    private final long TIMEOUT_MS = 1000;
+    private final long TIMEOUT_MS = 4000;
 
 
     @Autowired
@@ -62,7 +62,7 @@ public class TransactionConfirmator implements ITransactionConfirmation, ITransa
 
                 CreditCard usedCreditCard = transaction.getCreditCard();
                 if(transaction.getBank().equals("NewBank")) {
-                    log.info("\u001B[32msend fund reservation request\u001B[0m");
+                    log.info("\u0011[32msend fund reservation request\u001B[0m");
                     paymentProcessor.reserveFunds(transaction);
                 }
                 else

@@ -25,7 +25,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,7 +45,7 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
     private final KafkaProducerService kafkaProducerService;
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-    private final long TIMEOUT_MS = 1000;
+    private final long TIMEOUT_MS = 2000;
 
 
     @Autowired
