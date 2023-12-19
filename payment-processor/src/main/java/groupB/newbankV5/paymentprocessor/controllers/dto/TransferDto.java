@@ -1,18 +1,17 @@
 package groupB.newbankV5.paymentprocessor.controllers.dto;
-
-import java.math.BigDecimal;
+;
 
 public class TransferDto {
     private String fromAccountIBAN;
     private String fromAccountBIC;
     private String toAccountIBAN;
     private String toAccountBIC;
-    private BigDecimal amount;
+    private double amount;
 
     public TransferDto() {
     }
 
-    public TransferDto(String fromAccountIBAN, String fromAccountBIC, String toAccountIBAN, String toAccountBIC, BigDecimal amount) {
+    public TransferDto(String fromAccountIBAN, String fromAccountBIC, String toAccountIBAN, String toAccountBIC, double amount) {
         this.fromAccountIBAN = fromAccountIBAN;
         this.fromAccountBIC = fromAccountBIC;
         this.toAccountIBAN = toAccountIBAN;
@@ -28,7 +27,7 @@ public class TransferDto {
         return toAccountIBAN;
     }
 
-    public BigDecimal getAmount() {
+    public double getAmount() {
         return amount;
     }
 

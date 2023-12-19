@@ -31,17 +31,19 @@ public class Transaction {
     private BankAccount sender;
     private Boolean isExternal;
 
-    private LocalDateTime time;
+    long applicationId;
+
+    private long time;
 
     private String authorizationToken;
-    private BigDecimal amount;
-    private BigDecimal fees;
-    private TransactionStatus status;
-    private CardType creditCardType;
+    private String amount;
+    private String fees;
+    private String status;
+    private String creditCardType;
 
 
 
-    public TransactionStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
@@ -80,17 +82,9 @@ public class Transaction {
         this.recipient = recipient;
     }
 
-    public void setStatus(TransactionStatus status) {
-        this.status = status;
-    }
 
-    public BigDecimal getFees() {
-        return fees;
-    }
 
-    public void setFees(BigDecimal fees) {
-        this.fees = fees;
-    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -120,14 +114,10 @@ public class Transaction {
                 ", fees=" + fees +
                 ", status=" + status +
                 ", time=" + time +
+                ", creditCardType='" + creditCardType + '\'' +
                 '}';
     }
 
-    public Transaction(BankAccount recipient, String authorizationToken, BigDecimal amount) {
-        this.recipient = recipient;
-        this.authorizationToken = authorizationToken;
-        this.amount = amount;
-    }
 
     public String getAuthorizationToken() {
         return authorizationToken;
@@ -137,13 +127,7 @@ public class Transaction {
         this.authorizationToken = authorizationToken;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
 
     public String getId() {
         return id;
@@ -153,19 +137,94 @@ public class Transaction {
         this.id = id;
     }
 
-    public LocalDateTime getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(LocalDateTime time) {
+    public void setTime(long time) {
         this.time = time;
     }
 
-    public CardType getCreditCardType() {
+
+
+
+    public long getApplicationId() {
+        return applicationId;
+    }
+
+    public void setApplicationId(long applicationId) {
+        this.applicationId = applicationId;
+    }
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public String getFees() {
+        return fees;
+    }
+
+    public String getCreditCardType() {
         return creditCardType;
     }
 
-    public void setCreditCardType(CardType creditCardType) {
+    public void setCreditCardType(String creditCardType) {
         this.creditCardType = creditCardType;
+    }
+
+    public String getSenderBic() {
+        return sender.getBIC();
+    }
+
+    public String getSenderIban() {
+        return sender.getIBAN();
+    }
+
+    public String getRecipientBic() {
+        return recipient.getBIC();
+    }
+
+    public String getRecipientIban() {
+        return recipient.getIBAN();
+    }
+
+    public Boolean getIsExternal() {
+        return isExternal;
+    }
+
+    public void setIsExternal(Boolean external) {
+        isExternal = external;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public void setFees(String fees) {
+        this.fees = fees;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setSenderBic(String senderBic) {
+        this.sender.setBIC(senderBic);
+    }
+
+    public void setSenderIban(String senderIban) {
+        this.sender.setIBAN(senderIban);
+    }
+
+    public void setRecipientBic(String recipientBic) {
+        this.recipient.setBIC(recipientBic);
+    }
+
+    public void setRecipientIban(String recipientIban) {
+        this.recipient.setIBAN(recipientIban);
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount.toString();
     }
 }

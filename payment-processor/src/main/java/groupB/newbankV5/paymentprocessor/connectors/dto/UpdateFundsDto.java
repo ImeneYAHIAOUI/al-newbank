@@ -1,14 +1,13 @@
 package groupB.newbankV5.paymentprocessor.connectors.dto;
 
-import java.math.BigDecimal;
 
 public class UpdateFundsDto {
 
-    private BigDecimal amount;
+    private double amount;
 
     private String operation;
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
@@ -22,12 +21,12 @@ public class UpdateFundsDto {
 
     public UpdateFundsDto() {}
 
-    public UpdateFundsDto(BigDecimal amount, String operation) {
+    public UpdateFundsDto(double amount, String operation) {
         this.amount = amount;
         this.operation = operation;
     }
 
-    public BigDecimal getAmount() {
+    public double getAmount() {
         return amount;
     }
 

@@ -6,6 +6,8 @@ import java.util.Objects;
 
 public class CreditCard implements Serializable {
 
+    static final long serialVersionUID = -5176969365295371507L;
+
     private String cardNumber;
     private String expiryDate;
     private String cvv;
@@ -47,5 +49,14 @@ public class CreditCard implements Serializable {
 
     public void setCvv(String cvv) {
         this.cvv = cvv;
+    }
+
+    @Override
+    public String toString() {
+        return "CreditCard{" +
+                "cardNumber='" + cardNumber + '\'' +
+                ", expiryDate='" + expiryDate + '\'' +
+                ", cvv='" + cvv + '\'' +
+                '}';
     }
 }

@@ -12,7 +12,6 @@ import groupB.newbankV5.paymentprocessor.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.security.SecureRandom;
 
 import java.time.LocalDateTime;
@@ -25,9 +24,9 @@ import java.util.logging.Logger;
 public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, IFraudDetector {
     private static final Logger log = Logger.getLogger(PaymentProcessor.class.getName());
 
-    private static final BigDecimal HIGH_TRANSACTION_THRESHOLD = new BigDecimal(1000);
+    private static final double HIGH_TRANSACTION_THRESHOLD = 10000;
 
-    private static final BigDecimal LOW_TRANSACTION_THRESHOLD = new BigDecimal(0);
+    private static final double LOW_TRANSACTION_THRESHOLD = 0;
 
     private static final String NEWBANK_IBAN_REGEX = "^FR\\d{2}20523\\d+$";
 
@@ -88,13 +87,13 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
 
     }
 
-    private void fillCommunTransactionInformation(Transaction transaction, AccountDto accountDto, String toAccountIBAN, String toAccountBIC, BigDecimal amount) {
+    private void fillCommunTransactionInformation(Transaction transaction, AccountDto accountDto, String toAccountIBAN, String toAccountBIC, double amount) {
         transaction.setId(UUID.randomUUID());
         BankAccount sender = new BankAccount(accountDto.getIBAN(), accountDto.getBIC());
         BankAccount receiver = new BankAccount(toAccountIBAN, toAccountBIC);
         transaction.setSender(sender);
         transaction.setRecipient(receiver);
-        transaction.setAmount(amount);
+        transaction.setAmount(String.valueOf(amount));
     }
 
     @Override
@@ -123,7 +122,7 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
             kafkaProducerService.sendMessage(transaction);
             return new TransferResponseDto(false, "Insufficient funds", authToken);
         }
-        if(accountDto.getRestOfTheWeekLimit().compareTo(transferDetails.getAmount()) < 0){
+        if(accountDto.getRestOfTheWeekLimit() < transferDetails.getAmount()){
             transaction.setStatus(TransactionStatus.FAILED);
             transactionRepository.save(transaction);
             kafkaProducerService.sendMessage(transaction);
@@ -168,11 +167,11 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
         }
         List<CreditCardDto> creditCards = accountDto.getCreditCards();
         CreditCardDto creditCardDto = creditCards.stream().filter(creditCard -> creditCard.getCardNumber().equals(paymentDetails.getCardNumber())).findFirst().orElseThrow();
-        if(creditCardDto.getRestOfLimit().compareTo(paymentDetails.getAmount()) < 0){
+        if(creditCardDto.getRestOfLimit() < paymentDetails.getAmount()){
             log.info("\u001B[31mCredit card limit exceeded\u001B[0m");
             return new CreditCardResponseDto(false, "Credit card limit exceeded", authToken);
         }
-        if(accountDto.getBalance().compareTo(paymentDetails.getAmount()) < 0){
+        if(accountDto.getBalance() < paymentDetails.getAmount()){
             log.info("\u001B[31mInsufficient funds\u001B[0m");
             return new CreditCardResponseDto(false, "Insufficient funds", authToken);
         }
@@ -199,7 +198,7 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
             paymentTokenRepository.save(paymentToken.get());
             transaction.setStatus(TransactionStatus.PENDING_SETTLEMENT);
             transactionRepository.save(transaction);
-            customerCare.reserveFunds(transaction.getAmount(), transaction.getCreditCard().getCardNumber(), transaction.getCreditCard().getExpiryDate(), transaction.getCreditCard().getCvv());
+            customerCare.reserveFunds(Double.parseDouble(transaction.getAmount()), transaction.getCreditCard().getCardNumber(), transaction.getCreditCard().getExpiryDate(), transaction.getCreditCard().getCvv());
             return "Funds reserved";
         }
         catch (Exception e){
@@ -210,21 +209,21 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
 
 
     @Override
-    public boolean hasSufficientFunds(AccountDto accountDto, BigDecimal amount) {
-        BigDecimal balance =  accountDto.getBalance();
-        return balance.compareTo(amount) >= 0;
+    public boolean hasSufficientFunds(AccountDto accountDto, double amount) {
+        double balance =  accountDto.getBalance();
+        return balance > amount;
     }
 
 
 
     @Override
-    public void deductFunds(long accountId, BigDecimal amount) {
+    public void deductFunds(long accountId, double amount) {
 
         customerCare.updateBalance(accountId, amount, "withdraw");
     }
 
     @Override
-    public void depositFund(long accountId, BigDecimal amount) {
+    public void depositFund(long accountId, double amount) {
         log.info("Depositing funds");
         customerCare.updateBalance(accountId, amount, "deposit");
     }
@@ -241,15 +240,15 @@ public class PaymentProcessor implements ITransactionProcessor, IFundsHandler, I
 
 
 
-    private boolean checkAmount(BigDecimal amount) {
+    private boolean checkAmount(double amount) {
         log.info("Checking for fraudulent transaction");
 
-        if (amount.compareTo(HIGH_TRANSACTION_THRESHOLD) > 0) {
+        if (amount > HIGH_TRANSACTION_THRESHOLD ) {
             log.info("The amount is high enough to be considered a fraud risk");
             return true;
         }
 
-        if (amount.compareTo(LOW_TRANSACTION_THRESHOLD) < 0) {
+        if (amount  < 0) {
             log.info("The amount is low enough to be considered a fraud risk");
             return true;
         }

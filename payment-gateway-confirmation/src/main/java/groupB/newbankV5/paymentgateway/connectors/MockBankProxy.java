@@ -19,7 +19,7 @@ public class MockBankProxy implements IMockBank {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public String reserveFunds(BigDecimal amount, String cardNumber, String expiryDate, String cvv) {
+    public String reserveFunds(double amount, String cardNumber, String expiryDate, String cvv) {
         CreditCardInformationDto creditCard = new CreditCardInformationDto();
         creditCard.setAmount(amount);
         creditCard.setCardNumber(cardNumber);

@@ -8,6 +8,7 @@ services:
     cpus: 2
     ports:
       - "4999:8080"
+
     networks:
       - spring-newbank-network
     environment:

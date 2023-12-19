@@ -11,6 +11,7 @@ public class MetricRequest {
 
     private TimeRange timeRange;
 
+    private String period;
     private String resolution;
 
     public List<String> getMetrics() {
@@ -43,5 +44,9 @@ public class MetricRequest {
 
     public void setResolution(String resolution) {
         this.resolution = resolution;
+    }
+
+    public String getPeriod(){
+        return this.period;
     }
 }

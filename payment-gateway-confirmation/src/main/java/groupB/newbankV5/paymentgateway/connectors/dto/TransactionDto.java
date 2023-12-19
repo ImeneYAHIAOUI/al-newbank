@@ -3,6 +3,7 @@ package groupB.newbankV5.paymentgateway.connectors.dto;
 import groupB.newbankV5.paymentgateway.entities.BankAccount;
 import groupB.newbankV5.paymentgateway.entities.CardType;
 import groupB.newbankV5.paymentgateway.entities.CreditCard;
+import groupB.newbankV5.paymentgateway.entities.Transaction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -38,11 +39,11 @@ public class TransactionDto {
         this.sender = sender;
     }
 
-    public LocalDateTime getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(LocalDateTime time) {
+    public void setTime(long time) {
         this.time = time;
     }
 
@@ -62,19 +63,18 @@ public class TransactionDto {
         this.authorizationToken = authorizationToken;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
 
-    public void setAmount(BigDecimal amount) {
+
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
-    public BigDecimal getFees() {
-        return fees;
+    public String getAmount() {
+        return String.valueOf(amount);
     }
 
-    public void setFees(BigDecimal fees) {
+
+    public void setFees(String fees) {
         this.fees = fees;
     }
 
@@ -102,40 +102,52 @@ public class TransactionDto {
         this.creditCard = creditCard;
     }
 
-    public String getBank() {
-        return bank;
-    }
 
-    public void setBank(String bank) {
-        this.bank = bank;
-    }
 
-    private LocalDateTime time;
+    private long time;
     private Boolean isExternal;
     private String authorizationToken;
-    private BigDecimal amount;
-    private BigDecimal fees;
+    private double amount;
+    private String fees;
     private String status;
     private CardType creditCardType;
     private CreditCard creditCard;
-    private String bank;
 
     public TransactionDto() {
     }
 
-    public TransactionDto(UUID id, BankAccount recipient, BankAccount sender, LocalDateTime time, Boolean isExternal, String authorizationToken, BigDecimal amount, BigDecimal fees, String status, CardType creditCardType, CreditCard creditCard, String bank) {
-        this.id = id;
-        this.recipient = recipient;
-        this.sender = sender;
-        this.time = time;
-        this.isExternal = isExternal;
-        this.authorizationToken = authorizationToken;
-        this.amount = amount;
-        this.fees = fees;
-        this.status = status;
-        this.creditCardType = creditCardType;
-        this.creditCard = creditCard;
-        this.bank = bank;
+    public static TransactionDto fromTransaction(Transaction transaction) {
+        TransactionDto transactionDto = new TransactionDto();
+        transactionDto.setAmount(Double.parseDouble(transaction.getAmount()));
+        transactionDto.setAuthorizationToken(transaction.getAuthorizationToken());
+        transactionDto.setCreditCard(transaction.getCreditCard());
+        transactionDto.setCreditCardType(transaction.getCreditCardType());
+        transactionDto.setExternal(transaction.getExternal());
+        transactionDto.setFees(transaction.getFees());
+        transactionDto.setId(transaction.getId());
+        transactionDto.setRecipient(transaction.getRecipient());
+        transactionDto.setSender(transaction.getSender());
+        transactionDto.setStatus(transaction.getStatus().toString());
+        transactionDto.setTime(transaction.getTime());
+        return transactionDto;
     }
+
+    @Override
+    public String toString() {
+        return "TransactionDto{" +
+                "id=" + id +
+                ", recipient=" + recipient +
+                ", sender=" + sender +
+                ", time=" + time +
+                ", isExternal=" + isExternal +
+                ", authorizationToken='" + authorizationToken + '\'' +
+                ", amount=" + amount  +
+                ", fees='" + fees + '\'' +
+                ", status='" + status + '\'' +
+                ", creditCardType=" + creditCardType +
+                ", creditCard=" + creditCard +
+                '}';
+    }
+
 
 }

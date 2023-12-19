@@ -4,14 +4,14 @@ import java.math.BigDecimal;
 
 public class AccountDto {
     long id;
-    BigDecimal balance;
+    double balance;
 
-    private BigDecimal reservedBalance;
+    private double reservedBalance;
 
     public AccountDto() {
     }
 
-    public AccountDto(long accountId, BigDecimal balance, BigDecimal reservedBalance) {
+    public AccountDto(long accountId, double balance, double reservedBalance) {
         this.id = accountId;
         this.balance = balance;
         this.reservedBalance = reservedBalance;
@@ -25,24 +25,11 @@ public class AccountDto {
         this.id = id;
     }
 
-    public BigDecimal getBalance() {
-        return balance;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
 
     @Override
     public String toString() {
         return "AccountDto{" + "accountId=" + id + ", balance=" + balance + '}';
     }
 
-    public BigDecimal getReservedBalance() {
-        return reservedBalance;
-    }
 
-    public void setReservedBalance(BigDecimal reservedBalance) {
-        this.reservedBalance = reservedBalance;
-    }
 }

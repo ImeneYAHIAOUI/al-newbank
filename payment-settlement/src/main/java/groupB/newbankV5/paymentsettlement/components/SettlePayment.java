@@ -55,10 +55,10 @@ public class SettlePayment {
             ReleaseFundsDto account;
             if(isNewBankAccount(transaction.getSender().getIBAN())) {
                 if (isNewBankAccount(transaction.getRecipient().getIBAN())) {
-                    account = new ReleaseFundsDto(transaction.getAmount(), transaction.getFees(), transaction.getSender().getIBAN(), transaction.getRecipient().getIBAN());
+                    account = new ReleaseFundsDto(Double.parseDouble(transaction.getAmount()), Double.parseDouble(transaction.getFees()), transaction.getSender().getIBAN(), transaction.getRecipient().getIBAN());
                 } else {
-                    account = new ReleaseFundsDto(transaction.getAmount(), transaction.getFees(), transaction.getSender().getIBAN());
-                    SettleDto settleDto = externalBankProxy.addAmount(new IbanAmountDto(transaction.getRecipient().getIBAN(), transaction.getAmount()));
+                    account = new ReleaseFundsDto(Double.parseDouble(transaction.getAmount()), Double.parseDouble(transaction.getFees()), transaction.getSender().getIBAN());
+                    SettleDto settleDto = externalBankProxy.addAmount(new IbanAmountDto(transaction.getRecipient().getIBAN(), Double.parseDouble(transaction.getAmount())));
                     if (settleDto == null) {
                         transaction.setStatus(TransactionStatus.FAILED);
                         continue;
@@ -66,19 +66,19 @@ public class SettlePayment {
                 }
             }
             else {
-                SettleDto deduceDto = externalBankProxy.deductAmount(new IbanAmountDto(transaction.getSender().getIBAN(), transaction.getAmount()));
+                SettleDto deduceDto = externalBankProxy.deductAmount(new IbanAmountDto(transaction.getSender().getIBAN(), Double.parseDouble(transaction.getAmount())));
                 if (deduceDto == null) {
                     transaction.setStatus(TransactionStatus.FAILED);
                     continue;
                 }
                 if (isNewBankAccount(transaction.getRecipient().getIBAN())) {
-                    SettleDto settleDto = externalBankProxy.addAmount(new IbanAmountDto(transaction.getRecipient().getIBAN(), transaction.getAmount()));
+                    SettleDto settleDto = externalBankProxy.addAmount(new IbanAmountDto(transaction.getRecipient().getIBAN(), Double.parseDouble(transaction.getAmount())));
                     if (settleDto == null) {
                         transaction.setStatus(TransactionStatus.FAILED);
                         continue;
                     }
                 }
-                account = new ReleaseFundsDto(transaction.getFees());
+                account = new ReleaseFundsDto(Double.parseDouble(transaction.getFees()));
             }
             accounts.add(account);
             transaction.setStatus(TransactionStatus.SETTLED);

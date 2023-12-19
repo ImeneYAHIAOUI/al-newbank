@@ -58,7 +58,7 @@ public class TransactionController {
     @GetMapping("/toSettle")
     public List<Transaction> transactionToSettle(){
         List<Transaction>  transactions = transactionRepository.findAll().stream()
-                    .filter(transaction -> !transaction.getStatus().equals(TransactionStatus.SETTLED))
+                    .filter(transaction -> !transaction.getStatus().equals(TransactionStatus.SETTLED.getValue()))
                     .collect(Collectors.toList());
         if(transactions.size() > 0)
             log.info("\u001B[35mSending " + transactions.size() + " transaction" + (transactions.size() > 1 ? "s" : "") + " to settle\u001B[0m");
@@ -73,11 +73,11 @@ public class TransactionController {
 
     @GetMapping("/weekly")
     public List<Transaction> get(@RequestParam("iban") String iban) {
-        LocalDateTime localDateTime = LocalDateTime.now().minus(7, java.time.temporal.ChronoUnit.DAYS);
+        long now = System.currentTimeMillis();
         return transactionRepository.findAll().stream()
                 .filter(transaction -> transaction.getSender().getIBAN().equals(iban))
-                .filter(transaction -> !transaction.getStatus().equals(TransactionStatus.FAILED))
-                .filter(transaction -> transaction.getTime().isAfter(localDateTime))
+                .filter(transaction -> !transaction.getStatus().equals(TransactionStatus.FAILED.getValue()))
+                .filter(transaction -> transaction.getTime() > now - 604800000)
                 .collect(Collectors.toList());
     }
 
@@ -85,8 +85,10 @@ public class TransactionController {
     public void receiveTransaction(@Payload String payload, ConsumerRecord<String, Transaction> cr) {
         // Process the received message
         try {
+            log.info("payload: " + payload);
             Transaction transaction = objectMapper.readValue(payload, Transaction.class);
             log.info("\u001B[34mReceived transaction from Kafka\u001B[0m");
+            log.info("\u001B[34mTransaction: " + transaction + "\u001B[0m");
 
             // Save a new one or save with the updated status
             transactionRepository.save(transaction);

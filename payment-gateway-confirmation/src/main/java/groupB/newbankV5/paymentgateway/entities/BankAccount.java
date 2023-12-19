@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class BankAccount implements Serializable {
+
+    static final long serialVersionUID = -7487040334202377889L;
     private String IBAN;
     private String BIC;
 
@@ -44,5 +46,13 @@ public class BankAccount implements Serializable {
 
     public void setBIC(String BIC) {
         this.BIC = BIC;
+    }
+
+    @Override
+    public String toString() {
+        return "BankAccount{" +
+                "IBAN='" + IBAN + '\'' +
+                ", BIC='" + BIC + '\'' +
+                '}';
     }
 }

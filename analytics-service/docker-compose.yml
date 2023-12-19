@@ -1,7 +1,7 @@
 version: '3.1'
 services:
 
-  anaylytics-service:
+  analytics-service:
     image: "newbank/analytics-service"
     container_name: "analytics-service"
     ports:

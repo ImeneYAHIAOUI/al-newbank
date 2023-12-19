@@ -2,7 +2,6 @@ package groupB.newbankV5.paymentprocessor.connectors.dto;
 
 
 
-import java.math.BigDecimal;
 
 
 public class CreditCardDto {
@@ -11,21 +10,10 @@ public class CreditCardDto {
     private String cardHolderName;
     private String expiryDate;
     private String cvv;
-    private BigDecimal limit;
-    private BigDecimal restOfLimit;
+    private double limit;
+    private double restOfLimit;
     private String cardType;
 
-    public CreditCardDto() {
-    }
-    public CreditCardDto(String cardNumber, String cardHolderName, String expiryDate, String cvv, BigDecimal limit, BigDecimal restOfLimit, String cardType) {
-        this.cardNumber = cardNumber;
-        this.cardHolderName = cardHolderName;
-        this.expiryDate = expiryDate;
-        this.cvv = cvv;
-        this.limit = limit;
-        this.restOfLimit = restOfLimit;
-        this.cardType = cardType;
-    }
 
 
 
@@ -62,21 +50,10 @@ public class CreditCardDto {
     }
 
 
-    public BigDecimal getRestOfLimit() {
+    public double getRestOfLimit() {
         return restOfLimit;
     }
 
-    public void setRestOfLimit(BigDecimal restOfLimit) {
-        this.restOfLimit = restOfLimit;
-    }
-
-    public BigDecimal getLimit() {
-        return limit;
-    }
-
-    public void setLimit(BigDecimal limit) {
-        this.limit = limit;
-    }
 
     public String getCardType() {
         return cardType;

@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 
 public class IbanAmountDto {
     private String iban;
-    private BigDecimal amount;
+    private double amount;
 
     public IbanAmountDto() {
     }
 
-    public IbanAmountDto(String iban,BigDecimal amount) {
+    public IbanAmountDto(String iban,double amount) {
         this.iban = iban;
         this.amount = amount;
     }
@@ -22,11 +22,11 @@ public class IbanAmountDto {
         this.iban = iban;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
-    public BigDecimal getAmount() {
+    public double getAmount() {
         return amount;
     }
 

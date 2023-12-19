@@ -11,7 +11,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class TransactionsApplication {
 
     public static void main(String[] args) {
+
         SpringApplication.run(TransactionsApplication.class, args);
     }
 
+
+    public void rebuild(){};
 }

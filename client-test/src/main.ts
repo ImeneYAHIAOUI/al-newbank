@@ -29,6 +29,11 @@ async function main() {
         res.json(backendStatus);
     });
 
+    app.post('/metrics', async (req, res) => {
+        const metrics = await newbankSdk.getMetrics(req.body);
+        res.json(metrics);
+    });
+
 
     if ( cardNumber && cvv && expiryDate) {
         const paymentInfo: PaymentInfoDTO = {

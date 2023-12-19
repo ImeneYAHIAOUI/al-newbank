@@ -1,152 +1,88 @@
 package groupB.newbankV5.metrics.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Document(collection = "transactions")
 public class Transaction {
 
-    @Id
-    private String id;
+    private String amount;
+    private String fees;
+    @JsonProperty("recipient_iban")
+    private String recipientIban;
+    @JsonProperty("sender_bic")
+    private String senderBic;
 
+    @JsonProperty("is_external")
+    private boolean is_external;
+    @JsonProperty("sender_iban")
+    private String senderIban;
+    @JsonProperty("application_id")
+    private long applicationId;
+    @JsonProperty("credit_card_type")
+    private String creditCardType;
 
-    private BankAccount recipient;
+    @JsonProperty("recipient_bic")
+    private String recipientBic;
 
-
-    private BankAccount sender;
-    private Boolean isExternal;
-
-    private LocalDateTime time;
-
+    @JsonProperty("authorization_token")
     private String authorizationToken;
-    private BigDecimal amount;
-    private BigDecimal fees;
-    private TransactionStatus status;
-    private CardType creditCardType;
+    private String id;
+    private long time;
+    private String status;
 
-    private CreditCard creditCard;
-
-
-
-    public TransactionStatus getStatus() {
-        return status;
+    public String getAmount() {
+        return amount;
     }
 
-
-    public BankAccount getRecipient() {
-        return recipient;
-    }
-
-    public BankAccount getSender() {
-        return sender;
-    }
-
-    public void setSender(BankAccount sender) {
-        this.sender = sender;
-    }
-
-    public Boolean getExternal() {
-        return isExternal;
-    }
-
-    public void setExternal(Boolean external) {
-        isExternal = external;
-    }
-
-    public void setRecipient(BankAccount recipient) {
-        this.recipient = recipient;
-    }
-
-    public void setStatus(TransactionStatus status) {
-        this.status = status;
-    }
-
-    public BigDecimal getFees() {
+    public String getFees() {
         return fees;
     }
 
-    public void setFees(BigDecimal fees) {
-        this.fees = fees;
+    public String getRecipientIban() {
+        return recipientIban;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Transaction that = (Transaction) o;
-        return Objects.equals(recipient, that.recipient) && Objects.equals(authorizationToken, that.authorizationToken) && Objects.equals(amount, that.amount);
+    public String getSenderBic() {
+        return senderBic;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(recipient, authorizationToken, amount);
+    public boolean isIs_external() {
+        return is_external;
     }
 
-    public Transaction() {
+    public String getSenderIban() {
+        return senderIban;
     }
 
-    @Override
-    public String toString() {
-        return "Transaction{" +
-                "id='" + id + '\'' +
-                ", recipient=" + recipient +
-                ", sender=" + sender +
-                ", isExternal=" + isExternal +
-                ", authorizationToken='" + authorizationToken + '\'' +
-                ", amount=" + amount +
-                ", fees=" + fees +
-                ", status=" + status +
-                ", time=" + time +
-                '}';
+    public long getApplicationId() {
+        return applicationId;
     }
 
-    public Transaction(BankAccount recipient, String authorizationToken, BigDecimal amount) {
-        this.recipient = recipient;
-        this.authorizationToken = authorizationToken;
-        this.amount = amount;
+    public String getCreditCardType() {
+        return creditCardType;
+    }
+
+    public String getRecipientBic() {
+        return recipientBic;
     }
 
     public String getAuthorizationToken() {
         return authorizationToken;
     }
 
-    public void setAuthorizationToken(String authorizationToken) {
-        this.authorizationToken = authorizationToken;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(LocalDateTime time) {
-        this.time = time;
-    }
-
-    public CardType getCreditCardType() {
-        return creditCardType;
-    }
-
-    public void setCreditCardType(CardType creditCardType) {
-        this.creditCardType = creditCardType;
+    public String getStatus() {
+        return status;
     }
 }

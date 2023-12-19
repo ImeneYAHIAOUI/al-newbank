@@ -49,7 +49,7 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
     }
 
     @Override
-    public long getAuthorizedTransaction(Long merchantId) throws InvalidTokenException, ApplicationNotFoundException {
+    public long getAuthorizedTransaction(Long merchantId) {
         long confirmedTransactionsCount = transactionRepository.findByStatus(TransactionStatus.AUTHORIZED)
                 .stream()
                 .filter(transaction -> merchantId.equals(transaction.getMerchantId()))
@@ -57,7 +57,7 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
         return confirmedTransactionsCount;
     }
     @Override
-    public Transaction processPayment(String token, BigDecimal amount, String cryptedCreditCard) throws InvalidTokenException,
+    public Transaction processPayment(String token, double amount, String cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
             BadPaddingException, InvalidKeyException, InvalidKeySpecException {
         ApplicationDto application = businessIntegratorProxy.validateToken(token);
@@ -66,15 +66,17 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
 
 
         log.info("\u001B[32mSending payment authorization request to CCN\u001B[0m");
+
         CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
                 new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv(), amount)
         );
         if (!ccnResponseDto.isApproved()) {
             throw new CCNException("\u001B[31mPayment not authorized\u001B[0m");
         }
-        Transaction transaction = new Transaction(merchant.getBankAccount(), ccnResponseDto.getAuthToken(), amount);
+        Transaction transaction = new Transaction(merchant.getBankAccount(), ccnResponseDto.getAuthToken(), String.valueOf(amount));
         transaction.setId(UUID.randomUUID());
         transaction.setExternal(true);
+        transaction.setApplicationId(application.getId());
         transaction.setCreditCardType(ccnResponseDto.getCardType());
         transaction.setMerchantId(merchant.getId());
         CreditCard card = new CreditCard(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv());
@@ -83,6 +85,7 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
         transaction.setRecipient(merchant.getBankAccount());
         transaction.setStatus(TransactionStatus.AUTHORIZED);
         transaction.setBank(ccnResponseDto.getBankName());
+        log.info("\u001BTransaction: " + transaction+ "\u001B[0m");
         log.info("\u001B[32mPayment authorized\u001B[0m");
 
         transactionRepository.save(transaction);

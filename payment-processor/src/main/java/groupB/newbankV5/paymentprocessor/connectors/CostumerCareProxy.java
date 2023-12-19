@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
 import java.util.logging.Logger;
 
 @Component
@@ -41,19 +40,19 @@ public class CostumerCareProxy implements ICostumerCare {
     }
 
     @Override
-    public void updateBalance(long accountId, BigDecimal amount, String operation) {
+    public void updateBalance(long accountId, double amount, String operation) {
         UpdateFundsDto updateFundsDto = new UpdateFundsDto(amount, operation);
         restTemplate.put(costumerHostandPort + "/api/costumer/"+accountId+"/funds" , updateFundsDto);
     }
 
     @Override
-    public void reserveFunds(BigDecimal amount, String cardNumber, String expirationDate, String cvv) {
+    public void reserveFunds(double amount, String cardNumber, String expirationDate, String cvv) {
         ReserveFundsDto reserveFundsDto = new ReserveFundsDto(amount, cardNumber, expirationDate, cvv);
         restTemplate.put(costumerHostandPort + "/api/costumer/reservedfunds" , reserveFundsDto);
     }
 
     @Override
-    public void deduceWeeklyLimit(long accountId, BigDecimal amount) {
+    public void deduceWeeklyLimit(long accountId, double amount) {
         UpdateWeeklyLimitDto updateWeeklyLimitDto = new UpdateWeeklyLimitDto(amount);
         restTemplate.put(costumerHostandPort + "/api/costumer/"+accountId+"/deduceweeklylimit" , updateWeeklyLimitDto);
     }

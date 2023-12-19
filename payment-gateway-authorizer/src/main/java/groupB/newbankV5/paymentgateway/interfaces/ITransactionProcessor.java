@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public interface ITransactionProcessor {
 
-    Transaction processPayment(String token, BigDecimal amount, String cryptedCreditCard) throws InvalidTokenException,
+    Transaction processPayment(String token, double amount, String cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
             BadPaddingException, InvalidKeyException, InvalidKeySpecException;
 }

@@ -16,11 +16,12 @@ public class Transaction implements Serializable {
     private UUID id;
     private BankAccount recipient;
     private BankAccount sender;
-    private LocalDateTime time;
+    private long time;
+    private long applicationId;
     private Boolean isExternal;
     private String authorizationToken;
-    private BigDecimal amount;
-    private BigDecimal fees;
+    private String amount;
+    private String fees;
     private TransactionStatus status;
     private CardType creditCardType;
     private CreditCard creditCard;
@@ -64,13 +65,8 @@ public class Transaction implements Serializable {
         this.status = status;
     }
 
-    public BigDecimal getFees() {
-        return fees;
-    }
 
-    public void setFees(BigDecimal fees) {
-        this.fees = fees;
-    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -88,11 +84,11 @@ public class Transaction implements Serializable {
     public Transaction() {
     }
 
-    public Transaction(BankAccount recipient, String authorizationToken, BigDecimal amount) {
+    public Transaction(BankAccount recipient, String authorizationToken, String amount) {
         this.recipient = recipient;
         this.authorizationToken = authorizationToken;
         this.amount = amount;
-        this.time = LocalDateTime.now();
+        this.time = System.currentTimeMillis();
     }
 
     public UUID getId() {
@@ -103,11 +99,11 @@ public class Transaction implements Serializable {
         this.id = id;
     }
 
-    public LocalDateTime getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(LocalDateTime time) {
+    public void setTime(long time) {
         this.time = time;
     }
 
@@ -119,11 +115,11 @@ public class Transaction implements Serializable {
         this.authorizationToken = authorizationToken;
     }
 
-    public BigDecimal getAmount() {
+    public String getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(String amount) {
         this.amount = amount;
     }
 
@@ -149,5 +145,28 @@ public class Transaction implements Serializable {
 
     public void setBank(String bank) {
         this.bank = bank;
+    }
+
+    public void setApplicationId(Long id) {
+        this.applicationId = id;
+    }
+
+    public Long getApplicationId() {
+        return applicationId;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id='" + id + '\'' +
+                ", recipient=" + recipient +
+                ", sender=" + sender +
+                ", isExternal=" + isExternal +
+                ", authorizationToken='" + authorizationToken + '\'' +
+                ", amount=" + amount +
+                ", fees=" + fees +
+                ", status=" + status +
+                ", time=" + time +
+                '}';
     }
 }

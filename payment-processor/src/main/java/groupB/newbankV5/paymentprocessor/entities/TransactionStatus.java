@@ -14,14 +14,14 @@ public enum TransactionStatus {
         this.authorized = authorized;
     }
 
-    TransactionStatus() {
-    }
-
-    public String getAuthorized() {
-        return authorized;
-    }
-
-    public void setAuthorized(String authorized) {
-        this.authorized = authorized;
+    public static TransactionStatus fromString(String transactionStatus) {
+        if (transactionStatus != null) {
+            for (TransactionStatus b : TransactionStatus.values()) {
+                if (transactionStatus.equalsIgnoreCase(b.toString())) {
+                    return b;
+                }
+            }
+        }
+        return null;
     }
 }

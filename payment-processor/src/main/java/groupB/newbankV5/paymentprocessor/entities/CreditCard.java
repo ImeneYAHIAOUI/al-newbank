@@ -8,13 +8,11 @@ import javax.persistence.*;
 public class CreditCard {
 
     private String cardNumber;
-    private String cardHolderName;
     private String expiryDate;
     private String cvv;
 
-    public CreditCard(String cardNumber, String cardHolderName, String expiryDate, String cvv) {
+    public CreditCard(String cardNumber, String expiryDate, String cvv) {
         this.cardNumber = cardNumber;
-        this.cardHolderName = cardHolderName;
         this.expiryDate = expiryDate;
         this.cvv = cvv;
     }
@@ -31,13 +29,7 @@ public class CreditCard {
         this.cardNumber = cardNumber;
     }
 
-    public String getCardHolderName() {
-        return cardHolderName;
-    }
 
-    public void setCardHolderName(String cardHolderName) {
-        this.cardHolderName = cardHolderName;
-    }
 
     public String getExpiryDate() {
         return expiryDate;
