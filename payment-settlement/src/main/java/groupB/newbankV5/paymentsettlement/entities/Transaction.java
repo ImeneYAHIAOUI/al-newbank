@@ -1,7 +1,5 @@
 package groupB.newbankV5.paymentsettlement.entities;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Transaction {
