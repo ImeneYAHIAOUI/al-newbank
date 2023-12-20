@@ -24,7 +24,7 @@ Pros:
 * Ease of integration with Prometheus.
 * Utilizing Prometheus allows for real-time visualization of metrics.
 * Prometheus is known for its scalability, making it well-suited for handling increasing volumes of metrics as the system expands.
-  
+
 Cons:
 
 * Potential Network Latency : Sending metrics from the SDK to a centralized Prometheus server introduces network communication. Depending on the network conditions, there could be potential latency issues in metric transmission, impacting real-time monitoring
@@ -34,4 +34,3 @@ Cons:
 
 ## Additional Documentation
 [Prometheus Metric Exposition Documentation](https://prometheus.io/docs/instrumenting/exposition_formats/) 
-

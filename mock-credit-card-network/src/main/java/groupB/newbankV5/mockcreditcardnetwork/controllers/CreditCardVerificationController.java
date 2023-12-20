@@ -44,6 +44,8 @@ public class CreditCardVerificationController {
             errorResponse.setAuthToken();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
 
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 

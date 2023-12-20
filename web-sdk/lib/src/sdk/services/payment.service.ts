@@ -5,18 +5,19 @@ import {PaymentDto} from "../dto/payment.dto";
 import {AuthorizeDto} from "../dto/authorise.dto";
 import {GatewayConfirmationProxyService} from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
 import {RetrySettings} from "./Retry-settings";
-import {RequestDto} from "../dto/request.dto";
-import {MetricsProxy} from "./metrics-proxy/metrics-proxy";
+
+import { StatusReporterProxyService } from './status-reporter-proxy/status-reporter-proxy.service';
 
 export class PaymentService {
   private readonly gatewayAuthorizationProxyService;
   private readonly gatewayConfirmationProxyService;
-
+  private readonly statusReporterProxyService;
+  private readonly config = require('./config');
 constructor(retrySettings: RetrySettings) {
-  const config = require('./config');
-  this.gatewayAuthorizationProxyService = new GatewayAuthorizationProxyService(config.load_balancer_host,retrySettings);
-  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService(config.load_balancer_host,retrySettings);
 
+  this.statusReporterProxyService = new StatusReporterProxyService(retrySettings);
+  this.gatewayAuthorizationProxyService = new GatewayAuthorizationProxyService(this.config.load_balancer_host,retrySettings, this.statusReporterProxyService);
+  this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService(this.config.load_balancer_host,retrySettings, this.statusReporterProxyService);
 }
 
 
@@ -58,8 +59,6 @@ constructor(retrySettings: RetrySettings) {
   async processPayment(encryptedCardInfo: string, token: string,
      amount: string
   )   {
-    try {
-
       const payment : PaymentDto = {
         encryptedCard: encryptedCardInfo,
         amount: amount,
@@ -68,9 +67,6 @@ constructor(retrySettings: RetrySettings) {
       const auth : AuthorizeDto = await this.gatewayAuthorizationProxyService.authorizePaymentWithRetry(payment, token);
       console.debug('payment authorized');
       return auth;
-    } catch (error: any) {
-      throw new Error('Error processing card information: ' + error.message);
-    }
   }
 
   private encrypteCreditCard(paymentInfo: PaymentInfoDTO, publicKey: string) {
@@ -97,16 +93,19 @@ constructor(retrySettings: RetrySettings) {
   async authorize(paymentInfo: PaymentInfoDTO,token: string) {
 
        try {
-                const publicKey = await this.getPublicKey(token);
-                const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
-                const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
-                return result;
-            } catch (error) {
+
+          const publicKey = await this.getPublicKey(token);
+          const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
+          const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
+          return result;
+          } catch (error) {
                 console.error('Authorization failed:', error);
                 throw error;
-            }
-
+        }
+      
+  
   }
+    
   async confirmPayment(transactionId: string, token: string){
     console.debug('payment confirmation request sent');
 

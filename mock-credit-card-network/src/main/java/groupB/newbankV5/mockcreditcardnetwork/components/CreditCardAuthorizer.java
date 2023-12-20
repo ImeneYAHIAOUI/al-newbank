@@ -22,14 +22,21 @@ public class CreditCardAuthorizer {
     private final NewBankProxy newBankProxy;
     private final MockBankProxy mockBankProxy;
 
+    public static boolean TIME_OUT_SIMULATION = false;
+
     @Autowired
     public CreditCardAuthorizer(NewBankProxy newBankProxy, MockBankProxy mockBankProxy) {
         this.newBankProxy = newBankProxy;
         this.mockBankProxy = mockBankProxy;
     }
 
-    public CreditCardCheckResponseDto ValidateCreditCard(CreditCardInformationDto creditCardInformationDto) throws InvalidCardInformation {
+    public CreditCardCheckResponseDto ValidateCreditCard(CreditCardInformationDto creditCardInformationDto)
+            throws InvalidCardInformation, InterruptedException {
         String ccnumber = creditCardInformationDto.getCardNumber();
+        if(TIME_OUT_SIMULATION){
+            Thread.sleep(2000);
+            TIME_OUT_SIMULATION = false;
+        }
         if(isValidNewBank(ccnumber)) {
             CreditCardCheckResponseDto resp = newBankProxy.checkNewBankCreditCard(creditCardInformationDto);
             resp.setBankName("NewBank");

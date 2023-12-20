@@ -1,14 +1,13 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import * as retry from 'retry';
 import { HttpStatus } from '@nestjs/common';
-import { MerchantDTO } from '../../dto/merchant.dto';
-import { ApplicationDto } from '../../dto/application.dto';
-import { MerchantAlreadyExists } from '../../exceptions/merchant-already-exists.exception';
 import { ApplicationNotFound } from '../../exceptions/application-not-found.exception';
 import { InternalServerError } from '../../exceptions/internal-server.exception';
 import { UnauthorizedError } from '../../exceptions/unauthorized.exception';
 import {AuthorizeDto} from "../../dto/authorise.dto";
 import {RetrySettings} from "../Retry-settings";
+
+import { StatusReporterProxyService } from '../status-reporter-proxy/status-reporter-proxy.service';
 import {MetricsProxy} from "../metrics-proxy/metrics-proxy";
 import {RequestDto} from "../../dto/request.dto";
 export class GatewayAuthorizationProxyService {
@@ -16,11 +15,16 @@ export class GatewayAuthorizationProxyService {
   private readonly _gatewayPath = '/api/gateway_authorization/';
   private readonly retrySettings: RetrySettings;
   private readonly metricsProxy: MetricsProxy;
-  constructor(load_balancer_host: string,  retrySettings: RetrySettings) {
+
+  private readonly config = require('./../config');
+  private readonly statusReporterProxyService: StatusReporterProxyService;
+  constructor(load_balancer_host: string,  retrySettings: RetrySettings, statusReporterProxyService: StatusReporterProxyService) {
     this._gatewayBaseUrl = `${load_balancer_host}`;
     this.retrySettings = retrySettings;
     this.metricsProxy = new MetricsProxy(retrySettings)
+    this.statusReporterProxyService = statusReporterProxyService;
   }
+
     async getPublicKey(token: string): Promise<string> {
       try {
         const headers = {
@@ -65,10 +69,12 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
             },
           };
 
+          await this.statusReporterProxyService.isServiceAvailable(this.config.service_authorizer_name); 
+
           const response = await axios.post(
             `${this._gatewayBaseUrl}${this._gatewayPath}authorize`,
-            encryptedCardInfo,
-            httpOptions,
+            encryptedCardInfo,{
+            ...httpOptions, timeout: this.config.maxTimeOut,}
           );
           resolve(response.data);
           const end = new Date().getTime();
@@ -77,30 +83,40 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
           await this.metricsProxy.sendRequestResult(request, token);
         } catch (error: any) {
           lastError = error;
+
+          let message = lastError?.message;
+          if (axios.isAxiosError(error)) {
+            const axiosError = error as AxiosError;
+            const status = axiosError.response?.status;
+            if(status == 408){
+              message = 'Request Timeout: The payment authorization request took too long to process';
+            }
+            else if(status ==500){
+              message = 'Internal Server Error: The service encountered an unexpected issue';
+            }
+        }
           const end = new Date().getTime();
           const time = end - start;
           if (operation.retry(lastError)) {
-            console.error(`Retry attempt ${currentAttempt} failed. Retrying...`);
+              console.error(`Retry attempt ${currentAttempt}, ${message}. Retrying...`);
             return;
           }
-           console.error(`All retry attempts failed. Last error: ${lastError?.message}`);
-          if (isAxiosError(lastError) && lastError.response) {
+           console.error(`All retry attempts failed. Last error: ${message}`);
 
+          if (isAxiosError(lastError) && lastError.response) {
             if (lastError.response.status === HttpStatus.UNAUTHORIZED) {
-              console.error(lastError.response);
-              console.error(`Unauthorized access`);
-              reject(new UnauthorizedError(lastError.message));
+              reject(new UnauthorizedError(lastError.response.data.details));
+              return;
             } else if (lastError.response.status === HttpStatus.NOT_FOUND) {
-              console.error(lastError.response);
-              console.error(`Application not found`);
               reject(new ApplicationNotFound());
+              return;
             } else if (lastError.response.status === HttpStatus.INTERNAL_SERVER_ERROR) {
-              console.error(lastError.response);
-              reject(new InternalServerError(lastError.message));
+              reject(new InternalServerError(lastError.response));
+            }else if (lastError.response.status === HttpStatus.TOO_MANY_REQUESTS) {
+               console.error(`the service is currently experiencing high demand.`);
             }
           } else {
             const errorMessage = `Error while processing payment: ${lastError?.message}`;
-            console.error(errorMessage);
             reject(new Error(errorMessage));
           }
           const request : RequestDto = new RequestDto(new Date().toISOString(), time, 'FAILED', 'Payment authorization failed');

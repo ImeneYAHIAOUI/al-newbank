@@ -1,27 +1,28 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import * as retry from 'retry';
 import { HttpStatus } from '@nestjs/common';
-import { MerchantDTO } from '../../dto/merchant.dto';
-import { ApplicationDto } from '../../dto/application.dto';
-import { MerchantAlreadyExists } from '../../exceptions/merchant-already-exists.exception';
+
 import { ApplicationNotFound } from '../../exceptions/application-not-found.exception';
-import {AuthorizeDto} from "../../dto/authorise.dto";
 import { InternalServerError } from '../../exceptions/internal-server.exception';
 import { UnauthorizedError } from '../../exceptions/unauthorized.exception';
 import {RetrySettings} from "../Retry-settings";
 import {MetricsProxy} from "../metrics-proxy/metrics-proxy";
 import {RequestDto} from "../../dto/request.dto";
+import {StatusReporterProxyService} from "../status-reporter-proxy/status-reporter-proxy.service";
+
 
 export class GatewayConfirmationProxyService {
+  private readonly metricsProxy: MetricsProxy;
   private readonly _gatewayBaseUrl: string;
-   private readonly retrySettings: RetrySettings
-    private readonly metricsProxy: MetricsProxy;
-
+  private readonly retrySettings: RetrySettings
+  private readonly config = require('./../config');
+  private readonly statusReporterProxyService: StatusReporterProxyService;
   private readonly _gatewayPath = '/api/gateway-confirmation';
-  constructor(load_balancer_host: string,retrySettings: RetrySettings) {
+  constructor(load_balancer_host: string,retrySettings: RetrySettings, statusReporterProxyService: StatusReporterProxyService) {
     this._gatewayBaseUrl = `${load_balancer_host}`;
     this.retrySettings = retrySettings;
     this.metricsProxy = new MetricsProxy(retrySettings)
+    this.statusReporterProxyService = statusReporterProxyService;
   }
  
    confirmPayment(transactionId: string, token: string): Promise<String> {
@@ -45,8 +46,12 @@ export class GatewayConfirmationProxyService {
                   Authorization: `Bearer ${token}`,
                 },
               };
+              await this.statusReporterProxyService.isServiceAvailable(this.config.service_confirmation_name); 
 
-               const response = await axios.post(`${this._gatewayBaseUrl}${this._gatewayPath}/${transactionId}`,httpOptions,);
+               const response = await axios.post(`${this._gatewayBaseUrl}${this._gatewayPath}/${transactionId}`,
+               {
+                ...httpOptions, timeout: this.config.maxTimeOut,}
+              );
               resolve(response.data);
                 const end = new Date().getTime();
                 const time = end - start;
@@ -71,7 +76,7 @@ export class GatewayConfirmationProxyService {
                           } else if (lastError.response.status === HttpStatus.NOT_FOUND) {
                             console.error(lastError.response);
                             console.error(`Application not found`);
-                            reject(new ApplicationNotFound());
+                            reject(new ApplicationNotFound(lastError.response));
                           } else if (lastError.response.status === HttpStatus.INTERNAL_SERVER_ERROR) {
                             console.error(lastError.response);
                             reject(new InternalServerError(lastError.message));

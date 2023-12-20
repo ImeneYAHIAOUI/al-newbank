@@ -1,6 +1,6 @@
 ---
 id: adrs-adr004
-title: "ADR004: Add Backend Service Status"
+title: "ADR004: Adding Backend Services Status"
 description: >
   Architecture Decision Record (ADR) to implement a status retrieval for backend services
 ---
@@ -45,7 +45,6 @@ Given the potential high frequency of calls from various SDK clients on this sta
 
 ### Advantages:
 - Readable errors provided by the status checks calls done by the SDK instead of performing direct calls to the business services.
-- The SDK serves as a circuit breaker on the client-side
 - Prometheus server is protected from overload thanks to the read-through caching strategy
 
 ### Disadvantages:

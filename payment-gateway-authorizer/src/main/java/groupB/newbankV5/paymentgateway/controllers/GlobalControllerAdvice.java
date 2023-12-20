@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolationException;
+import java.security.InvalidKeyException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 @RestControllerAdvice(assignableTypes = {
         TransactionerController.class
@@ -47,6 +50,8 @@ public class GlobalControllerAdvice {
         errorDTO.setDetails("Application not found");
         return errorDTO;
     }
+
+
     @ExceptionHandler({MerchantNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorDTO handleExceptions(MerchantNotFoundException e) {
@@ -70,6 +75,24 @@ public class GlobalControllerAdvice {
         ErrorDTO errorDTO = new ErrorDTO();
         errorDTO.setError(e.getMessage());
         errorDTO.setDetails("Credit card network rejected transaction");
+        return errorDTO;
+    }
+
+    @ExceptionHandler({InvalidKeyException.class})
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorDTO handleExceptions(InvalidKeyException e) {
+        ErrorDTO errorDTO = new ErrorDTO();
+        errorDTO.setError(e.getMessage());
+        errorDTO.setDetails("Invalid key");
+        return errorDTO;
+    }
+
+    @ExceptionHandler({TimeoutException.class})
+    @ResponseStatus(HttpStatus.REQUEST_TIMEOUT)
+    public ErrorDTO handleExceptions(TimeoutException e) {
+        ErrorDTO errorDTO = new ErrorDTO();
+        errorDTO.setError(e.getMessage());
+        errorDTO.setDetails("timeout exception");
         return errorDTO;
     }
 

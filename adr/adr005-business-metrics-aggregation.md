@@ -5,7 +5,7 @@ description: >
   Architecture Decision Record (ADR) to implement a business metrics aggregation API for the client SDK
 ---
 
-*Status: [Open]*
+*Status: [Closed]*
 
 ## Background
 
@@ -50,3 +50,7 @@ Description: Implementing CronJob services to periodically poll and process data
 #### Cons:
 - Complexity in keeping track of last changes: Maintaining accurate timestamps or tracking mechanisms can be complex, potentially leading to inaccuracies in metrics.
 - Scalability concerns with huge inserts and selects: As data grows, the solution might struggle to handle large amounts of data inserts and selects, impacting performance.
+
+## Decision 
+
+The event-based CDC was adopted by making use of cloud capabilities (GCP Compute Engine) as it would have been impossible otherwise on our machines.
