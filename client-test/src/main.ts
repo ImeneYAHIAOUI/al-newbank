@@ -49,7 +49,6 @@ async function main() {
             const confirm = await newbankSdk.confirmPayment(response.transactionId);
             console.log(confirm);
         } catch (error: any) {
-            console.log("NADDDDDIIIIMMMM");
            console.log(error.message);
            return;
         }
