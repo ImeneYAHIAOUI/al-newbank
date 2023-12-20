@@ -94,14 +94,7 @@ public class MetricsService implements IMetricsService {
                 .filter(transaction -> transaction.getTime() > fromInMillis && transaction.getTime() < toInMillis).toList();
         List<Request> requests = requestRepository.findAll().stream()
                 .filter(request1 -> request1.getDateTime().isAfter(from) && request1.getDateTime().isBefore(to)).toList();
-        log.info("from: " + from);
-        log.info("to: " + to);
-        log.info("from in millis: " + fromInMillis);
-        log.info("to in millis: " + toInMillis);
-        log.info("Transactions: " + transactions);
-        log.info("Requests: " + requests);
-        log.info("total requests: " + requestRepository.findAll());
-        log.info("total transactions: " + transactionRepository.findAll());
+
         return generateMetricsList(from, to, request,transactions,requests);
 
     }
@@ -139,6 +132,7 @@ public class MetricsService implements IMetricsService {
             if (request.getMetrics() == null || request.getMetrics().isEmpty()) {
                 metrics.addValue("transactionCount", BigDecimal.valueOf(transactions.size()));
                 metrics.addValue("totalRequestsCount", BigDecimal.valueOf(requests.size()));
+                metrics.addValue("totalAmountSpent", BigDecimal.valueOf(transactions.stream().map(Transaction::getAmount).mapToDouble(Double::parseDouble).sum()));
                 metrics.addValue("averageAmountSpent", BigDecimal.valueOf(transactions.stream().map(Transaction::getAmount).mapToDouble(Double::parseDouble).average().orElse(0)));
                 if (transactions.size() > 0) {
                     metrics.addValue("TransactionSuccessRate", BigDecimal.valueOf(transactions.stream().filter(transaction -> transaction.getStatus().equals(TransactionStatus.CONFIRMED.getValue())).count() / transactions.size()));
