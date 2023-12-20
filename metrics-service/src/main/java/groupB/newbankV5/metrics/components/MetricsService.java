@@ -71,8 +71,8 @@ public class MetricsService implements IMetricsService {
 
         if (request.getPeriod() != null) {
             String period = request.getPeriod();
-            int amount = Integer.parseInt(period.substring(1, period.length() - 1));
-            ChronoUnit chronoUnit = period.endsWith("mi") ? ChronoUnit.MINUTES : period.endsWith("h") ? ChronoUnit.HOURS : period.endsWith("d") ? ChronoUnit.DAYS : period.endsWith("w") ? ChronoUnit.WEEKS : period.endsWith("m") ? ChronoUnit.MONTHS : ChronoUnit.YEARS;
+            int amount =period.length() == 3 ? Integer.parseInt(period.substring(1, period.length() - 1)) : Integer.parseInt(period.substring(1, period.length() - 2));
+            ChronoUnit chronoUnit = period.endsWith("mi") || period.endsWith("MI") || period.endsWith("Mi") || period.endsWith("mI") ? ChronoUnit.MINUTES : period.endsWith("h") || period.endsWith("H") ? ChronoUnit.HOURS : period.endsWith("d")  || period.endsWith("D") ? ChronoUnit.DAYS : period.endsWith("w")  || period.endsWith("W") ? ChronoUnit.WEEKS : period.endsWith("m") || period.endsWith("M") ? ChronoUnit.MONTHS : ChronoUnit.YEARS;
             to = LocalDateTime.now();
             from = to.minus(amount, chronoUnit);
 
@@ -93,9 +93,9 @@ public class MetricsService implements IMetricsService {
                 .map(transactionEnvelop -> transactionEnvelop.getPayload().getTransaction())
                 .filter(transaction -> transaction.getTime() > fromInMillis && transaction.getTime() < toInMillis).toList();
         List<Request> requests = requestRepository.findAll().stream()
-                .filter(request1 -> request1.getDateTime().isAfter(request.getTimeRange().getFrom()) && request1.getDateTime().isBefore(request.getTimeRange().getTo())).toList();
-        log.info("from: " + request.getTimeRange().getFrom());
-        log.info("to: " + request.getTimeRange().getTo());
+                .filter(request1 -> request1.getDateTime().isAfter(from) && request1.getDateTime().isBefore(to)).toList();
+        log.info("from: " + from);
+        log.info("to: " + to);
         log.info("from in millis: " + fromInMillis);
         log.info("to in millis: " + toInMillis);
         log.info("Transactions: " + transactions);
