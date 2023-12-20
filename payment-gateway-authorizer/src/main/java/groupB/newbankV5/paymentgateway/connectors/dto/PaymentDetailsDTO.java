@@ -7,14 +7,14 @@ public class PaymentDetailsDTO {
     private String cardNumber;
     private String expirationDate;
     private String cvv;
-    private BigDecimal amount;
+    private double amount;
 
 
     public PaymentDetailsDTO() {
         // Default constructor
     }
 
-    public PaymentDetailsDTO(String cardNumber, String expirationDate, String cvv, BigDecimal amount) {
+    public PaymentDetailsDTO(String cardNumber, String expirationDate, String cvv, double amount) {
         this.cardNumber = cardNumber;
         this.expirationDate = expirationDate;
         this.cvv = cvv;
@@ -29,7 +29,7 @@ public class PaymentDetailsDTO {
         this.amount = amount;
     }
 
-    public PaymentDetailsDTO(String cardHolderName, String cardNumber, String expirationDate, String cvv, BigDecimal amount) {
+    public PaymentDetailsDTO(String cardHolderName, String cardNumber, String expirationDate, String cvv, double amount) {
         this.cardHolderName = cardHolderName;
         this.cardNumber = cardNumber;
         this.expirationDate = expirationDate;
@@ -72,11 +72,11 @@ public class PaymentDetailsDTO {
         this.cvv = cvv;
     }
 
-    public BigDecimal getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 

@@ -1,6 +1,5 @@
 package groupB.newbankV5.paymentprocessor.connectors.dto;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public class AccountDto {
@@ -8,10 +7,10 @@ public class AccountDto {
     private String IBAN;
     private String BIC;
 
-    private BigDecimal balance;
+    private double balance;
 
-    private BigDecimal limit;
-    private BigDecimal restOfTheWeekLimit;
+    private double limit;
+    private double restOfTheWeekLimit;
 
     private List<CreditCardDto> creditCards;
 
@@ -19,7 +18,7 @@ public class AccountDto {
     }
 
 
-    public AccountDto(String IBAN, String BIC, BigDecimal balance, List<CreditCardDto> creditCards, BigDecimal limit) {
+    public AccountDto(String IBAN, String BIC, long balance, List<CreditCardDto> creditCards, long limit) {
         this.IBAN = IBAN;
         this.BIC = BIC;
         this.balance = balance;
@@ -43,19 +42,19 @@ public class AccountDto {
         this.BIC = BIC;
     }
 
-    public BigDecimal getBalance() {
+    public double getBalance() {
         return balance;
     }
 
-    public void setBalance(BigDecimal balance) {
+    public void setBalance(double balance) {
         this.balance = balance;
     }
 
-    public BigDecimal getLimit() {
+    public double getLimit() {
         return limit;
     }
 
-    public void setLimit(BigDecimal limit) {
+    public void setLimit(double limit) {
         this.limit = limit;
     }
     public List<CreditCardDto> getCreditCards() {
@@ -74,11 +73,11 @@ public class AccountDto {
         this.id = id;
     }
 
-    public BigDecimal getRestOfTheWeekLimit() {
+    public double getRestOfTheWeekLimit() {
         return restOfTheWeekLimit;
     }
 
-    public void setRestOfTheWeekLimit(BigDecimal restOfTheWeekLimit) {
+    public void setRestOfTheWeekLimit(double restOfTheWeekLimit) {
         this.restOfTheWeekLimit = restOfTheWeekLimit;
     }
 }

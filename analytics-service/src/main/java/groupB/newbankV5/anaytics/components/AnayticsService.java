@@ -46,7 +46,7 @@ public class AnayticsService {
                 .filter(Transaction::getExternal)
                 .sorted(Comparator.comparing(Transaction::getTime))
                 .collect(Collectors.groupingBy(
-                        transaction -> transaction.getTime().toLocalDate(),
+                        transaction -> transaction.getTime(),
                         TreeMap::new,
                         Collectors.toList()
                 ));
@@ -93,7 +93,7 @@ public class AnayticsService {
                 .filter(transaction -> YearMonth.from(transaction.getTime()).equals(targetMonth))
                 .sorted(Comparator.comparing(Transaction::getTime))
                 .collect(Collectors.groupingBy(
-                        transaction -> transaction.getTime().toLocalDate(),
+                        transaction -> transaction.getTime(),
                         TreeMap::new,
                         Collectors.toList()
                 ))
@@ -115,7 +115,7 @@ public class AnayticsService {
                 .filter(transaction -> YearMonth.from(transaction.getTime()).equals(targetMonth))
                 .sorted(Comparator.comparing(Transaction::getTime))
                 .collect(Collectors.groupingBy(
-                        transaction -> transaction.getTime().toLocalDate(),
+                        transaction -> transaction.getTime(),
                         TreeMap::new,
                         Collectors.toList()
                 ))

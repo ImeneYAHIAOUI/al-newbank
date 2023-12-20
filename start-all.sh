@@ -20,6 +20,7 @@ docker compose --env-file ./.env \
           --file fees-calculator/docker-compose.yml\
           --file customer-care/docker-compose.yml \
           --file mock-credit-card-network/docker-compose.yml \
+          --file metrics-service/docker-compose.yml \
           --file business-integrator/docker-compose.yml \
           --file payment-settlement/docker-compose.yml\
           --file payment-processor/docker-compose.yml\

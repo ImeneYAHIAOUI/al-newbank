@@ -1,17 +1,50 @@
 package groupB.newbankV5.paymentprocessor.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+
 import java.util.Objects;
 import java.util.UUID;
 
 
 @Table
 public class Transaction  {
+
+
+
+
+    @PrimaryKey
+    private UUID id;
+
+    private long time;
+
+    private long applicationId;
+    private CardType creditCardType;
+    @JsonProperty("recipient")
+
+    private BankAccount recipient;
+    @JsonProperty("sender")
+    private BankAccount sender;
+    private Boolean isExternal;
+    private String authorizationToken;
+    @JsonProperty("amount")
+    private String amount;
+    @JsonProperty("status")
+    private TransactionStatus status;
+    private String fees;
+    private CreditCard creditCard;
+
+    private String bank;
+
+    public String getBank() {
+        return bank;
+    }
+
+    public void setBank(String bank) {
+        this.bank = bank;
+    }
 
 
     public UUID getId() {
@@ -21,33 +54,6 @@ public class Transaction  {
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    @PrimaryKey
-    private UUID id;
-
-    private LocalDateTime time;
-    private CardType creditCardType;
-
-    private BankAccount recipient;
-
-    private BankAccount sender;
-    private Boolean isExternal;
-    private String authorizationToken;
-    private BigDecimal amount;
-    private TransactionStatus status;
-    private BigDecimal fees;
-    private CreditCard creditCard;
-
-
-    public Transaction(  BankAccount recipient, BankAccount sender, Boolean isExternal, String authorizationToken, BigDecimal amount, TransactionStatus status) {
-        this.recipient = recipient;
-        this.sender = sender;
-        this.isExternal = isExternal;
-        this.authorizationToken = authorizationToken;
-        this.amount = amount;
-        this.status = status;
-        this.time = LocalDateTime.now();
     }
 
     public TransactionStatus getStatus() {
@@ -82,11 +88,11 @@ public class Transaction  {
         this.status = status;
     }
 
-    public LocalDateTime getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(LocalDateTime time) {
+    public void setTime(long time) {
         this.time = time;
     }
 
@@ -104,14 +110,10 @@ public class Transaction  {
     }
 
     public Transaction() {
-        this.time = LocalDateTime.now();
+
     }
 
-    public Transaction(BankAccount recipient, String authorizationToken, BigDecimal amount) {
-        this.recipient = recipient;
-        this.authorizationToken = authorizationToken;
-        this.amount = amount;
-    }
+
 
     public String getAuthorizationToken() {
         return authorizationToken;
@@ -121,11 +123,11 @@ public class Transaction  {
         this.authorizationToken = authorizationToken;
     }
 
-    public BigDecimal getAmount() {
+    public String getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(String amount) {
         this.amount = amount;
     }
 
@@ -133,8 +135,6 @@ public class Transaction  {
     public String toString() {
         return "Transaction{" +
                 "id='" + id + '\'' +
-                ", recipient=" + recipient.toString() +
-                ", sender=" + sender.toString() +
                 ", isExternal=" + isExternal +
                 ", authorizationToken='" + authorizationToken + '\'' +
                 ", amount=" + amount +
@@ -145,9 +145,6 @@ public class Transaction  {
     }
 
 
-    public void setFees(BigDecimal fees) {
-        this.fees = fees;
-    }
 
     public CardType getCreditCardType() {
         return creditCardType;
@@ -164,4 +161,16 @@ public class Transaction  {
     public void setCreditCard(CreditCard creditCard) {
         this.creditCard = creditCard;
     }
+
+
+    public long getApplicationId() {
+        return applicationId;
+    }
+
+    public void setApplicationId(long applicationId) {
+        this.applicationId = applicationId;
+    }
+
+
+
 }

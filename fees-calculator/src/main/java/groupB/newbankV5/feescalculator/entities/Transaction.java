@@ -1,11 +1,5 @@
 package groupB.newbankV5.feescalculator.entities;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.persistence.*;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -19,10 +13,12 @@ public class Transaction {
     private BankAccount sender;
     private Boolean isExternal;
     private String authorizationToken;
-    private BigDecimal amount;
-    private BigDecimal fees;
+    private String amount;
+    private String fees;
     private TransactionStatus status;
-    private LocalDateTime time;
+    private long time;
+
+    private long applicationId;
 
     public CardType getCreditCardType() {
         return creditCardType;
@@ -66,11 +62,9 @@ public class Transaction {
         this.status = status;
     }
 
-    public BigDecimal getFees() {
-        return fees;
-    }
 
-    public void setFees(BigDecimal fees) {
+
+    public void setFees(String fees) {
         this.fees = fees;
     }
 
@@ -90,11 +84,7 @@ public class Transaction {
     public Transaction() {
     }
 
-    public Transaction(BankAccount recipient, String authorizationToken, BigDecimal amount) {
-        this.recipient = recipient;
-        this.authorizationToken = authorizationToken;
-        this.amount = amount;
-    }
+
 
     public String getAuthorizationToken() {
         return authorizationToken;
@@ -112,19 +102,35 @@ public class Transaction {
         this.id = id;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
+    public String  getAmount() {
+        return this.amount;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
 
-    public LocalDateTime getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(LocalDateTime time) {
+    public void setTime(long time) {
         this.time = time;
+    }
+
+    public long getApplicationId() {
+        return applicationId;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id='" + id + '\'' +
+                ", recipient=" + recipient +
+                ", sender=" + sender +
+                ", isExternal=" + isExternal +
+                ", authorizationToken='" + authorizationToken + '\'' +
+                ", amount=" + amount +
+                ", fees=" + fees +
+                ", status=" + status +
+                ", time=" + time +
+                '}';
     }
 }

@@ -1,20 +1,19 @@
 package groupB.newbankV5.paymentprocessor.connectors.dto;
 
-import java.math.BigDecimal;
 
 public class UpdateWeeklyLimitDto {
 
-    private BigDecimal amount;
+    private double amount;
 
-    public UpdateWeeklyLimitDto(BigDecimal amount) {
+    public UpdateWeeklyLimitDto(double amount) {
         this.amount = amount;
     }
 
-    public BigDecimal getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 }

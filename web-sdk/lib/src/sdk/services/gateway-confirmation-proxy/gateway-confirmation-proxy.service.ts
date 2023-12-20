@@ -1,18 +1,15 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import * as retry from 'retry';
 import { HttpStatus } from '@nestjs/common';
-import { MerchantDTO } from '../../dto/merchant.dto';
-import { ApplicationDto } from '../../dto/application.dto';
-import { MerchantAlreadyExists } from '../../exceptions/merchant-already-exists.exception';
+
 import { ApplicationNotFound } from '../../exceptions/application-not-found.exception';
-import {AuthorizeDto} from "../../dto/authorise.dto";
 import { InternalServerError } from '../../exceptions/internal-server.exception';
 import { UnauthorizedError } from '../../exceptions/unauthorized.exception';
 import {RetrySettings} from "../Retry-settings";
+import {MetricsProxy} from "../metrics-proxy/metrics-proxy";
+import {RequestDto} from "../../dto/request.dto";
+import {StatusReporterProxyService} from "../status-reporter-proxy/status-reporter-proxy.service";
 
-import { StatusReporterProxyService } from '../status-reporter-proxy/status-reporter-proxy.service';
-import { MetricsProxy } from '../metrics-proxy/metrics-proxy';
-import { RequestDto } from '../../dto/request.dto';
 
 export class GatewayConfirmationProxyService {
   private readonly metricsProxy: MetricsProxy;

@@ -67,4 +67,16 @@ public class Request {
     public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
+
+    @Override
+    public String toString() {
+        return "Request{" +
+                "id='" + id + '\'' +
+                ", application=" + application +
+                ", dateTime=" + dateTime +
+                ", time=" + time +
+                ", status='" + status + '\'' +
+                ", details='" + details + '\'' +
+                '}';
+    }
 }

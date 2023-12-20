@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface RequestRepository extends MongoRepository<Request, String> {
 
-    List<Request> findByApplication(Long application);
 }

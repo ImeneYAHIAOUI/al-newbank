@@ -6,6 +6,6 @@ import groupB.newbankV5.paymentgateway.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.paymentgateway.exceptions.InvalidTokenException;
 
 public interface ITransactionFinder {
-    long getAuthorizedTransaction(Long merchantId) throws InvalidTokenException, ApplicationNotFoundException;
+    long getAuthorizedTransaction(Long merchantId);
 
 }

@@ -3,35 +3,35 @@ package groupB.newbankV5.paymentsettlement.connectors.dto;
 import java.math.BigDecimal;
 
 public class ReleaseFundsDto {
-    private BigDecimal amount;
+    private double amount;
     private String IBAN;
     private String receiverIban;
-    private BigDecimal fees;
+    private double fees;
 
-    public ReleaseFundsDto(BigDecimal amount, BigDecimal fees, String IBAN, String receiverIban) {
+    public ReleaseFundsDto(double amount, double fees, String IBAN, String receiverIban) {
         this.amount = amount;
         this.IBAN = IBAN;
         this.receiverIban = receiverIban;
         this.fees = fees;
     }
 
-    public ReleaseFundsDto(BigDecimal amount,BigDecimal fees, String iban) {
+    public ReleaseFundsDto(double amount,double fees, String iban) {
         this.amount = amount;
         this.fees = fees;
         this.IBAN = iban;
     }
 
-    public ReleaseFundsDto(BigDecimal fees) {
+    public ReleaseFundsDto(double fees) {
 
         this.fees = fees;
 
     }
 
-    public BigDecimal getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
@@ -51,11 +51,8 @@ public class ReleaseFundsDto {
         this.receiverIban = receiverIban;
     }
 
-    public BigDecimal getFees() {
-        return fees;
-    }
 
-    public void setFees(BigDecimal fees) {
+    public void setFees(double fees) {
         this.fees = fees;
     }
 }

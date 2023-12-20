@@ -1,15 +1,14 @@
 package groupB.newbankV5.paymentprocessor.connectors.dto;
 
-import java.math.BigDecimal;
 
 public class ReserveFundsDto {
-    BigDecimal amount;
+    double amount;
     private String cardNumber;
     private String expirationDate;
     private String cvv;
     private String authToken;
 
-    public ReserveFundsDto(BigDecimal amount, String cardNumber, String expirationDate, String cvv) {
+    public ReserveFundsDto(double amount, String cardNumber, String expirationDate, String cvv) {
         this.amount = amount;
         this.cardNumber = cardNumber;
         this.expirationDate = expirationDate;
@@ -40,11 +39,11 @@ public class ReserveFundsDto {
         this.cvv = cvv;
     }
 
-    public BigDecimal getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 

@@ -22,6 +22,7 @@ compile_dir "external-bank"
 compile_dir "mock-credit-card-network"
 compile_dir "monitoring"
 compile_dir "status-reporter"
+compile_dir "metrics-service"
 
 
 echo "** Done all"

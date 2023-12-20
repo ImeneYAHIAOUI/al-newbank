@@ -18,11 +18,11 @@ public enum TransactionStatus {
     TransactionStatus() {
     }
 
-    public String getAuthorized() {
+    public String getValue() {
         return authorized;
     }
 
-    public void setAuthorized(String authorized) {
+    public void setValue(String authorized) {
         this.authorized = authorized;
     }
 }

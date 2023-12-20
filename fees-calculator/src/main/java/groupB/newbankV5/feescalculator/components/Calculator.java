@@ -25,22 +25,25 @@ public class Calculator implements IFeesCalculator {
 
     @Override
     public void applyFees(Transaction transaction) {
-        BigDecimal fees = BigDecimal.ZERO;
+        double fees = 0;
         if (transaction.getCreditCardType() == CardType.CREDIT) {
-            fees = fees.add(transaction.getAmount().multiply(BigDecimal.valueOf(CREDIT_INTERCHANGE_FEE_RATE)));
+            fees += Double.parseDouble(transaction.getAmount()) * CREDIT_INTERCHANGE_FEE_RATE;
         } else {
-            fees = fees.add(transaction.getAmount().multiply(BigDecimal.valueOf(DEBIT_INTERCHANGE_FEE_RATE)));
+            fees += Double.parseDouble(transaction.getAmount()) * DEBIT_INTERCHANGE_FEE_RATE;
         }
 
         if (!transaction.getSender().getBIC().startsWith("FR")) {
-            fees = fees.add(transaction.getAmount().multiply(BigDecimal.valueOf(CROSS_BORDER_FEE_RATE)));
+            fees += Double.parseDouble(transaction.getAmount()) * CROSS_BORDER_FEE_RATE;
         }
 
-        fees = fees.add(transaction.getAmount().multiply(BigDecimal.valueOf(NETWORK_FEE_RATE)));
+        fees += Double.parseDouble(transaction.getAmount()) * NETWORK_FEE_RATE;
 
 
-        transaction.setFees(fees);
+        transaction.setFees(Double.toString(fees));
         transaction.setStatus(TransactionStatus.FEES_CALCULATED);
+
+        log.info("Fees calculated: " + fees);
+        log.info("Transaction " + transaction );
     }
 
 }

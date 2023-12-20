@@ -1,10 +1,9 @@
 package groupB.newbankV5.paymentgateway.entities;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,51 +13,29 @@ import java.util.UUID;
 @RedisHash("Transaction")
 public class Transaction implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = -7520870722843116252L;
+
     @Id
     private UUID id;
     private BankAccount recipient;
     private BankAccount sender;
-    private LocalDateTime time;
+    private long time;
+
+    private long applicationId;
     private Boolean isExternal;
     private String authorizationToken;
-    private BigDecimal amount;
-    private BigDecimal fees;
+    private String amount;
+    private String fees;
     private TransactionStatus status;
     private CardType creditCardType;
     private CreditCard creditCard;
     private String bank;
-    private Long merchantId;
-
-    @Override
-    public String toString() {
-        return "{\n" +
-                "  \"id\": \"" + id + "\",\n" +
-                "  \"recipient\": " + recipient + ",\n" +
-                "  \"sender\": " + sender + ",\n" +
-                "  \"time\": " + time + ",\n" +
-                "  \"authorizationToken\": \"" + authorizationToken + "\",\n" +
-                "  \"amount\": " + amount + ",\n" +
-                "  \"fees\": " + fees + ",\n" +
-                "  \"status\": \"" + status + "\",\n" +
-                "  \"creditCardType\": " + creditCardType + ",\n" +
-                "  \"creditCard\": " + creditCard + ",\n" +
-                "  \"bank\": \"" + bank + "\",\n" +
-                "  \"merchantId\": " + merchantId + ",\n" +
-                "  \"external\": " + isExternal + "\n" +
-                "}";
-    }
-
 
     public TransactionStatus getStatus() {
         return status;
     }
-    public Long getMerchantId() {
-        return merchantId;
-    }
 
-    public void setMerchantId(Long merchantId) {
-        this.merchantId = merchantId;
-    }
 
     public BankAccount getRecipient() {
         return recipient;
@@ -88,11 +65,11 @@ public class Transaction implements Serializable {
         this.status = status;
     }
 
-    public BigDecimal getFees() {
+    public String getFees() {
         return fees;
     }
 
-    public void setFees(BigDecimal fees) {
+    public void setFees(String fees) {
         this.fees = fees;
     }
 
@@ -112,12 +89,6 @@ public class Transaction implements Serializable {
     public Transaction() {
     }
 
-    public Transaction(BankAccount recipient, String authorizationToken, BigDecimal amount) {
-        this.recipient = recipient;
-        this.authorizationToken = authorizationToken;
-        this.amount = amount;
-        this.time = LocalDateTime.now();
-    }
 
     public UUID getId() {
         return id;
@@ -127,11 +98,11 @@ public class Transaction implements Serializable {
         this.id = id;
     }
 
-    public LocalDateTime getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(LocalDateTime time) {
+    public void setTime(long time) {
         this.time = time;
     }
 
@@ -143,13 +114,10 @@ public class Transaction implements Serializable {
         this.authorizationToken = authorizationToken;
     }
 
-    public BigDecimal getAmount() {
+    public String getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
 
     public CardType getCreditCardType() {
         return creditCardType;
@@ -174,6 +142,31 @@ public class Transaction implements Serializable {
     public void setBank(String bank) {
         this.bank = bank;
     }
+
+    public long getApplicationId() {
+        return applicationId;
+    }
+
+    public void setApplicationId(long applicationId) {
+        this.applicationId = applicationId;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id='" + id + '\'' +
+                ", recipient=" + recipient +
+                ", sender=" + sender +
+                ", isExternal=" + isExternal +
+                ", authorizationToken='" + authorizationToken + '\'' +
+                ", amount=" + amount +
+                ", fees=" + fees +
+                ", status=" + status +
+                ", time=" + time +
+                '}';
+    }
+
+
 
 
 }

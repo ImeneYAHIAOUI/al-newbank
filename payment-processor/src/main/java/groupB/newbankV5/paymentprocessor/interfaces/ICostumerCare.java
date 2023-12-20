@@ -2,7 +2,6 @@ package groupB.newbankV5.paymentprocessor.interfaces;
 
 import groupB.newbankV5.paymentprocessor.connectors.dto.AccountDto;
 
-import java.math.BigDecimal;
 
 public interface ICostumerCare {
 
@@ -11,12 +10,12 @@ public interface ICostumerCare {
     AccountDto getAccountByCreditCard(String cardNumber, String expiryDate, String cvv);
 
 
-    void updateBalance(long accountId, BigDecimal amount, String operation);
+    void updateBalance(long accountId, double amount, String operation);
 
 
 
-    void reserveFunds(BigDecimal amount, String cardNumber, String expirationDate, String cvv);
+    void reserveFunds(double amount, String cardNumber, String expirationDate, String cvv);
 
-    void deduceWeeklyLimit(long accountId, BigDecimal amount);
+    void deduceWeeklyLimit(long accountId, double amount);
 
 }

@@ -34,7 +34,7 @@ public class MetricsController {
     public String health() {
         return "OK";
     }
-    @GetMapping("")
+    @PostMapping("")
     public ResponseEntity<List<Metrics>> getTransactions(@RequestHeader("Authorization") String authorizationHeader, @RequestBody MetricRequest metricRequest) throws InvalidTokenException,
             ApplicationNotFoundException {
         String token = authorizationHeader.substring(7);

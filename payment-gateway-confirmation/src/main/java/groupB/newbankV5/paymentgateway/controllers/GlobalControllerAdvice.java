@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
+import java.util.Arrays;
 
 @RestControllerAdvice(assignableTypes = {
         TransactionConfirmationController.class
@@ -19,19 +18,9 @@ public class GlobalControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleExceptions(ConstraintViolationException e) {
         ErrorDTO errorDTO = new ErrorDTO();
-        errorDTO.setError("Bad request");
-        errorDTO.setDetails(e.getMessage());
+        errorDTO.setError("Constraint Violation");
+        errorDTO.setDetails(e.getMessage()+ " " + e.getConstraintViolations() + " " + e.getLocalizedMessage() + " " + Arrays.toString(e.getSuppressed()));
         return errorDTO;
     }
-
-    @ExceptionHandler({ TimeoutException.class})
-    @ResponseStatus(HttpStatus.REQUEST_TIMEOUT)
-    public ErrorDTO handleExceptions(TimeoutException e) {
-        ErrorDTO errorDTO = new ErrorDTO();
-        errorDTO.setError(e.getMessage());
-        errorDTO.setDetails("timeout exception");
-        return errorDTO;
-    }
-    
 
 }

@@ -1,7 +1,5 @@
 package groupB.newbankV5.paymentsettlement.entities;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Transaction {
@@ -11,10 +9,12 @@ public class Transaction {
     private BankAccount sender;
     private Boolean isExternal;
     private String authorizationToken;
-    private BigDecimal amount;
-    private BigDecimal fees;
+    private String amount;
+    private String fees;
 
-    private LocalDateTime time;
+    private long time;
+
+    private long applicationId;
     private TransactionStatus status;
     private CardType creditCardType;
 
@@ -50,16 +50,10 @@ public class Transaction {
         this.status = status;
     }
 
-    public BigDecimal getFees() {
-        if (fees == null){
-            return BigDecimal.ZERO;
-        }
+    public String getFees() {
         return fees;
     }
 
-    public void setFees(BigDecimal fees) {
-        this.fees = fees;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -77,17 +71,12 @@ public class Transaction {
     public Transaction() {
     }
 
-    public Transaction(BankAccount recipient, String authorizationToken, BigDecimal amount) {
-        this.recipient = recipient;
-        this.authorizationToken = authorizationToken;
-        this.amount = amount;
-    }
 
-    public LocalDateTime getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(LocalDateTime time) {
+    public void setTime(long time) {
         this.time = time;
     }
 
@@ -99,13 +88,11 @@ public class Transaction {
         this.authorizationToken = authorizationToken;
     }
 
-    public BigDecimal getAmount() {
+    public String getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
+
 
     public String getId() {
         return id;
@@ -126,5 +113,13 @@ public class Transaction {
 
     public void setCreditCardType(CardType creditCardType) {
         this.creditCardType = creditCardType;
+    }
+
+    public long getApplicationId() {
+        return applicationId;
+    }
+
+    public void setApplicationId(long applicationId) {
+        this.applicationId = applicationId;
     }
 }

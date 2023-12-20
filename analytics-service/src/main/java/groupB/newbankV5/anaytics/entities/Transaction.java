@@ -4,7 +4,7 @@ package groupB.newbankV5.anaytics.entities;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -30,7 +30,7 @@ public class Transaction {
     private BankAccount sender;
     private Boolean isExternal;
 
-    private LocalDateTime time;
+    private LocalDate time;
 
     private String authorizationToken;
     private BigDecimal amount;
@@ -152,11 +152,11 @@ public class Transaction {
         this.id = id;
     }
 
-    public LocalDateTime getTime() {
+    public LocalDate getTime() {
         return time;
     }
 
-    public void setTime(LocalDateTime time) {
+    public void setTime(LocalDate time) {
         this.time = time;
     }
 

@@ -1,13 +1,13 @@
 package groupB.newbankV5.paymentprocessor.controllers.dto;
 
-import java.math.BigDecimal;
+
 
 public class PaymentDetailsDTO {
     private String cardHolderName;
     private String cardNumber;
     private String expirationDate;
     private String cvv;
-    private BigDecimal amount;
+    private double amount;
     private String toAccountIBAN;
     private String toAccountBIC;
 
@@ -15,7 +15,7 @@ public class PaymentDetailsDTO {
         // Default constructor
     }
 
-    public PaymentDetailsDTO(String cardHolderName, String cardNumber, String expirationDate, String cvv, BigDecimal amount, String toAccountIBAN, String toAccountBIC) {
+    public PaymentDetailsDTO(String cardHolderName, String cardNumber, String expirationDate, String cvv, double amount, String toAccountIBAN, String toAccountBIC) {
         this.cardHolderName = cardHolderName;
         this.cardNumber = cardNumber;
         this.expirationDate = expirationDate;
@@ -65,11 +65,11 @@ public class PaymentDetailsDTO {
         this.cvv = cvv;
     }
 
-    public BigDecimal getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 

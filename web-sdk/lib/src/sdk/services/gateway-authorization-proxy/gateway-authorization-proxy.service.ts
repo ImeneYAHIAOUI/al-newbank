@@ -1,16 +1,13 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import * as retry from 'retry';
 import { HttpStatus } from '@nestjs/common';
-import { MerchantDTO } from '../../dto/merchant.dto';
-import { ApplicationDto } from '../../dto/application.dto';
-import { MerchantAlreadyExists } from '../../exceptions/merchant-already-exists.exception';
 import { ApplicationNotFound } from '../../exceptions/application-not-found.exception';
 import { InternalServerError } from '../../exceptions/internal-server.exception';
 import { UnauthorizedError } from '../../exceptions/unauthorized.exception';
 import {AuthorizeDto} from "../../dto/authorise.dto";
 import {RetrySettings} from "../Retry-settings";
-import { StatusReporterProxyService } from '../status-reporter-proxy/status-reporter-proxy.service';
 
+import { StatusReporterProxyService } from '../status-reporter-proxy/status-reporter-proxy.service';
 import {MetricsProxy} from "../metrics-proxy/metrics-proxy";
 import {RequestDto} from "../../dto/request.dto";
 export class GatewayAuthorizationProxyService {
@@ -18,6 +15,7 @@ export class GatewayAuthorizationProxyService {
   private readonly _gatewayPath = '/api/gateway_authorization/';
   private readonly retrySettings: RetrySettings;
   private readonly metricsProxy: MetricsProxy;
+
   private readonly config = require('./../config');
   private readonly statusReporterProxyService: StatusReporterProxyService;
   constructor(load_balancer_host: string,  retrySettings: RetrySettings, statusReporterProxyService: StatusReporterProxyService) {
@@ -85,6 +83,7 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
           await this.metricsProxy.sendRequestResult(request, token);
         } catch (error: any) {
           lastError = error;
+
           let message = lastError?.message;
           if (axios.isAxiosError(error)) {
             const axiosError = error as AxiosError;

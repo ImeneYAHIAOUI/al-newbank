@@ -5,6 +5,7 @@ import {PaymentDto} from "../dto/payment.dto";
 import {AuthorizeDto} from "../dto/authorise.dto";
 import {GatewayConfirmationProxyService} from './gateway-confirmation-proxy/gateway-confirmation-proxy.service';
 import {RetrySettings} from "./Retry-settings";
+
 import { StatusReporterProxyService } from './status-reporter-proxy/status-reporter-proxy.service';
 
 export class PaymentService {
@@ -13,6 +14,7 @@ export class PaymentService {
   private readonly statusReporterProxyService;
   private readonly config = require('./config');
 constructor(retrySettings: RetrySettings) {
+
   this.statusReporterProxyService = new StatusReporterProxyService(retrySettings);
   this.gatewayAuthorizationProxyService = new GatewayAuthorizationProxyService(this.config.load_balancer_host,retrySettings, this.statusReporterProxyService);
   this.gatewayConfirmationProxyService = new GatewayConfirmationProxyService(this.config.load_balancer_host,retrySettings, this.statusReporterProxyService);
@@ -48,9 +50,9 @@ constructor(retrySettings: RetrySettings) {
   }
 
 
-  async getPublicKey(token: string): Promise<string> {
-    return await this.gatewayAuthorizationProxyService.getPublicKey(token);
-  }
+   async getPublicKey(token: string): Promise<string> {
+     return await this.gatewayAuthorizationProxyService.getPublicKey(token);
+   }
 
 
 
@@ -89,7 +91,9 @@ constructor(retrySettings: RetrySettings) {
   }
 
   async authorize(paymentInfo: PaymentInfoDTO,token: string) {
+
        try {
+
           const publicKey = await this.getPublicKey(token);
           const encryptedCardInfo = this.encrypteCreditCard(paymentInfo, publicKey);
           const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
@@ -104,7 +108,9 @@ constructor(retrySettings: RetrySettings) {
     
   async confirmPayment(transactionId: string, token: string){
     console.debug('payment confirmation request sent');
+
     try{
+
       return await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
     } catch (error) {
       console.error('Payment confirmation failed:', error);

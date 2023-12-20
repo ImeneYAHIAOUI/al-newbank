@@ -5,5 +5,4 @@ module.exports = {
     service_authorizer_name : 'Authorizer',
     service_confirmation_name : 'confirmation',
     maxTimeOut : 2000,
-
 };

@@ -79,64 +79,6 @@ export class MetricsProxy {
             });
         });
     }
-
-
-    
-    /*async sendRequestResult(requestDto: RequestDto, token: string) {
-
-        const operation = retry.operation({
-            retries: this.retrySettings.retries,
-            factor: this.retrySettings.factor,
-            minTimeout: this.retrySettings.minTimeout,
-            maxTimeout: this.retrySettings.maxTimeout,
-            randomize: this.retrySettings.randomize,
-        });
-        let lastError: Error | undefined;
-        return new Promise<String>((resolve, reject) => {
-            operation.attempt(async (currentAttempt) => {
-                try {
-                    const httpOptions: AxiosRequestConfig = {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${token}`,
-                        },
-                    };
-
-                    const response = await axios.post(`${this.metricsUrl}${this._metricsPath}/request`,requestDto,httpOptions,);
-                    resolve(response.data);
-                } catch (error: any) {
-                    lastError = error;
-
-                    if (operation.retry(lastError)) {
-                        console.error(`Retry attempt ${currentAttempt} failed. Retrying...`);
-                        return;
-                    }
-                    console.error(`All retry attempts failed. Last error: ${lastError?.message}`);
-                    if (isAxiosError(lastError) && lastError.response) {
-
-                        if (lastError.response.status === HttpStatus.UNAUTHORIZED) {
-                            console.error(lastError.response);
-                            console.error(`Unauthorized access`);
-                            reject(new UnauthorizedError(lastError.message));
-                        } else if (lastError.response.status === HttpStatus.NOT_FOUND) {
-                            console.error(lastError.response);
-                            console.error(`Application not found`);
-                            reject(new ApplicationNotFound());
-                        } else if (lastError.response.status === HttpStatus.INTERNAL_SERVER_ERROR) {
-                            console.error(lastError.response);
-                            reject(new InternalServerError(lastError.message));
-                        }
-                    } else {
-                        const errorMessage = `Error while processing payment: ${lastError?.message}`;
-                        console.error(errorMessage);
-                        reject(new Error(errorMessage));
-                    }
-                }
-            });
-        });
-
-    }*/
-
     async sendRequestResult(requestDto: RequestDto, token: string){
         try {
             const httpOptions: AxiosRequestConfig = {
