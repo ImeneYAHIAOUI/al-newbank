@@ -6,7 +6,6 @@ import java.util.Objects;
 
 public class BankAccount implements Serializable {
 
-    static final long serialVersionUID = -7487040334202377889L;
     private String IBAN;
     private String BIC;
 

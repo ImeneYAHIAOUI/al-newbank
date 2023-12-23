@@ -52,7 +52,7 @@ public class TransactionRepository {
 
     public List<Transaction> findByStatus(RedisTemplate<String, Transaction> redisTemplate, TransactionStatus status){
         List<Transaction> transactions = new ArrayList<>();
-        String pattern = "*\"status\": \"" + status + "\"*";
+        String pattern = "*status=" + status + "*";
         List<String> keys = scanKeys(pattern, redisTemplate);
         for(String key : keys) {
             Transaction t = redisTemplate.opsForValue().get(key);
@@ -62,12 +62,10 @@ public class TransactionRepository {
     }
 
     public List<String> scanKeys(String pattern, RedisTemplate<String, Transaction> redisTemplate) {
-        return redisTemplate.execute((RedisCallback<List<String>>) connection -> {
-            return connection.scan(ScanOptions.scanOptions().match(pattern).build())
-                    .stream()
-                    .map(keyBytes -> new String(keyBytes, StandardCharsets.UTF_8))
-                    .collect(Collectors.toList());
-        });
+        return redisTemplate.execute((RedisCallback<List<String>>) connection -> connection.scan(ScanOptions.scanOptions().match(pattern).build())
+                .stream()
+                .map(keyBytes -> new String(keyBytes, StandardCharsets.UTF_8))
+                .collect(Collectors.toList()));
     }
 
 
@@ -81,15 +79,15 @@ public class TransactionRepository {
     }
 
     public Transaction findById(RedisTemplate<String, Transaction> redisTemplate, UUID id){
-        String pattern = "*\"id\": \"" + id + "\"*";
-        Optional<String> key = scanKeys(pattern, redisTemplate).stream().findAny();
-        System.out.println("key "+ key.get());
+        String pattern = "*id='" + id + "'*";
+        List<String> keys = scanKeys(pattern, redisTemplate);
+        Optional<String> key = keys.stream().findAny();
         return key.map(s -> redisTemplate.opsForValue().get(s)).orElse(null);
 
     }
 
     public void deleteById(RedisTemplate<String, Transaction> redisTemplate, UUID id) {
-        String pattern = "*\"id\": \"" + id + "\"*";
+        String pattern = "*id='" + id + "'*";
         Optional<String> key = scanKeys(pattern, redisTemplate).stream().findAny();
         key.ifPresent(redisTemplate::delete);
     }

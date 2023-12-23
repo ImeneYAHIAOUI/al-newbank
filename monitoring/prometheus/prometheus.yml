@@ -20,7 +20,7 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     scrape_interval: 500ms
     static_configs:
-      - targets: ['host.docker.internal:5060']
+      - targets: ['host.docker.internal:3501']
         labels:
           application: 'PaymentGateway Authorizer 1'
 
@@ -28,7 +28,7 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     scrape_interval: 500ms
     static_configs:
-      - targets: ['host.docker.internal:5061']
+      - targets: ['host.docker.internal:3503']
         labels:
           application: 'PaymentGateway Authorizer 2'
 
@@ -36,7 +36,7 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     scrape_interval: 500ms
     static_configs:
-      - targets: [ 'host.docker.internal:5070' ]
+      - targets: [ 'host.docker.internal:3500' ]
         labels:
           application: 'Payment confirmation'
 

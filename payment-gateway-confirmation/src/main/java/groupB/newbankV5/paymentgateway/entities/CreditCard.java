@@ -6,7 +6,6 @@ import java.util.Objects;
 
 public class CreditCard implements Serializable {
 
-    static final long serialVersionUID = -5176969365295371507L;
 
     private String cardNumber;
     private String expiryDate;

@@ -28,7 +28,7 @@ services:
     env_file:
       - .env
     ports:
-      - "5071:8080"
+      - "3504:8080"
     depends_on:
       - gateway-db1
       - gateway-db2
