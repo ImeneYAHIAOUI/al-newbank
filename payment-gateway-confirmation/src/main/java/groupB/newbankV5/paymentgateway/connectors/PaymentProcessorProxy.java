@@ -19,8 +19,6 @@ public class PaymentProcessorProxy implements IPaymentProcessor {
     @Override
     public String reserveFunds(TransactionDto transaction) {
         try {
-            log.info("transaction: " + transaction);
-            log.info("url: " + paymentProcessorHostandPort + "/api/payment/reserveFunds");
             return restTemplate.postForEntity(paymentProcessorHostandPort + "/api/payment/reserveFunds?amount=" + transaction.getAmount(),
                     transaction, String.class).getBody();
         } catch (Exception e) {

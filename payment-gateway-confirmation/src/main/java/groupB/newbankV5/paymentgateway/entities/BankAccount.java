@@ -1,11 +1,14 @@
 package groupB.newbankV5.paymentgateway.entities;
 
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
 public class BankAccount implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
     private String IBAN;
     private String BIC;
 

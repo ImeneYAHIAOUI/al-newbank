@@ -84,7 +84,6 @@ public class TransactionController {
             log.info("payload: " + payload);
             Transaction transaction = objectMapper.readValue(payload, Transaction.class);
             log.info("\u001B[34mReceived transaction from Kafka\u001B[0m");
-            log.info("\u001B[34mTransaction: " + transaction + "\u001B[0m");
 
             // Save a new one or save with the updated status
             transactionRepository.save(transaction);

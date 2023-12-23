@@ -1,13 +1,14 @@
 package groupB.newbankV5.paymentgateway.entities;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
 public class CreditCard implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private String cardNumber;
     private String expiryDate;

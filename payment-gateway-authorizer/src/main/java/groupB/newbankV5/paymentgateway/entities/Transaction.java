@@ -3,6 +3,7 @@ package groupB.newbankV5.paymentgateway.entities;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -11,6 +12,8 @@ import java.util.UUID;
 
 @RedisHash("Transaction")
 public class Transaction implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id
     private UUID id;

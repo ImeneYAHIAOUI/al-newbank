@@ -12,7 +12,10 @@ import java.util.UUID;
 
 @RedisHash("Transaction")
 public class Transaction implements Serializable {
-    
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @Id
     private UUID id;
     private BankAccount recipient;

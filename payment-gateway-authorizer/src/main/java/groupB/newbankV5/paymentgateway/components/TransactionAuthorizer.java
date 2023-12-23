@@ -85,7 +85,6 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
         transaction.setRecipient(merchant.getBankAccount());
         transaction.setStatus(TransactionStatus.AUTHORIZED);
         transaction.setBank(ccnResponseDto.getBankName());
-        log.info("\u001BTransaction: " + transaction+ "\u001B[0m");
         log.info("\u001B[32mPayment authorized\u001B[0m");
 
         transactionRepository.save(transaction);
