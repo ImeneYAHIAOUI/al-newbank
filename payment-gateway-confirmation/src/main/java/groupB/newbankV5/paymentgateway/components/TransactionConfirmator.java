@@ -46,7 +46,6 @@ public class TransactionConfirmator implements ITransactionConfirmation {
             CreditCard usedCreditCard = transaction.getCreditCard();
             if(transaction.getBank().equals("NewBank")) {
                 log.info("\u001B[32msend fund reservation request\u001B[0m");
-                log.info("\u001B[32mtransaction : " + transaction + "\u001B[0m");
                 paymentProcessor.reserveFunds(TransactionDto.fromTransaction(transaction));
             }
             else
