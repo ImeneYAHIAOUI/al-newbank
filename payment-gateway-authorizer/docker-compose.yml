@@ -9,9 +9,6 @@ services:
       - .env
     ports:
       - "3501:8080"
-    depends_on:
-      - gateway-db1
-      - gateway-db2
     environment:
       - CCN_WITH_PORT=${CCN_SERVICE}:8080
       - PAYMENT_WITH_PORT=${PAYMENTPROCESSOR_SERVICE}:8080
@@ -30,10 +27,6 @@ services:
       - .env
     ports:
       - "3503:8080"
-    depends_on:
-      - gateway-db1
-      - gateway-db2
-
     environment:
       - CCN_WITH_PORT=${CCN_SERVICE}:8080
       - PAYMENT_WITH_PORT=${PAYMENTPROCESSOR_SERVICE}:8080

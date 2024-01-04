@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-docker-compose -f docker-compose.yml down
+# docker-compose -f docker-compose.yml down
 docker-compose --env-file ./.env \
                -f payment-gateway-authorizer/docker-compose.yml \
                -f payment-gateway-confirmation/docker-compose.yml \
@@ -20,4 +20,4 @@ echo "Done"
 
 echo "Removing network"
 
-docker network rm spring-newbank-network
+# docker network rm spring-newbank-network
