@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@teamb/newbank-sdk": "^1.2.1",
-    "axios": "^1.5.1"
+    "axios": "^1.5.1",
+    "circuit-breaker-js": "^0.0.1"
   }
 }

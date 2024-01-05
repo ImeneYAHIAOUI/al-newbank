@@ -25,6 +25,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.UUID;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 @Service
@@ -35,6 +36,8 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
     private final BusinessIntegratorProxy businessIntegratorProxy;
     private final TransactionRepository transactionRepository;
     private final IRSA rsa;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final long TIMEOUT_MS = 2000;
 
     private final KafkaProducerService kafkaProducerService;
 
@@ -59,7 +62,9 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
     @Override
     public Transaction processPayment(String token, double amount, String cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
-            BadPaddingException, InvalidKeyException, InvalidKeySpecException {
+            BadPaddingException, InvalidKeyException, InvalidKeySpecException, ExecutionException, InterruptedException, TimeoutException {
+
+        Future<Transaction> future = executorService.submit(() -> {
         ApplicationDto application = businessIntegratorProxy.validateToken(token);
         MerchantDto merchant = application.getMerchant();
         CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
@@ -89,6 +94,9 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
 
         transactionRepository.save(transaction);
         return transaction;
+                }
+        );
+        return future.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
     }
 
 
