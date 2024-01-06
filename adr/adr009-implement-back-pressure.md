@@ -17,7 +17,8 @@ To implement a back pressure mechanism, a rate limiter will be introduced to mon
 
 Additionally, the circuit breaker will be enhanced to automatically open for the duration specified in the response when the rate limiter triggers the 429 status. This improvement prevents any incoming calls during the open state, ensuring a more stable and resilient system during periods of high demand. After the designated period, the circuit breaker will automatically close, allowing normal operations to resume.
 
-This diagram illustrates the diiferent states of the circuit breaker in this case : 
+#### Flow Diagram illustrating the diiferent states of the circuit breaker in our case : 
+
 ![closed](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/circuit-breaker-close.png)
 ![open](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/circuit-breaker-open.png)
 
