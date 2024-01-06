@@ -1,8 +1,8 @@
 ---
 id: adrs-adr008
-title: "ADR008: Implementation "
+title: "ADR008: Implementation of a master-slave database"
 description: >
-  Architecture Decision Record (ADR) to Implement a master-slave database.
+  Architecture Decision Record (ADR) to Implement a master-slave database for business integrator service.
 ---
 
 *Status: [Final]*
