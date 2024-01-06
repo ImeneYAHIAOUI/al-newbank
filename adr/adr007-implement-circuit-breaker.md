@@ -17,6 +17,8 @@ To enhance the resilience of the system and benefit from the status checks estab
 
 In case of unavailability, the SDK will directly inform the client that the service is not accessible.
 
+### Flow Diagram of SDK Reaction Through Circuit Breaker in Case of Service Availability and Unavailability :
+
 ![availibity](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/circuit-breaker-availability.png)
 
 
