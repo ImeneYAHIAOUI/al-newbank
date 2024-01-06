@@ -73,7 +73,6 @@ class PaymentService {
         }
         catch (error) {
             this.metricsReporter.sendPostRequest('/authorize/failure');
-            console.error('Authorization failed:', error);
             throw error;
         }
     }
@@ -86,7 +85,6 @@ class PaymentService {
         }
         catch (error) {
             this.metricsReporter.sendPostRequest('/confirm/payment/failure');
-            console.error('Payment confirmation failed:', error);
             throw error;
         }
     }

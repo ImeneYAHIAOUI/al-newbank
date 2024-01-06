@@ -34,7 +34,7 @@ public class CreditCardAuthorizer {
             throws InvalidCardInformation, InterruptedException {
         String ccnumber = creditCardInformationDto.getCardNumber();
         if(TIME_OUT_SIMULATION){
-            Thread.sleep(2000);
+            Thread.sleep(4000);
             TIME_OUT_SIMULATION = false;
         }
         if(isValidNewBank(ccnumber)) {

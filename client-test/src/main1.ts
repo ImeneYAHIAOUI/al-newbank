@@ -31,14 +31,17 @@ async function main() {
             i++;
 
             try {
+                if(i==6){
+                    await sleep(200);
+                }
 
                 if(i==5){
-                    await sleep(5000);
+                    await sleep(4900);
 
                 }     
                         const response = await newbankSdk.authorizePayment(paymentInfo);
                          
-                        if(i>=5) {
+                        if(i>=6) {
                             newbankSdk.confirmPayment(response.transactionId)
                         }
                       

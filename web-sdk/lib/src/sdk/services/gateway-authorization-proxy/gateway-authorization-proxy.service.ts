@@ -64,8 +64,7 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
 
     return new Promise<AuthorizeDto>((resolve, reject) => {
       if (Date.now() < GatewayAuthorizationProxyService.circuitBreakerOpenUntil) {
-        console.error(`Circuit Breaker is open. Rejecting request.`);
-        reject(new Error('Circuit Breaker is open. Retry later.'));
+        reject(new Error('Circuit Breaker is open. Rejecting request.'));
         return;
       }
 

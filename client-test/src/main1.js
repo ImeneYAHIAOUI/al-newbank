@@ -54,7 +54,7 @@ function main() {
                     responseTimeout = 5000;
                     _a = process.argv, cardNumber = _a[2], cvv = _a[3], expiryDate = _a[4], token = _a[5], port = _a[6];
                     newbankSdk = new newbank_sdk_1.NewbankSdk(token, retrySettings);
-                    if (!(cardNumber && cvv && expiryDate)) return [3 /*break*/, 9];
+                    if (!(cardNumber && cvv && expiryDate)) return [3 /*break*/, 11];
                     paymentInfo = {
                         cardNumber: cardNumber,
                         cvv: cvv,
@@ -65,30 +65,36 @@ function main() {
                     i = 0;
                     _b.label = 1;
                 case 1:
-                    if (!(i < 7)) return [3 /*break*/, 8];
+                    if (!(i < 7)) return [3 /*break*/, 10];
                     i++;
                     _b.label = 2;
                 case 2:
-                    _b.trys.push([2, 6, , 7]);
-                    if (!(i == 5)) return [3 /*break*/, 4];
-                    return [4 /*yield*/, sleep(5000)];
+                    _b.trys.push([2, 8, , 9]);
+                    if (!(i == 6)) return [3 /*break*/, 4];
+                    return [4 /*yield*/, sleep(200)];
                 case 3:
                     _b.sent();
                     _b.label = 4;
-                case 4: return [4 /*yield*/, newbankSdk.authorizePayment(paymentInfo)];
+                case 4:
+                    if (!(i == 5)) return [3 /*break*/, 6];
+                    return [4 /*yield*/, sleep(4900)];
                 case 5:
+                    _b.sent();
+                    _b.label = 6;
+                case 6: return [4 /*yield*/, newbankSdk.authorizePayment(paymentInfo)];
+                case 7:
                     response = _b.sent();
-                    if (i >= 5) {
+                    if (i >= 6) {
                         newbankSdk.confirmPayment(response.transactionId);
                     }
-                    return [3 /*break*/, 7];
-                case 6:
+                    return [3 /*break*/, 9];
+                case 8:
                     error_1 = _b.sent();
                     console.log(error_1.message);
-                    return [3 /*break*/, 7];
-                case 7: return [3 /*break*/, 1];
-                case 8: return [2 /*return*/];
-                case 9: return [2 /*return*/];
+                    return [3 /*break*/, 9];
+                case 9: return [3 /*break*/, 1];
+                case 10: return [2 /*return*/];
+                case 11: return [2 /*return*/];
             }
         });
     });

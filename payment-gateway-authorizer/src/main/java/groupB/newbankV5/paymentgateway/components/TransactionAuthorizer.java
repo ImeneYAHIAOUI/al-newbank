@@ -37,7 +37,7 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
     private final TransactionRepository transactionRepository;
     private final IRSA rsa;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-    private final long TIMEOUT_MS = 2000;
+    private final long TIMEOUT_MS = 4000;
 
     private final KafkaProducerService kafkaProducerService;
 
