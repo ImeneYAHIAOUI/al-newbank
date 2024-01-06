@@ -22,8 +22,7 @@ To address these concerns specifically in the context of the Business Integrator
 3. **High Availability:** This ensures continuous system availability by enabling the promotion of the slave database to master in the event of a master database failure, crucial for uninterrupted Business Integrator service operations.
 
 ### Disadvantages:
-1. **Token Verification Bottleneck:** While read operations are distributed across the single slave database, token verification for payment gateway processes still relies on the master database, posing a potential bottleneck. This aspect requires specific consideration and optimization to ensure efficient processing within the context of the Business Integrator service.
-
+1. **Token Verification Bottleneck:** While read operations are distributed across the single slave database, token verification for payment gateway processes still relies on the master database, posing a potential bottleneck, since there is a data replication delay.
 
 
 
