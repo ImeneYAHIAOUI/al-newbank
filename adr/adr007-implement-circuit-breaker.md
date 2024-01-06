@@ -1,6 +1,6 @@
 ---
 id: adrs-adr007
-title: "ADR006: Implementation of a Circuit Breaker in the SDK"
+title: "ADR007: Implementation of a Circuit Breaker in the SDK"
 description: >
   Architecture Decision Record (ADR) to Implement a circuit breaker on the client side (SDK)
 ---
