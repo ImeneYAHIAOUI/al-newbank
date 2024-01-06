@@ -20,9 +20,9 @@ Additionally, the circuit breaker will be enhanced to automatically open for the
 ## Consequences:
 
 ### Advantages:
-**1.	Improved Service Stability:** The back pressure mechanism ensures that the system remains stable even during periods of high client request volume.
-**2.	Efficient Resource Utilization:** The rate limiter optimizes resource utilization by controlling the rate of incoming requests, preventing overload.
-**3.	Enhanced Circuit Breaker Resilience:** The improved circuit breaker automatically adjusts its open duration based on the response, preventing excessive calls during periods of high demand.
+1. **Improved Service Stability:** The back pressure mechanism ensures that the system remains stable even during periods of high client request volume.
+2. **Efficient Resource Utilization:** The rate limiter optimizes resource utilization by controlling the rate of incoming requests, preventing overload.
+3. **Enhanced Circuit Breaker Resilience:** The improved circuit breaker automatically adjusts its open duration based on the response, preventing excessive calls during periods of high demand.
 
 ## Disadvantages:
-**1.	Potential Delay:** Clients may experience a delay in processing their requests due to the rate limiter and circuit breaker mechanisms.
+1. **Potential Delay:** Clients may experience a delay in processing their requests due to the rate limiter and circuit breaker mechanisms.
