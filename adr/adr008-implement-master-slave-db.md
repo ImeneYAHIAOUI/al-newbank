@@ -21,8 +21,7 @@ To address these concerns specifically in the context of the Business Integrator
 ## Consequences:
 
 ### Advantages:
-1. **Scalability:** Introducing a read-only slave database facilitates horizontal scaling, efficiently managing growing read operations from new applications and merchants.
-2. **Performance Optimization:** Distributing read operations across a single slave database alleviates the master database's load, enhancing overall system performance for both read and write operations. While there may be a replication delay, it isn't a significant issue in our case. The integration process, involving adding merchants and obtaining tokens before integrating them into the app, inherently takes time, allowing for replication in the slave database before usage for token verification.
-3. **High Availability:** This ensures continuous system availability by enabling the promotion of the slave database to master in the event of a master database failure, crucial for uninterrupted Business Integrator service operations.
+1. **Performance Optimization:** Distributing read operations across a single slave database alleviates the master database's load, enhancing overall system performance for both read and write operations. While there may be a replication delay, it isn't a significant issue in our case. The integration process, involving adding merchants and obtaining tokens before integrating them into the app, inherently takes time, allowing for replication in the slave database before usage for token verification.
+2. **High Availability:** This ensures continuous system availability by enabling the promotion of the slave database to master in the event of a master database failure, crucial for uninterrupted Business Integrator service operations.
 
 
