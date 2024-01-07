@@ -120,8 +120,8 @@ echo -e "\033[0;34mID Application:\033[0m \033[0;32m$ApplicationId\033[0m"
 apiKey=$(echo "$response" | grep -o '"apiKey":"[^"]*' | cut -d'"' -f4)
 echo -e "\033[0;34mAPI Key:\033[0m \033[0;32m$apiKey\033[0m"
 echo ""
-url1="http://localhost:5061/api/gateway_authorization/simulate?errorCode="
-url="http://localhost:5060/api/gateway_authorization/simulate?errorCode="
+url1="http://localhost:3501/api/gateway_authorization/simulate?errorCode="
+url="http://localhost:3503/api/gateway_authorization/simulate?errorCode="
 url2="http://localhost:5001/api/timeout"
 
 

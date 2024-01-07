@@ -39,7 +39,7 @@ Given the potential high frequency of calls from various SDK clients on this sta
 
 #### High-level view of the architecture and the interactions : 
 
-![Architecture](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/service-status.png)
+![Architecture](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/service-status.png)
 
 ## Consequences
 

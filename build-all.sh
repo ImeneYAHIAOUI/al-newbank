@@ -24,5 +24,4 @@ compile_dir "monitoring"
 compile_dir "status-reporter"
 compile_dir "metrics-service"
 
-
 echo "** Done all"

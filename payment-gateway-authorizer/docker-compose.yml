@@ -16,6 +16,39 @@ services:
       - EXTERNALBANK_WITH_PORT=${EXTERNAL_BANK_SERVICE}:8080
       - REDIS_HOST1=gateway-db1
       - REDIS_HOST2=gateway-db2
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql-slave:5432/my_database
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=my_database_password
+    networks:
+      - spring-newbank-network
+    
+  postgresql-master:
+    image: 'docker.io/bitnami/postgresql:11-debian-10'
+    environment:
+      - POSTGRESQL_PGAUDIT_LOG=READ,WRITE
+      - POSTGRESQL_LOG_HOSTNAME=true
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_REPLICATION_USER=repl_user
+      - POSTGRESQL_REPLICATION_PASSWORD=repl_password
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_DATABASE=my_database
+      - POSTGRESQL_PASSWORD=my_database_password
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - spring-newbank-network
+  postgresql-slave:
+    image: 'docker.io/bitnami/postgresql:11-debian-10'
+    depends_on:
+      - postgresql-master
+    environment:
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=my_password
+      - POSTGRESQL_MASTER_HOST=postgresql-master
+      - POSTGRESQL_PGAUDIT_LOG=READ,WRITE
+      - POSTGRESQL_LOG_HOSTNAME=true
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_REPLICATION_USER=repl_user
+      - POSTGRESQL_REPLICATION_PASSWORD=repl_password
     networks:
       - spring-newbank-network
 
@@ -28,6 +61,9 @@ services:
     ports:
       - "3503:8080"
     environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql-master:5432/my_database
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=my_database_password
       - CCN_WITH_PORT=${CCN_SERVICE}:8080
       - PAYMENT_WITH_PORT=${PAYMENTPROCESSOR_SERVICE}:8080
       - BUSINESSINTEGRATOR_WITH_PORT=${BUSINESSINTEGRATOR_SERVICE}:8080

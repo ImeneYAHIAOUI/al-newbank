@@ -18,6 +18,8 @@ export class GatewayAuthorizationProxyService {
 
   private readonly config = require('./../config');
   private readonly statusReporterProxyService: StatusReporterProxyService;
+  private static circuitBreakerOpenUntil: number = 0;
+
   constructor(load_balancer_host: string,  retrySettings: RetrySettings, statusReporterProxyService: StatusReporterProxyService) {
     this._gatewayBaseUrl = `${load_balancer_host}`;
     this.retrySettings = retrySettings;
@@ -55,11 +57,17 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
       maxTimeout: this.retrySettings.maxTimeout,
       randomize: this.retrySettings.randomize,
     });
+    
 
     let lastError: Error | undefined;
     const start = new Date().getTime();
 
     return new Promise<AuthorizeDto>((resolve, reject) => {
+      if (Date.now() < GatewayAuthorizationProxyService.circuitBreakerOpenUntil) {
+        reject(new Error('Circuit Breaker is open. Rejecting request.'));
+        return;
+      }
+
       operation.attempt(async (currentAttempt) => {
         try {
           const httpOptions: AxiosRequestConfig = {
@@ -82,9 +90,19 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
           const request : RequestDto = new RequestDto(new Date().toISOString(), time, 'SUCCESS', 'Payment authorized');
           await this.metricsProxy.sendRequestResult(request, token);
         } catch (error: any) {
+          if (error.response && error.response.status === HttpStatus.TOO_MANY_REQUESTS) {
+            console.log(`Opening circuit Breaker due to many requests issue`);
+            GatewayAuthorizationProxyService.circuitBreakerOpenUntil = Date.now() + 5000; 
+            console.log(`Closing circuit Breaker after 5 seconds...`);
+            setTimeout(() => {
+              console.log("Circuit Breaker is closed now, all requests will be executed again !");
+            }, 5000);
+            reject(new Error(`the service is currently experiencing high demand.`));
+        }
           lastError = error;
 
           let message = lastError?.message;
+      
           if (axios.isAxiosError(error)) {
             const axiosError = error as AxiosError;
             const status = axiosError.response?.status;

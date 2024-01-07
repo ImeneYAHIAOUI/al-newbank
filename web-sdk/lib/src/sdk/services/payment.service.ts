@@ -99,7 +99,6 @@ constructor(retrySettings: RetrySettings) {
           const result=await this.processPayment(encryptedCardInfo, token, paymentInfo.amount);
           return result;
           } catch (error) {
-                console.error('Authorization failed:', error);
                 throw error;
         }
       
@@ -113,7 +112,6 @@ constructor(retrySettings: RetrySettings) {
 
       return await this.gatewayConfirmationProxyService.confirmPayment(transactionId, token);
     } catch (error) {
-      console.error('Payment confirmation failed:', error);
       throw error;
     }
   }

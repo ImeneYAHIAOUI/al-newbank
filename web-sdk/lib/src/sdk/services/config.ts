@@ -4,5 +4,5 @@ module.exports = {
     metrics_host: 'http://localhost:3003',
     service_authorizer_name : 'Authorizer',
     service_confirmation_name : 'confirmation',
-    maxTimeOut : 2000,
+    maxTimeOut : 4000,
 };

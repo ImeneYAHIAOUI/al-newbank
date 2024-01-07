@@ -1,6 +1,7 @@
 package groupB.newbankV5.paymentgateway.controllers.dto;
 
 import groupB.newbankV5.paymentgateway.entities.BankAccount;
+import groupB.newbankV5.paymentgateway.entities.Merchant;
 
 
 public class MerchantDto {
@@ -42,6 +43,14 @@ public class MerchantDto {
     }
 
 
+    public static MerchantDto merchantDtoFactory(Merchant merchant) {
+        MerchantDto merchantDto = new MerchantDto();
+        merchantDto.setId(merchant.getId());
+        merchantDto.setName(merchant.getName());
+        merchantDto.setEmail(merchant.getEmail());
+        merchantDto.setBankAccount(merchant.getBankAccount());
+        return merchantDto;
+    }
 
    
 }

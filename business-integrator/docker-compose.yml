@@ -12,30 +12,14 @@ services:
     ports:
       - "5012:8080"
     depends_on:
-      integrator-db:
-        condition: service_healthy
+      - postgresql-master
     environment:
-      - POSTGRES_HOST=integrator-db:5432
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_DB=${POSTGRES_DB}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql-master:5432/my_database
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=my_database_password
     networks:
       - spring-newbank-network
 
-  integrator-db:
-    image: postgres:15.2
-    container_name: "integrator-db"
-    environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_DB=${POSTGRES_DB}
-    networks:
-      - spring-newbank-network
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
 networks:
   spring-newbank-network:
