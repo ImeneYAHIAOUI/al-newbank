@@ -4,6 +4,7 @@ This project aims to design a cashless banking system that also supports online 
 
 * Steps to run :
 Execute `build-all.sh` script to Load dependencies, compile if necessary, prepare the environment and build the docker containers.
+Run the 'run.sh' script present in **connectors/connectors/** to start the kafka-connect framework (this include the source and sink databases : redis, postgres and mongo).
 Execute `start-all.sh` script start-all.sh start the services.
 
 # Newbank SDK
