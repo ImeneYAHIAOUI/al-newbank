@@ -13,6 +13,7 @@ Within our backend architecture, the payment authorization and confirmation proc
 This intricate dependency structure poses a potential risk of network performance issues, leading to prolonged waits and indefinite blocking during service calls. Such challenges can significantly impact the overall responsiveness and reliability of the payment authorization process.
 
 This diagram illustrates the dependency chain of Payment Gateway Authorizer : 
+
 ![Timeout](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/timeout.png)
 
 ## Decision:
