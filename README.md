@@ -66,7 +66,7 @@ Sends a request to retrieve the status of backend services.
 - Backend service status.
 
 
-### Retry policies
+### `Retry policies`
 
 Payment calls can be retried using an exponential backoff strategy. 
 
