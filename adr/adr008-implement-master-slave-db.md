@@ -16,7 +16,7 @@ To address these concerns specifically in the context of the Business Integrator
 
 #### Flow Diagram of using the PostgreSQL master-slave db : 
 
-![master-slave](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/master-slave.png)
+![master-slave](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/master-slave.png)
 
 ## Consequences:
 

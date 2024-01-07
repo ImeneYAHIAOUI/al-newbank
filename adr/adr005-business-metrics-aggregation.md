@@ -25,7 +25,7 @@ Description: Implementing Change Data Capture (CDC) using an event-based approac
 
 #### High-level view of the architecture and the interactions : 
 
-![CDCArchitecture](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/cdc-architecture.png)
+![CDCArchitecture](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/cdc-architecture.png)
 
 #### Pros : 
 - Real-time data updates: Event-based CDC allows for real-time updates to metrics as transactions occur and services get consumed.
@@ -41,7 +41,7 @@ Description: Implementing CronJob services to periodically poll and process data
 
 #### High-level view of the architecture and the interactions : 
 
-![CronArchitecture](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/images/cron-architecture.png)
+![CronArchitecture](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/cron-architecture.png)
 
 #### Pros:
 - Simplicity: CronJob services are straightforward and easier to implement 
