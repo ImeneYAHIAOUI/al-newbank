@@ -4,7 +4,7 @@ title: 'ADR002: Collection and Sending of Merchant Payment Metrics to Prometheus
 description: >
    Architecture Decision Record (ADR) to Collect and Send of Merchant Payment Metrics to Prometheus in the SDK
 ---
-Status: [Rejected]
+Status: [Superseded]
 
 
 ## Context
