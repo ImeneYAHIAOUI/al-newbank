@@ -23,6 +23,8 @@ To address this need, we have decided to :
 
 As our prometheus is configured to scrape all services for their metrics, the uptime is already provided with additional useful information to the **Status Reporter**.
 
+Given the potentially high frequency of calls from various SDK clients on this status reporting service, we have chosen to implement a cache-aside strategy with a duration of 5 seconds to reduce the number of calls on the Prometheus server. 
+
 #### Code snippet of the API : 
 
 ```JS 
@@ -30,12 +32,10 @@ As our prometheus is configured to scrape all services for their metrics, the up
   const servicesStats = newBankClient.getBackendStatus();
 ```
 
-The status retrieval call will return a list of the service with their status : 
+The status retrieval call should return a list of the service with their status : 
 - UP : denoting an up and running healthy service
 - DOWN : denoting a service that stopped, crashed or just unable to be reached anymore
 - DEGRADED : denoting a service that is potentially low on resource and/or processing too many requests in the meantime
-
-Given the potential high frequency of calls from various SDK clients on this status reporting service, we have chosen to implement a cache-aside strategy with a duration of 5 seconds to reduce the number of calls on the Prometheus server. 
 
 #### High-level view of the architecture and the interactions : 
 
