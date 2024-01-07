@@ -9,10 +9,6 @@ services:
       - .env
     ports:
       - "3501:8080"
-    depends_on:
-      - gateway-db1
-      - gateway-db2
-      - postgresql-slave
     environment:
       - CCN_WITH_PORT=${CCN_SERVICE}:8080
       - PAYMENT_WITH_PORT=${PAYMENTPROCESSOR_SERVICE}:8080
@@ -64,10 +60,6 @@ services:
       - .env
     ports:
       - "3503:8080"
-    depends_on:
-      - gateway-db1
-      - gateway-db2
-      - postgresql-master
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql-master:5432/my_database
       - SPRING_DATASOURCE_USERNAME=postgres

@@ -12,21 +12,21 @@ services:
     networks:
       - spring-newbank-network
     environment:
-      - POSTGRES_HOST=transaction-pg-db:5432
+      - POSTGRES_HOST=postgres:5432
 
-  transaction-pg-db:
-    image: postgres
-    container_name: "transaction-pg-db"
-    mem_limit: 1g
-    cpus: 2
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgresuser
-      - POSTGRES_PASSWORD=postgrespass
-      - POSTGRES_DB=transaction-db
-    networks:
-      - spring-newbank-network
+#  transaction-pg-db:
+#    image: postgres
+#    container_name: "transaction-pg-db"
+#    mem_limit: 1g
+#    cpus: 2
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      - POSTGRES_USER=postgresuser
+#      - POSTGRES_PASSWORD=postgrespass
+#      - POSTGRES_DB=transaction-db
+#    networks:
+#      - spring-newbank-network
 
 
 
