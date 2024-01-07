@@ -5,7 +5,7 @@ Newbank SDK is an SDK provided by Newbank-teamb for use by developers of merchan
 ## Installation
 
 **Pre-requists** 
-In order to use the SDK Download and install Node.js and npm from (here)[https://nodejs.org/en/download/].
+In order to use the SDK Download and install Node.js and npm from [here](https://nodejs.org/en/download/).
 
 Then run the following command : 
 ```bash
