@@ -3,8 +3,3 @@ management:
     web:
       exposure:
         include: [ "prometheus" ]
-
-spring:
-  jpa:
-    hibernate:
-      ddl-auto: none

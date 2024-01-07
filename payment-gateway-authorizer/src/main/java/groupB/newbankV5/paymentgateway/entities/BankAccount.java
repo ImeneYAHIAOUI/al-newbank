@@ -4,12 +4,10 @@ package groupB.newbankV5.paymentgateway.entities;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.persistence.Embeddable;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
-@Embeddable
 public class BankAccount implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
