@@ -9,9 +9,7 @@ services:
       - .env
     ports:
       - "3500:8080"
-    depends_on:
-      - gateway-db1
-      - gateway-db2
+
     environment:
       - CCN_WITH_PORT=${CCN_SERVICE}:8080
       - PAYMENT_WITH_PORT=${PAYMENTPROCESSOR_SERVICE}:8080
@@ -29,31 +27,13 @@ services:
       - .env
     ports:
       - "3504:8080"
-    depends_on:
-      - gateway-db1
-      - gateway-db2
+  
     environment:
       - CCN_WITH_PORT=${CCN_SERVICE}:8080
       - PAYMENT_WITH_PORT=${PAYMENTPROCESSOR_SERVICE}:8080
       - EXTERNALBANK_WITH_PORT=${EXTERNAL_BANK_SERVICE}:8080
       - REDIS_HOST1=gateway-db1
       - REDIS_HOST2=gateway-db2
-    networks:
-      - spring-newbank-network
-
-  gateway-db1:
-    image: redis
-    container_name: "gateway-db1"
-    ports:
-      - "6378:6379"
-    networks:
-      - spring-newbank-network
-
-  gateway-db2:
-    image: redis
-    container_name: "gateway-db2"
-    expose:
-      - "6379:6379"
     networks:
       - spring-newbank-network
 
