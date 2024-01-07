@@ -44,7 +44,7 @@ The status retrieval call should return a list of the service with their status 
 ## Consequences
 
 ### Advantages:
-- Readable errors provided by the status checks calls done by the SDK instead of performing direct calls to the business services.
+- Visible and comprehsenbile services state instead of performing direct calls to the business backends.
 - Prometheus server is protected from overload thanks to the read-through caching strategy
 
 ### Disadvantages:
