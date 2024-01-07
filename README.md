@@ -58,13 +58,12 @@ Includes the steps of sending a payment authorization request to the backend via
 **Parameters:**
 - `paymentInformation`: Payment information.
 
-## `getBackendStatus()`
+### `getBackendStatus()`
 
 Sends a request to retrieve the status of backend services.
 
 **Return:**
 - Backend service status.
-
 
 ### `Retry policies`
 
