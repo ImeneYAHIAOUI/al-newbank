@@ -34,3 +34,6 @@ In case of unavailability, the SDK will directly inform the client that the serv
 
 ### Disadvantages:
 1. **Potential Delay:** The circuit breaker mechanism will introduce a slight delay in making backend service requests.
+
+## Additional Documentation
+[circuit-breaker.js](https://www.npmjs.com/package/circuit-breaker-js)
