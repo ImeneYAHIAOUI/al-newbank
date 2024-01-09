@@ -15,7 +15,7 @@ export class StatusReporterProxyService {
     private readonly retrySettings: RetrySettings
 
     private readonly _statusReportePath = '/api/status/healthcheck';
-    private readonly _statusAvailibilityPath = '/api/status/availability?serviceName=';
+    private readonly _statusAvailibilityPath = '=';
 
     private readonly config;
     constructor( retrySettings: RetrySettings) {

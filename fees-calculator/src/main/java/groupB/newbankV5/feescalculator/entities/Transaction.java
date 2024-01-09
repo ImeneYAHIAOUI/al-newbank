@@ -1,12 +1,15 @@
 package groupB.newbankV5.feescalculator.entities;
 
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.io.Serializable;
 import java.util.Objects;
-import java.util.UUID;
 
-public class Transaction {
+public class Transaction implements Serializable {
 
-
-    private UUID id;
+    @JsonProperty("id")
+    private String id;
 
     private BankAccount recipient;
 
@@ -14,10 +17,12 @@ public class Transaction {
     private Boolean isExternal;
     private String authorizationToken;
     private String amount;
+
+    @JsonProperty("fees")
     private String fees;
     private TransactionStatus status;
     private long time;
-
+    @JsonProperty("applicationId")
     private long applicationId;
 
     public CardType getCreditCardType() {
@@ -94,13 +99,6 @@ public class Transaction {
         this.authorizationToken = authorizationToken;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
 
     public String  getAmount() {
         return this.amount;

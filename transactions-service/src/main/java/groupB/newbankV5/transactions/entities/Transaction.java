@@ -3,6 +3,8 @@ package groupB.newbankV5.transactions.entities;
 
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

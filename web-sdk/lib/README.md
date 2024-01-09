@@ -50,9 +50,39 @@ Includes the steps of sending a payment authorization request to the backend via
 **Parameters:**
 - `paymentInformation`: Payment information.
 
-## `getBackendStatus()`
+### `getBackendStatus()`
 
 Sends a request to retrieve the status of backend services.
 
 **Return:**
 - Backend service status.
+
+### `Retry policies`
+
+Payment calls can be retried using an exponential backoff strategy. 
+
+```JS
+import {NewbankSdk, RetrySettings} from "@teamb/newbank-sdk";
+
+const retrySettings = new RetrySettings({ retries: 2,
+                                          factor:2,
+                                          minTimeout: 1000,
+                                          maxTimeout: 3000,
+                                          randomize: true });
+const token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 
+const newbankSdk = new NewbankSdk(token, retrySettings);
+```
+The retrial concerns all subsequent calls made by the SDK.
+
+The RetrySettings class provides a convenient way to configure retry behavior :
+   
+   `retries`: The maximum number of retry attempts. Default is `3`.
+   
+   `factor`: The exponential factor to determine the delay between retries. Default is `2`.
+   
+   `minTimeout`: The minimum time (in milliseconds) to wait before the first retry. Default is `1000`.
+   
+   `maxTimeout`: The maximum time (in milliseconds) between two retry attempts. Default is `3000`.
+   
+   `randomize`: A boolean indicating whether to randomize the timeouts. Default is `true`.
+

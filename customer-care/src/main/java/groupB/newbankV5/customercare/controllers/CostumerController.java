@@ -221,6 +221,8 @@ public class CostumerController {
             try {
                 fundsHandler.releaseReservedFunds(releaseFundsDto);
             } catch (Exception e) {
+                log.warning("\u001B[31mError releasing funds: \u001B[0m" + e.getMessage());
+                e.printStackTrace();
                 return ResponseEntity.status(400).build();
             }
         }

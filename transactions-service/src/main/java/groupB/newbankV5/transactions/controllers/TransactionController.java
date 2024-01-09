@@ -16,6 +16,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,6 +64,7 @@ public class TransactionController {
 
     @PutMapping("settle")
     public ResponseEntity<String> saveTransactions(@RequestBody List<Transaction> transactions) {
+        log.info("\u001B[35mSaving transactions {}\u001B[0m", Arrays.toString(transactions.toArray()));
         transactionRepository.saveAll(transactions);
         return ResponseEntity.ok("Transactions saved successfully");
     }
@@ -92,4 +94,6 @@ public class TransactionController {
             log.error("\u001B[31mError while processing transaction: " + e.getMessage() + "\u001B[0m");
         }
     }
+
+
 }

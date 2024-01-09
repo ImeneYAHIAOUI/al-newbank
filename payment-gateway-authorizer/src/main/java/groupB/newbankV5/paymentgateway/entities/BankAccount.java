@@ -1,9 +1,6 @@
 package groupB.newbankV5.paymentgateway.entities;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
@@ -54,9 +51,9 @@ public class BankAccount implements Serializable {
 
     @Override
     public String toString() {
-        return "{\n" +
-                "  \"IBAN\": \"" + IBAN + "\",\n" +
-                "  \"BIC\": \"" + BIC + "\"\n" +
-                "}";
+        return "BankAccount{" +
+                "IBAN='" + IBAN + '\'' +
+                ", BIC='" + BIC + '\'' +
+                '}';
     }
 }

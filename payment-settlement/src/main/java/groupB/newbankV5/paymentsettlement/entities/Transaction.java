@@ -1,21 +1,41 @@
 package groupB.newbankV5.paymentsettlement.entities;
 
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Transaction {
+public class Transaction implements Serializable {
+
+
+    @JsonProperty("id")
 
     private String id;
+
     private BankAccount recipient;
+
     private BankAccount sender;
     private Boolean isExternal;
     private String authorizationToken;
     private String amount;
-    private String fees;
 
+
+    @JsonProperty("fees")
+    private String fees;
+    private TransactionStatus status;
     private long time;
 
     private long applicationId;
-    private TransactionStatus status;
+
+    public CardType getCreditCardType() {
+        return creditCardType;
+    }
+
+    public void setCreditCardType(CardType creditCardType) {
+        this.creditCardType = creditCardType;
+    }
+
     private CardType creditCardType;
 
     public TransactionStatus getStatus() {
@@ -50,10 +70,11 @@ public class Transaction {
         this.status = status;
     }
 
-    public String getFees() {
-        return fees;
-    }
 
+
+    public void setFees(String fees) {
+        this.fees = fees;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -71,6 +92,10 @@ public class Transaction {
     public Transaction() {
     }
 
+    public String  getAmount() {
+        return this.amount;
+    }
+
 
     public long getTime() {
         return time;
@@ -80,46 +105,28 @@ public class Transaction {
         this.time = time;
     }
 
-    public String getAuthorizationToken() {
-        return authorizationToken;
-    }
-
-    public void setAuthorizationToken(String authorizationToken) {
-        this.authorizationToken = authorizationToken;
-    }
-
-    public String getAmount() {
-        return amount;
-    }
-
-
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String toString() {
-        return "Transaction{" + "id='" + id + '\'' + ", recipient=" + recipient + ", sender=" + sender + ", isExternal=" + isExternal + ", authorizationToken='" + authorizationToken + '\'' + ", amount=" + amount + ", fees=" + fees + ", status=" + status + '}';
-    }
-
-    public CardType getCreditCardType() {
-        return creditCardType;
-    }
-
-    public void setCreditCardType(CardType creditCardType) {
-        this.creditCardType = creditCardType;
-    }
-
     public long getApplicationId() {
         return applicationId;
     }
 
-    public void setApplicationId(long applicationId) {
-        this.applicationId = applicationId;
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id='" + id + '\'' +
+                ", recipient=" + recipient +
+                ", sender=" + sender +
+                ", isExternal=" + isExternal +
+                ", authorizationToken='" + authorizationToken + '\'' +
+                ", amount=" + amount +
+                ", fees=" + fees +
+                ", status=" + status +
+                ", time=" + time +
+                '}';
     }
+
+
+    public String getFees() {
+        return fees;
+    }
+
 }

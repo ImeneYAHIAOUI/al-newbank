@@ -1,37 +1,49 @@
 package groupB.newbankV5.metrics.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
+
+@Document(collection = "ptransaction")
 public class Transaction {
 
+
+    @Field("amount")
     private String amount;
+    @Field("fees")
     private String fees;
-    @JsonProperty("recipient_iban")
+    @Field("recipient_iban")
     private String recipientIban;
-    @JsonProperty("sender_bic")
+    @Field("sender_bic")
     private String senderBic;
 
-    @JsonProperty("is_external")
+    @Field("is_external")
     private boolean is_external;
-    @JsonProperty("sender_iban")
+    @Field("sender_iban")
     private String senderIban;
-    @JsonProperty("application_id")
+    @Field("application_id")
     private long applicationId;
-    @JsonProperty("credit_card_type")
+    @Field("credit_card_type")
     private String creditCardType;
 
-    @JsonProperty("recipient_bic")
+    @Field("recipient_bic")
     private String recipientBic;
 
-    @JsonProperty("authorization_token")
+    @Field("_id")  // Use the same name as in the JSON document
+    private String mongoId;
+
+    @Field("authorization_token")
     private String authorizationToken;
+    @Field("id")
     private String id;
+
+    @Field("time")
     private long time;
+
+    @Field("status")
     private String status;
 
     public String getAmount() {
@@ -84,5 +96,80 @@ public class Transaction {
 
     public String getStatus() {
         return status;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public void setFees(String fees) {
+        this.fees = fees;
+    }
+
+    public void setRecipientIban(String recipientIban) {
+        this.recipientIban = recipientIban;
+    }
+
+    public void setSenderBic(String senderBic) {
+        this.senderBic = senderBic;
+    }
+
+    public void setIs_external(boolean is_external) {
+        this.is_external = is_external;
+    }
+
+    public void setSenderIban(String senderIban) {
+        this.senderIban = senderIban;
+    }
+
+    public void setApplicationId(long applicationId) {
+        this.applicationId = applicationId;
+    }
+
+    public void setCreditCardType(String creditCardType) {
+        this.creditCardType = creditCardType;
+    }
+
+    public void setRecipientBic(String recipientBic) {
+        this.recipientBic = recipientBic;
+    }
+
+    public void setAuthorizationToken(String authorizationToken) {
+        this.authorizationToken = authorizationToken;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public boolean getIs_external() {
+        return this.is_external;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "amount='" + amount + '\'' +
+                ", fees='" + fees + '\'' +
+                ", recipientIban='" + recipientIban + '\'' +
+                ", senderBic='" + senderBic + '\'' +
+                ", is_external=" + is_external +
+                ", senderIban='" + senderIban + '\'' +
+                ", applicationId=" + applicationId +
+                ", creditCardType='" + creditCardType + '\'' +
+                ", recipientBic='" + recipientBic + '\'' +
+                ", authorizationToken='" + authorizationToken + '\'' +
+                ", id='" + id + '\'' +
+                ", time=" + time +
+                ", status='" + status + '\'' +
+                '}';
     }
 }
