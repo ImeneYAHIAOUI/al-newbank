@@ -126,8 +126,7 @@ sed -i "s/NEWBANK_TOKEN=.*/NEWBANK_TOKEN=${apiKey}/" ../newbank-example/.env
 
 sed -i "s/CARD_NUMBER=.*/CARD_NUMBER=$cardNumber/" ./.env
 sed -i "s/CVV=.*/CVV=$cvv/" ./.env
-sed -i "s/EXPIRY_DATE=.*/EXPIRY_DATE=$expiryDate/" ./.env
-
+sed -i "s#EXPIRY_DATE=.*#EXPIRY_DATE=$expiryDate#" ./.env
 
 # shellcheck disable=SC2164
 cd ../newbank-example
