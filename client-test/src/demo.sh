@@ -120,10 +120,10 @@ echo -e "\033[0;34mID Application:\033[0m \033[0;32m$ApplicationId\033[0m"
 apiKey=$(echo "$response" | grep -o '"apiKey":"[^"]*' | cut -d'"' -f4)
 echo -e "\033[0;34mAPI Key:\033[0m \033[0;32m$apiKey\033[0m"
 
-sed -i "s/NEWBANK_TOKEN=.*/NEWBANK_TOKEN=${apiKey}/" newbank-example/.env
+sed -i "s/NEWBANK_TOKEN=.*/NEWBANK_TOKEN=${apiKey}/" ../newbank-example/.env
 
 # shellcheck disable=SC2164
-cd newbank-example
+cd ../newbank-example
 
 npm run start&
 
