@@ -135,9 +135,10 @@ done
 paymentDto='{
      "cardNumber": "'"${cardNumber}"'",
      "cvv": "'"${cvv}"'",
-      "expirationDate": "'"${expiryDate}"'",
-      "amount": 500,
+     "expirationDate": "'"${expiryDate}"'",
+     "amount": 500
 }'
 
-curl -s -X POST -H "Content-Type: application/json" -d "$paymentDto" "http://localhost:6906/payment" -w "%{http_code}" >/dev/null
+
+curl -s -X POST -H "Content-Type: application/json" -d "$paymentDto" "http://localhost:6906/payment"
 
