@@ -11,7 +11,17 @@ export class AppController {
         return this.appService.getHello();
     }
 
-    @Post('/payment')
+    @Post('/authorize')
+    authorizePayment(@Body() paymentInfoDTO: PaymentInfoDTO): void {
+        this.appService.authorizePayment(paymentInfoDTO);
+    }
+
+    @Post('/confirm')
+    confirmPayment(@Body() transactionId: string): void {
+        this.appService.confirmPayment(transactionId);
+    }
+    
+    @Post('/pay')
     payment(@Body() paymentInfoDTO: PaymentInfoDTO): void {
         this.appService.payment(paymentInfoDTO);
     }

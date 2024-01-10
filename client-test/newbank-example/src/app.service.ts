@@ -23,15 +23,15 @@ export class AppService {
     }
 
     payment(paymentInfoDTO: PaymentInfoDTO): void {
-        this.newbankSdk.authorizePayment(paymentInfoDTO).then((response: AuthorizeDto) => {
-            this.newbankSdk.confirmPayment(response.transactionId).then((confirm) => {
-                console.log(confirm);
-            }).catch((error) => {
-                console.log(error.message);
-            });
-        }).catch((error) => {
-            console.log(error.message);
-        });
+        this.newbankSdk.pay(paymentInfoDTO).then(r => console.log(r));
+    }
+
+    authorizePayment(paymentInfoDTO: PaymentInfoDTO) {
+         this.newbankSdk.authorizePayment(paymentInfoDTO).then(r => console.log(r));
+    }
+
+    confirmPayment(transactionId: string): void {
+        this.newbankSdk.confirmPayment(transactionId).then(r => console.log(r));
     }
 
 
