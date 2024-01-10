@@ -22,6 +22,11 @@ response=$(curl -s -H "Content-Type: application/json" -d "$data" "$url")
     cardNumber=$(echo "$debitCardResponse" | grep -oi '"cardNumber":"[^"]*' | cut -d'"' -f4)
     cvv=$(echo "$debitCardResponse" | grep -oi '"cvv":"[^"]*' | cut -d'"' -f4)
     expiryDate=$(echo "$debitCardResponse" | grep -oi '"expiryDate":"[^"]*' | cut -d'"' -f4)
+
+    sed -i "s/NEWBANK_CARD_NUMBER=.*/NEWBANK_CARD_NUMBER=${cardNumber}/" ./.env
+    sed -i "s/NEWBANK_CVV=.*/NEWBANK_CVV=${cvv}/" ./.env
+    sed -i "s/NEWBANK_EXPIRY_DATE=.*/NEWBANK_EXPIRY_DATE=${expiryDate}/" ./.env
+
  operation='{
    "amount": 10000000,
    "operation": "deposit"
@@ -122,6 +127,8 @@ echo -e "\033[0;34mAPI Key:\033[0m \033[0;32m$apiKey\033[0m"
 
 sed -i "s/NEWBANK_TOKEN=.*/NEWBANK_TOKEN=${apiKey}/" ../newbank-example/.env
 
+
+
 # shellcheck disable=SC2164
 cd ../newbank-example
 
@@ -132,13 +139,4 @@ while ! nc -z localhost 6906; do
     sleep 1
 done
 
-paymentDto='{
-     "cardNumber": "'"${cardNumber}"'",
-     "cvv": "'"${cvv}"'",
-     "expirationDate": "'"${expiryDate}"'",
-     "amount": 500
-}'
-
-
-curl -s -X POST -H "Content-Type: application/json" -d "$paymentDto" "http://localhost:6906/payment"
 
