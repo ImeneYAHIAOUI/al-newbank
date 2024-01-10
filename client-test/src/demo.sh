@@ -119,6 +119,25 @@ echo -e "\033[0;34mID Application:\033[0m \033[0;32m$ApplicationId\033[0m"
 
 apiKey=$(echo "$response" | grep -o '"apiKey":"[^"]*' | cut -d'"' -f4)
 echo -e "\033[0;34mAPI Key:\033[0m \033[0;32m$apiKey\033[0m"
-echo ""
 
-ts-node main.ts "$cardNumber" "$cvv" "$expiryDate" "$apiKey" "6906"
+sed -i "s/NEWBANK_TOKEN=.*/NEWBANK_TOKEN=${apiKey}/" newbank-example/.env
+
+# shellcheck disable=SC2164
+cd newbank-example
+
+npm run start&
+
+# Wait for the service to start
+while ! nc -z localhost 6906; do
+    sleep 1
+done
+
+paymentDto='{
+     "cardNumber": "'"${cardNumber}"'",
+     "cvv": "'"${cvv}"'",
+      "expirationDate": "'"${expiryDate}"'",
+      "amount": 500,
+}'
+
+curl -s -X POST -H "Content-Type: application/json" -d "$paymentDto" "http://localhost:6906/payment" -w "%{http_code}" >/dev/null
+
