@@ -1,6 +1,7 @@
 package groupB.newBankV5.statusreporter.connectors;
 
 import groupB.newBankV5.statusreporter.connectors.dto.PrometheusAlertDTO;
+import groupB.newBankV5.statusreporter.connectors.dto.PrometheusCPUUsageDTO;
 import groupB.newBankV5.statusreporter.connectors.dto.PrometheusTargetsDto;
 import groupB.newBankV5.statusreporter.interfaces.IPrometheusProxy;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,5 +38,14 @@ public class PrometheusProxy implements IPrometheusProxy {
                 PrometheusAlertDTO.class).getBody();
     }
 
+    @Override
+    public PrometheusCPUUsageDTO retrieveCPUUsage(String applicationName) {
+        log.info("Sending request to prometheus to retrieve CPU usage");
+        String application = "{application=\"" + applicationName + "\"}";
+        return restTemplate.getForEntity(
+                prometheusHostandPort +
+                        "/api/v1/query?query=system_cpu_usage{application}",
+                        PrometheusCPUUsageDTO.class,application).getBody();
+    }
 
 }

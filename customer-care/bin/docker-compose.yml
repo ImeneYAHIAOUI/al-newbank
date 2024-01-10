@@ -5,7 +5,7 @@ services:
     image: "newbank/customer-care"
     container_name: "costumer-service"
     mem_limit: 1g
-    cpus: '0.2'
+    cpus: 2
     restart: always
     ports:
       - "5003:8080"
