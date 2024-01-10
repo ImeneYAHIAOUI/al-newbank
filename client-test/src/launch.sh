@@ -23,9 +23,6 @@ response=$(curl -s -H "Content-Type: application/json" -d "$data" "$url")
     cvv=$(echo "$debitCardResponse" | grep -oi '"cvv":"[^"]*' | cut -d'"' -f4)
     expiryDate=$(echo "$debitCardResponse" | grep -oi '"expiryDate":"[^"]*' | cut -d'"' -f4)
 
-    sed -i "s/NEWBANK_CARD_NUMBER=.*/NEWBANK_CARD_NUMBER=${cardNumber}/" ./.env
-    sed -i "s/NEWBANK_CVV=.*/NEWBANK_CVV=${cvv}/" ./.env
-    sed -i "s/NEWBANK_EXPIRY_DATE=.*/NEWBANK_EXPIRY_DATE=${expiryDate}/" ./.env
 
  operation='{
    "amount": 10000000,
@@ -127,6 +124,9 @@ echo -e "\033[0;34mAPI Key:\033[0m \033[0;32m$apiKey\033[0m"
 
 sed -i "s/NEWBANK_TOKEN=.*/NEWBANK_TOKEN=${apiKey}/" ../newbank-example/.env
 
+sed -i "s/NEWBANK_CARD_NUMBER=.*/NEWBANK_CARD_NUMBER=${cardNumber}/" ./.env
+sed -i "s/NEWBANK_CVV=.*/NEWBANK_CVV=${cvv}/" ./.env
+sed -i "s/NEWBANK_EXPIRY_DATE=.*/NEWBANK_EXPIRY_DATE=${expiryDate}/" ./.env
 
 
 # shellcheck disable=SC2164
