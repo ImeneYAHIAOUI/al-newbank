@@ -124,9 +124,9 @@ echo -e "\033[0;34mAPI Key:\033[0m \033[0;32m$apiKey\033[0m"
 
 sed -i "s/NEWBANK_TOKEN=.*/NEWBANK_TOKEN=${apiKey}/" ../newbank-example/.env
 
-sed -i "s/NEWBANK_CARD_NUMBER=.*/NEWBANK_CARD_NUMBER=${cardNumber}/" ./.env
-sed -i "s/NEWBANK_CVV=.*/NEWBANK_CVV=${cvv}/" ./.env
-sed -i "s/NEWBANK_EXPIRY_DATE=.*/NEWBANK_EXPIRY_DATE=${expiryDate}/" ./.env
+sed -i "s/CARD_NUMBER=.*/CARD_NUMBER=$cardNumber/" ./.env
+sed -i "s/CVV=.*/CVV=$cvv/" ./.env
+sed -i "s/EXPIRY_DATE=.*/EXPIRY_DATE=$expiryDate/" ./.env
 
 
 # shellcheck disable=SC2164
