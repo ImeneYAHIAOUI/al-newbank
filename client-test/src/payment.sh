@@ -5,9 +5,9 @@ source .env
 # . .env
 
 # Extract values from environment variables
-cardNumber=$NEWBANK_CARD_NUMBER
-cvv=$NEWBANK_CVV
-expiryDate=$NEWBANK_EXPIRY_DATE
+cardNumber=$CARD_NUMBER
+cvv=$CVV
+expiryDate=$EXPIRY_DATE
 
 # Print the extracted values for verification
 echo "Card Number: $cardNumber"
