@@ -33,6 +33,8 @@ public class Transaction  {
     private String amount;
     @JsonProperty("status")
     private TransactionStatus status;
+
+    @JsonProperty("fees")
     private String fees;
     private CreditCard creditCard;
 

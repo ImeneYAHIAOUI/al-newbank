@@ -13,6 +13,7 @@ import groupB.newbankV5.paymentsettlement.interfaces.ICostumerCare;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +42,8 @@ public class SettlePayment {
 
 
     public void deductFunds(List<ReleaseFundsDto> accounts) {
+        log.info("accounts: " + Arrays.toString(accounts.toArray()));
+
         costumerCare.releaseFunds(accounts);
     }
 
@@ -55,9 +58,12 @@ public class SettlePayment {
             ReleaseFundsDto account;
             if(isNewBankAccount(transaction.getSender().getIBAN())) {
                 if (isNewBankAccount(transaction.getRecipient().getIBAN())) {
-                    account = new ReleaseFundsDto(Double.parseDouble(transaction.getAmount()), Double.parseDouble(transaction.getFees()), transaction.getSender().getIBAN(), transaction.getRecipient().getIBAN());
+                    account = new ReleaseFundsDto(BigDecimal.valueOf(Double.parseDouble(transaction.getAmount())), BigDecimal.valueOf(Double.parseDouble(transaction.getFees())),
+                            transaction.getSender().getIBAN(), transaction.getRecipient().getIBAN());
                 } else {
-                    account = new ReleaseFundsDto(Double.parseDouble(transaction.getAmount()), Double.parseDouble(transaction.getFees()), transaction.getSender().getIBAN());
+                    account = new ReleaseFundsDto(BigDecimal.valueOf(Double.parseDouble(transaction.getAmount())), BigDecimal.valueOf(Double.parseDouble(transaction.getFees())),
+                            transaction.getSender().getIBAN());
+
                     SettleDto settleDto = externalBankProxy.addAmount(new IbanAmountDto(transaction.getRecipient().getIBAN(), Double.parseDouble(transaction.getAmount())));
                     if (settleDto == null) {
                         transaction.setStatus(TransactionStatus.FAILED);
@@ -78,7 +84,7 @@ public class SettlePayment {
                         continue;
                     }
                 }
-                account = new ReleaseFundsDto(Double.parseDouble(transaction.getFees()));
+                account = new ReleaseFundsDto(BigDecimal.valueOf(Double.parseDouble(transaction.getAmount())), BigDecimal.valueOf(Double.parseDouble(transaction.getFees())), transaction.getSender().getIBAN(), transaction.getRecipient().getIBAN());
             }
             accounts.add(account);
             transaction.setStatus(TransactionStatus.SETTLED);

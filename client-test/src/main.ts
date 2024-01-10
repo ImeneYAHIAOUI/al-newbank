@@ -4,7 +4,6 @@ import bodyParser from 'body-parser';
 import {NewbankSdk, RetrySettings} from "@teamb/newbank-sdk";
 import {PaymentInfoDTO} from "@teamb/newbank-sdk";
 import {AuthorizeDto} from "@teamb/newbank-sdk";
-import {UnauthorizedError} from "@teamb/newbank-sdk";
 
 async function main() {
     const retrySettings = new RetrySettings({

@@ -35,6 +35,7 @@ public class FeesCalculatorController {
         log.info("\u001B[0m\u001B[35mReceived request to apply fees\u001B[0m");
         transactions.forEach(calculator::applyFees);
 
+
         log.info("\u001B[35mFees applied\u001B[0m");
         return ResponseEntity.ok().body(transactions);
     }

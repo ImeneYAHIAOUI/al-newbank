@@ -40,12 +40,4 @@ public class GlobalControllerAdvice {
         return errorDTO;
     }
 
-    @ExceptionHandler({IllegalArgumentException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDTO handleExceptions(IllegalArgumentException e) {
-        ErrorDTO errorDTO = new ErrorDTO();
-        errorDTO.setError(e.getMessage());
-        errorDTO.setDetails("Invalid request");
-        return errorDTO;
-    }
 }

@@ -185,7 +185,6 @@ public class CustomerCare implements AccountFinder, AccountRegistration, Savings
 
     @Override
     public Account moveToSavingsAccount(Account account, BigDecimal amount) {
-        System.out.printf("account: %s%n", account);
         if(amount.compareTo(account.getBalance()) > 0){
             throw new InsufficientFundsException("Insufficient funds "+account.getBalance()+" to move to savings account");
         }

@@ -2,7 +2,7 @@ package groupB.newbankV5.customercare.controllers.dto;
 
 import java.math.BigDecimal;
 
-public class ReleaseFundsDto {
+public class ReleaseFundsDto implements java.io.Serializable {
     private BigDecimal amount;
     private String IBAN;
     private String receiverIban;

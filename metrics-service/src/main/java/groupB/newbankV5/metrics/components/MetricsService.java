@@ -8,6 +8,7 @@ import groupB.newbankV5.metrics.entities.*;
 import groupB.newbankV5.metrics.exceptions.ApplicationNotFoundException;
 import groupB.newbankV5.metrics.exceptions.InvalidTokenException;
 import groupB.newbankV5.metrics.interfaces.IMetricsService;
+import groupB.newbankV5.metrics.repositories.RedisTransactionRepository;
 import groupB.newbankV5.metrics.repositories.RequestRepository;
 import groupB.newbankV5.metrics.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.util.stream.Collectors.groupingBy;
 
 
 @Component
@@ -37,13 +39,16 @@ public class MetricsService implements IMetricsService {
 
 
     private final TransactionRepository transactionRepository;
+
+    private final RedisTransactionRepository redisTransactionRepository;
     private final BusinessIntegratorProxy businessIntegratorProxy;
 
     private final RequestRepository requestRepository;
 
     @Autowired
-    public MetricsService(TransactionRepository transactionRepository, BusinessIntegratorProxy businessIntegratorProxy, RequestRepository requestRepository) {
+    public MetricsService(TransactionRepository transactionRepository, RedisTransactionRepository redisTransactionRepository, BusinessIntegratorProxy businessIntegratorProxy, RequestRepository requestRepository) {
         this.transactionRepository = transactionRepository;
+        this.redisTransactionRepository = redisTransactionRepository;
         this.businessIntegratorProxy = businessIntegratorProxy;
         this.requestRepository = requestRepository;
     }
@@ -88,12 +93,26 @@ public class MetricsService implements IMetricsService {
         ApplicationDto application = businessIntegratorProxy.validateToken(token);
 
 
+        List<Transaction> transactions = new ArrayList<>(transactionRepository.findAll().stream()
+                .filter(transaction -> transaction.getApplicationId() == application.getId())
+                .filter(transaction -> transaction.getTime() > fromInMillis && transaction.getTime() < toInMillis).toList());
 
-        List<Transaction> transactions = transactionRepository.findAll().stream()
-                .map(transactionEnvelop -> transactionEnvelop.getPayload().getTransaction())
-                .filter(transaction -> transaction.getTime() > fromInMillis && transaction.getTime() < toInMillis).toList();
+        List<Transaction> redisTransactions = redisTransactionRepository.findAll().stream()
+                .map(RedisTransaction::getTransactionId)
+                .filter(transactionId -> transactionId.matches(".*" + application.getId() + ".*"))
+                .map(this::redisTransactionToTransaction).filter(Optional::isPresent).map(Optional::get)
+                .filter(transaction -> transaction.getTime() > fromInMillis && transaction.getTime() < toInMillis)
+                .toList();
+
+        transactions.addAll(redisTransactions);
+
         List<Request> requests = requestRepository.findAll().stream()
+                .filter(request1 -> request1.getApplication().equals(application.getId()))
                 .filter(request1 -> request1.getDateTime().isAfter(from) && request1.getDateTime().isBefore(to)).toList();
+
+
+
+
 
         return generateMetricsList(from, to, request,transactions,requests);
 
@@ -111,13 +130,13 @@ public class MetricsService implements IMetricsService {
         LocalDateTime current = from;
         int increment =  request.getResolution().equals("5M") ? 5 : request.getResolution().equals("15M") ? 15 : request.getResolution().equals("30M") ? 30 : 1;
         ChronoUnit chronoUnit = request.getResolution().equals("5M") || request.getResolution().equals("15M") || request.getResolution().equals("30M") ? ChronoUnit.MINUTES : request.getResolution().equals("H") ? ChronoUnit.HOURS : request.getResolution().equals("D") ? ChronoUnit.DAYS : request.getResolution().equals("W") ? ChronoUnit.WEEKS : request.getResolution().equals("M") ? ChronoUnit.MONTHS : ChronoUnit.YEARS;
-        long toInMillis = to.toInstant(ZoneOffset.UTC).toEpochMilli();
+        long incrementInMillis = chronoUnit.getDuration().toMillis() * increment;
         while (current.isBefore(to)) {
             Metrics metrics = new Metrics();
             metrics.setTimestamp(current);
             LocalDateTime finalCurrent = current;
             long fromInMillis = current.toInstant(ZoneOffset.UTC).toEpochMilli();
-            List<Transaction> transactions = timeRangeTransactions.stream().filter(transaction -> transaction.getTime() > fromInMillis && transaction.getTime() < toInMillis).toList();
+            List<Transaction> transactions = timeRangeTransactions.stream().filter(transaction -> transaction.getTime() > fromInMillis && transaction.getTime() < fromInMillis + incrementInMillis).toList();
             List<Request> requests = timeRangeRequests.stream().filter(request1 -> request1.getDateTime().isAfter(finalCurrent) && request1.getDateTime().isBefore(finalCurrent.plus(increment, chronoUnit))).toList();
             if (request.getFilters() != null && !request.getFilters().isEmpty()) {
                 for (Map.Entry<String, List<String>> filter : request.getFilters().entrySet()) {
@@ -129,23 +148,42 @@ public class MetricsService implements IMetricsService {
                     }
                 }
             }
+
+
+
+            Map<String, List<Transaction>> transactionsById = transactions.stream().collect(groupingBy(Transaction::getId));
+            Map<String, List<Transaction>> transactionsByStatus = transactions.stream().collect(groupingBy(Transaction::getStatus));
+
+
             if (request.getMetrics() == null || request.getMetrics().isEmpty()) {
-                metrics.addValue("transactionCount", BigDecimal.valueOf(transactions.size()));
+
+
+                metrics.addValue("transactionCount", BigDecimal.valueOf(transactionsById.size()));
                 metrics.addValue("totalRequestsCount", BigDecimal.valueOf(requests.size()));
-                metrics.addValue("totalAmountSpent", BigDecimal.valueOf(transactions.stream().map(Transaction::getAmount).mapToDouble(Double::parseDouble).sum()));
-                metrics.addValue("averageAmountSpent", BigDecimal.valueOf(transactions.stream().map(Transaction::getAmount).mapToDouble(Double::parseDouble).average().orElse(0)));
+                metrics.addValue("totalAmountSpent", BigDecimal.valueOf(transactionsById.values().stream().filter(transactionList -> transactionList.size() > 1).map(transactionList2 -> transactionList2.get(0)).map(Transaction::getAmount).mapToDouble(Double::parseDouble).sum()));
+                metrics.addValue("averageAmountSpent", BigDecimal.valueOf(transactionsById.values().stream().filter(transactionList -> transactionList.size() > 1).map(transactionList2 -> transactionList2.get(0)).map(Transaction::getAmount).mapToDouble(Double::parseDouble).average().orElse(0)));
                 if (transactions.size() > 0) {
-                    metrics.addValue("TransactionSuccessRate", BigDecimal.valueOf(transactions.stream().filter(transaction -> transaction.getStatus().equals(TransactionStatus.CONFIRMED.getValue())).count() / transactions.size()));
+
+                    double successRate = getRate(transactionsByStatus, true);
+                    double failureRate = getRate(transactionsByStatus, false);
+
+                    metrics.addValue("TransactionSuccessRate", BigDecimal.valueOf(successRate));
+                    metrics.addValue("TransactionFailureRate", BigDecimal.valueOf(failureRate));
+
                 } else {
                     metrics.addValue("TransactionSuccessRate", BigDecimal.valueOf(0));
-                }
-                if (transactions.size() > 0) {
-                    metrics.addValue("TransactionFailureRate", BigDecimal.valueOf(transactions.stream().filter(transaction -> transaction.getStatus().equals(TransactionStatus.FAILED.getValue())).count() / transactions.size()));
-                } else {
                     metrics.addValue("TransactionFailureRate", BigDecimal.valueOf(0));
+
                 }
-                metrics.addValue("totalFees", BigDecimal.valueOf(transactions.stream().map(Transaction::getFees).mapToDouble(Double::parseDouble).sum()));
-                metrics.addValue("averageFees", BigDecimal.valueOf(transactions.stream().map(Transaction::getFees).mapToDouble(Double::parseDouble).average().orElse(0)));
+                double totalFees = transactionsById.values().stream().map(transactionList -> {
+                    Transaction transaction = transactionList.stream().filter(transaction1 -> transaction1.getStatus().equals(TransactionStatus.SETTLED.getValue())).findFirst().orElse(null);
+                    return transaction != null ? Double.parseDouble(transaction.getFees()) : 0;
+                }).mapToDouble(Double::doubleValue).sum();
+
+                double averageFees = getAverageFees(transactionsById);
+
+                metrics.addValue("totalFees", BigDecimal.valueOf(totalFees));
+                metrics.addValue("averageFees", BigDecimal.valueOf(averageFees));
                 metrics.addValue("successfulRequestsCount", BigDecimal.valueOf(requests.stream().filter(request1 -> request1.getStatus().equals("SUCCESS")).count()));
                 metrics.addValue("failedRequestsCount", BigDecimal.valueOf(requests.stream().filter(request1 -> request1.getStatus().equals("FAILED")).count()));
                 metrics.addValue("averageRequestTime", BigDecimal.valueOf(requests.stream().map(Request::getTime).mapToDouble(BigDecimal::doubleValue).average().orElse(0)));
@@ -154,26 +192,35 @@ public class MetricsService implements IMetricsService {
             } else {
                 for (String metric : request.getMetrics()) {
                     switch (metric) {
-                        case "transactionCount" -> metrics.addValue("transactionCount", BigDecimal.valueOf(transactions.size()));
-                        case "totalAmountSpent" -> metrics.addValue("totalAmountSpent", BigDecimal.valueOf(transactions.stream().map(Transaction::getAmount).mapToDouble(Double::parseDouble).sum()));
-                        case "averageAmountSpent" -> metrics.addValue("averageAmountSpent", BigDecimal.valueOf(transactions.stream().map(Transaction::getAmount).mapToDouble(Double::parseDouble).average().orElse(0)));
+                        case "transactionCount" -> metrics.addValue("transactionCount", BigDecimal.valueOf(transactionsById.size()));
+                        case "totalAmountSpent" -> metrics.addValue("totalAmountSpent", BigDecimal.valueOf(transactionsById.values().stream().map(transactionList -> transactionList.get(0)).map(Transaction::getAmount).mapToDouble(Double::parseDouble).sum()));
+                        case "averageAmountSpent" -> metrics.addValue("averageAmountSpent", BigDecimal.valueOf(transactionsById.values().stream().map(transactionList -> transactionList.get(0)).map(Transaction::getAmount).mapToDouble(Double::parseDouble).average().orElse(0)));
                         case "TransactionSuccessRate" -> {
                             if (transactions.size() > 0) {
-                                metrics.addValue("TransactionSuccessRate", BigDecimal.valueOf(transactions.stream().filter(transaction -> transaction.getStatus().equals(TransactionStatus.CONFIRMED.getValue())).count() / transactions.size()));
+                                double successRate = getRate(transactionsByStatus, true);
+
+                                metrics.addValue("TransactionSuccessRate", BigDecimal.valueOf(successRate));
+
                             } else {
                                 metrics.addValue("TransactionSuccessRate", BigDecimal.valueOf(0));
                             }
                         }
                         case "TransactionFailureRate" -> {
                             if (transactions.size() > 0) {
-                                metrics.addValue("TransactionFailureRate", BigDecimal.valueOf(transactions.stream().filter(transaction -> transaction.getStatus().equals(TransactionStatus.FAILED.getValue())).count() / transactions.size()));
+                                double failureRate = getRate(transactionsByStatus, false);
+
+                                metrics.addValue("TransactionFailureRate", BigDecimal.valueOf(failureRate));
+
                             } else {
                                 metrics.addValue("TransactionFailureRate", BigDecimal.valueOf(0));
                             }
                         }
 
-                        case "totalFees" -> metrics.addValue("totalFees", BigDecimal.valueOf(transactions.stream().map(Transaction::getFees).mapToDouble(Double::parseDouble).sum()));
-                        case "averageFees" -> metrics.addValue("averageFees", BigDecimal.valueOf(transactions.stream().map(Transaction::getFees).mapToDouble(Double::parseDouble).average().orElse(0)));
+                        case "totalFees" -> metrics.addValue("totalFees", BigDecimal.valueOf(transactionsById.values().stream().map(transactionList -> {
+                            Transaction transaction = transactionList.stream().filter(transaction1 -> transaction1.getStatus().equals(TransactionStatus.SETTLED.getValue())).findFirst().orElse(null);
+                            return transaction != null ? Double.parseDouble(transaction.getFees()) : 0;
+                        }).mapToDouble(Double::doubleValue).sum()));
+                        case "averageFees" -> metrics.addValue("averageFees", BigDecimal.valueOf(getAverageFees(transactionsById)));
                         case "totalRequestsCount" -> metrics.addValue("totalRequestsCount", BigDecimal.valueOf(requests.size()));
                         case "successfulRequestsCount" -> metrics.addValue("successfulRequestsCount", BigDecimal.valueOf(requests.stream().filter(request1 -> request1.getStatus().equals("SUCCESS")).count()));
                         case "failedRequestsCount" -> metrics.addValue("failedRequestsCount", BigDecimal.valueOf(requests.stream().filter(request1 -> request1.getStatus().equals("FAILED")).count()));
@@ -190,6 +237,22 @@ public class MetricsService implements IMetricsService {
         return metricsList;
     }
 
+    private double getAverageFees(Map<String, List<Transaction>> transactionsById) {
+        return transactionsById.values().stream().map(transactionList -> {
+            Transaction transaction = transactionList.stream().filter(transaction1 -> transaction1.getStatus().equals(TransactionStatus.SETTLED.getValue())).findFirst().orElse(null);
+            return transaction != null ? Double.parseDouble(transaction.getFees()) : 0;
+        }).mapToDouble(Double::doubleValue).average().orElse(0);
+    }
+
+    private double getRate(Map<String, List<Transaction>> transactionsByStatus, boolean success) {
+        int successCount = transactionsByStatus.get(TransactionStatus.SETTLED.getValue()) != null ? transactionsByStatus.get(TransactionStatus.SETTLED.getValue()).size() : 0;
+        int failureCount = transactionsByStatus.get(TransactionStatus.FAILED.getValue()) != null ? transactionsByStatus.get(TransactionStatus.FAILED.getValue()).size() : 0;
+        int total = successCount + failureCount;
+         return success ?  total > 0 ? 100 * (double) successCount / total : 0 : total > 0 ? 100 * (double) failureCount / total : 0;
+
+    }
+
+
     private List<Transaction> filterTransactionsByCreditCardType(List<Transaction> transactions, List<String> value) {
         List<Transaction> filteredTransactions = new ArrayList<>();
         for (String creditCardType: value) {
@@ -205,6 +268,58 @@ public class MetricsService implements IMetricsService {
         }
         return filteredTransactions;
     }
+
+    private Optional<Transaction> redisTransactionToTransaction(String redisTransaction) {
+
+        Pattern idPattern = Pattern.compile("id='(.*?)'");
+        Pattern IBANPattern = Pattern.compile("IBAN='(.*?)'");
+        Pattern BICPattern = Pattern.compile("BIC='(.*?)'");
+        Pattern isExternalPattern = Pattern.compile("isExternal=(.*?),");
+        Pattern amountPattern = Pattern.compile("amount=(.*?),");
+        Pattern feesPattern = Pattern.compile("fees=(.*?),");
+        Pattern statusPattern = Pattern.compile("status=(.*?),");
+        Pattern applicationIdPattern = Pattern.compile("applicationId=(.*?),");
+        Pattern CreditCardTypePattern = Pattern.compile("creditCardType=(.*?),");
+        Pattern timePattern = Pattern.compile("time=(.*?)}");
+
+
+
+        Matcher idMatcher = idPattern.matcher(redisTransaction);
+        Matcher IBANMatcher = IBANPattern.matcher(redisTransaction);
+        Matcher BICMatcher = BICPattern.matcher(redisTransaction);
+        Matcher isExternalMatcher = isExternalPattern.matcher(redisTransaction);
+        Matcher amountMatcher = amountPattern.matcher(redisTransaction);
+        Matcher feesMatcher = feesPattern.matcher(redisTransaction);
+        Matcher statusMatcher = statusPattern.matcher(redisTransaction);
+        Matcher applicationIdMatcher = applicationIdPattern.matcher(redisTransaction);
+        Matcher CreditCardTypeMatcher = CreditCardTypePattern.matcher(redisTransaction);
+        Matcher timeMatcher = timePattern.matcher(redisTransaction);
+
+        if (idMatcher.find() && IBANMatcher.find() && BICMatcher.find() && isExternalMatcher.find() && amountMatcher.find() && feesMatcher.find() && statusMatcher.find() && timeMatcher.find() && applicationIdMatcher.find() && CreditCardTypeMatcher.find()) {
+
+            Transaction transaction = new Transaction();
+            transaction.setId(idMatcher.group(1));
+            transaction.setRecipientIban(IBANMatcher.group(1));
+            transaction.setRecipientBic(BICMatcher.group(1));
+            if (IBANMatcher.find() && BICMatcher.find()) {
+                transaction.setSenderBic(BICMatcher.group(1));
+                transaction.setSenderIban(IBANMatcher.group(1));
+            }
+            transaction.setIs_external(Boolean.parseBoolean(isExternalMatcher.group(1)));
+            transaction.setAmount(amountMatcher.group(1));
+            transaction.setFees(feesMatcher.group(1));
+            transaction.setStatus(statusMatcher.group(1));
+            transaction.setApplicationId(Long.parseLong(applicationIdMatcher.group(1)));
+            transaction.setCreditCardType(CreditCardTypeMatcher.group(1));
+            transaction.setTime(Long.parseLong(timeMatcher.group(1)));
+
+            return Optional.of(transaction);
+        }
+
+        return Optional.empty();
+
+    }
+
 
 
 }

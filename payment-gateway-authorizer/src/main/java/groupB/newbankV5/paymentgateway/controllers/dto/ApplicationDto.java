@@ -1,7 +1,8 @@
 package groupB.newbankV5.paymentgateway.controllers.dto;
 
 
-import groupB.newbankV5.paymentgateway.entities.Application;
+
+import javax.persistence.Column;
 
 public class ApplicationDto {
 
@@ -70,5 +71,6 @@ public class ApplicationDto {
     public void setMerchant(MerchantDto merchant) {
         this.merchant = merchant;
     }
+
 
 }

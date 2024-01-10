@@ -45,16 +45,13 @@ public class TransactionerController {
 
     private final TransactionRepository transactionRepository;
 
-
-
     @Autowired
-    public TransactionerController(ITransactionProcessor transactionProcessor, IRSA crypto, ITransactionFinder transactionFinder,
-                                   TransactionRepository transactionRepository) {
+    public TransactionerController(ITransactionProcessor transactionProcessor,IRSA crypto, ITransactionFinder transactionFinder,
+            TransactionRepository transactionRepository) {
         this.transactionProcessor = transactionProcessor;
         this.crypto=crypto;
         this.transactionFinder=transactionFinder;
         this.transactionRepository = transactionRepository;
-
     }
 
 //    @PostMapping("/process")
@@ -63,7 +60,6 @@ public class TransactionerController {
 //        return ResponseEntity.status(HttpStatus.OK).body(transactionProcessor.authorizePayment(paymentDetails));
 //
 //    }
-
 
     @PostMapping("simulate")
     public ResponseEntity<String> activeToggle(@RequestParam int errorCode) {

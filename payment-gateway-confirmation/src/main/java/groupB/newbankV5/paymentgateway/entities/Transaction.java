@@ -162,6 +162,8 @@ public class Transaction implements Serializable {
                 ", amount=" + amount +
                 ", fees=" + fees +
                 ", status=" + status +
+                ", creditCardType=" + creditCardType +
+                ", applicationId=" + applicationId +
                 ", time=" + time +
                 '}';
     }

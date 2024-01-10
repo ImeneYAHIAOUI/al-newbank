@@ -40,7 +40,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var newbank_sdk_1 = require("@teamb/newbank-sdk");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var retrySettings, responseTimeout, _a, cardNumber, cvv, expiryDate, token, port, newbankSdk, paymentInfo, responses, i, response, error_1;
+        var retrySettings, _a, cardNumber, cvv, expiryDate, token, port, newbankSdk, paymentInfo, response, confirm_1, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -51,55 +51,33 @@ function main() {
                         maxTimeout: 3000,
                         randomize: true,
                     });
-                    responseTimeout = 5000;
                     _a = process.argv, cardNumber = _a[2], cvv = _a[3], expiryDate = _a[4], token = _a[5], port = _a[6];
                     newbankSdk = new newbank_sdk_1.NewbankSdk(token, retrySettings);
-                    if (!(cardNumber && cvv && expiryDate)) return [3 /*break*/, 11];
+                    if (!(cardNumber && cvv && expiryDate)) return [3 /*break*/, 5];
                     paymentInfo = {
                         cardNumber: cardNumber,
                         cvv: cvv,
                         expirationDate: expiryDate,
                         amount: '500',
                     };
-                    responses = [];
-                    i = 0;
+                    response = void 0;
                     _b.label = 1;
                 case 1:
-                    if (!(i < 7)) return [3 /*break*/, 10];
-                    i++;
-                    _b.label = 2;
+                    _b.trys.push([1, 4, , 5]);
+                    return [4 /*yield*/, newbankSdk.authorizePayment(paymentInfo)];
                 case 2:
-                    _b.trys.push([2, 8, , 9]);
-                    if (!(i == 6)) return [3 /*break*/, 4];
-                    return [4 /*yield*/, sleep(200)];
-                case 3:
-                    _b.sent();
-                    _b.label = 4;
-                case 4:
-                    if (!(i == 5)) return [3 /*break*/, 6];
-                    return [4 /*yield*/, sleep(4900)];
-                case 5:
-                    _b.sent();
-                    _b.label = 6;
-                case 6: return [4 /*yield*/, newbankSdk.authorizePayment(paymentInfo)];
-                case 7:
                     response = _b.sent();
-                    if (i >= 6) {
-                        newbankSdk.confirmPayment(response.transactionId);
-                    }
-                    return [3 /*break*/, 9];
-                case 8:
+                    return [4 /*yield*/, newbankSdk.confirmPayment(response.transactionId)];
+                case 3:
+                    confirm_1 = _b.sent();
+                    console.log(confirm_1);
+                    return [3 /*break*/, 5];
+                case 4:
                     error_1 = _b.sent();
-                    console.log(error_1.message);
-                    return [3 /*break*/, 9];
-                case 9: return [3 /*break*/, 1];
-                case 10: return [2 /*return*/];
-                case 11: return [2 /*return*/];
+                    return [2 /*return*/];
+                case 5: return [2 /*return*/];
             }
         });
     });
-}
-function sleep(ms) {
-    return new Promise(function (resolve) { return setTimeout(resolve, ms); });
 }
 main();

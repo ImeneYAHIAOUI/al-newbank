@@ -119,24 +119,25 @@ echo -e "\033[0;34mID Application:\033[0m \033[0;32m$ApplicationId\033[0m"
 
 apiKey=$(echo "$response" | grep -o '"apiKey":"[^"]*' | cut -d'"' -f4)
 echo -e "\033[0;34mAPI Key:\033[0m \033[0;32m$apiKey\033[0m"
-echo ""
-url1="http://localhost:3501/api/gateway_authorization/simulate?errorCode="
-url="http://localhost:3503/api/gateway_authorization/simulate?errorCode="
-url2="http://localhost:5001/api/timeout"
 
+sed -i "s/NEWBANK_TOKEN=.*/NEWBANK_TOKEN=${apiKey}/" ../newbank-example/.env
 
-ERROR_CODE=200
+# shellcheck disable=SC2164
+cd ../newbank-example
 
-response=$(curl -s -X POST "${url}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}')
-response=$(curl -s -X POST "${url1}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}')
-response=$(curl -s -X POST "${url2}" -H "Content-Type: application/json" -d '{}')
+npm run start&
 
-ts-node main.ts "$cardNumber" "$cvv" "$expiryDate" "$apiKey" "6906"
+# Wait for the service to start
+while ! nc -z localhost 6906; do
+    sleep 1
+done
 
-ERROR_CODE=500
+paymentDto='{
+     "cardNumber": "'"${cardNumber}"'",
+     "cvv": "'"${cvv}"'",
+      "expirationDate": "'"${expiryDate}"'",
+      "amount": 500,
+}'
 
-response=$(curl  -s -X POST "${url}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}')
-response=$(curl  -s -X POST "${url1}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}')
-
-ts-node main.ts "$cardNumber" "$cvv" "$expiryDate" "$apiKey" "6906"
+curl -s -X POST -H "Content-Type: application/json" -d "$paymentDto" "http://localhost:6906/payment" -w "%{http_code}" >/dev/null
 

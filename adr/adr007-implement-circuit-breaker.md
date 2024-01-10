@@ -21,12 +21,11 @@ In case of unavailability, the SDK will directly inform the client that the serv
 
 ![availibity](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/circuit-breaker-availability.png)
 
-
-## Consequences:
-
+## Consequences
 ### Advantages:
 1. **Enhanced Resilience:** The SDK becomes more resilient by avoiding unnecessary requests during backend services disruptions.
 2.  **Effective Use of Health Checks:** The circuit breaker efficiently leverages the existing health check done to determine the availability of backend services.
 
 ### Disadvantages:
 1. **Potential Delay:** The circuit breaker mechanism will introduce a slight delay in making backend service requests.
+
