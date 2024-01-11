@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {NewbankSdk, RetrySettings} from "@teamb/newbank-sdk";
 import {PaymentInfoDTO} from "@teamb/newbank-sdk";
-import {AuthorizeDto} from "@teamb/newbank-sdk";
 
 @Injectable()
 export class AppService {
@@ -17,11 +16,6 @@ export class AppService {
         const token = process.env.NEWBANK_TOKEN;
         this.newbankSdk = new NewbankSdk(token, retrySettings);
     }
-
-    getHello(): string {
-        return 'Hello World!';
-    }
-
     payment(paymentInfoDTO: PaymentInfoDTO): void {
         this.newbankSdk.pay(paymentInfoDTO).then(r => console.log(r));
     }
@@ -42,4 +36,9 @@ export class AppService {
     getMetrics(body: any) {
         return this.newbankSdk.getMetrics(body);
     }
+
+    getHello(): string {
+        return 'Hello World!';
+    }
+
 }

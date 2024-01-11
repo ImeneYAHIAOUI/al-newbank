@@ -20,7 +20,7 @@ export class AppController {
     confirmPayment(@Body() transactionId: string): void {
         this.appService.confirmPayment(transactionId);
     }
-    
+
     @Post('/pay')
     payment(@Body() paymentInfoDTO: PaymentInfoDTO): void {
         this.appService.payment(paymentInfoDTO);

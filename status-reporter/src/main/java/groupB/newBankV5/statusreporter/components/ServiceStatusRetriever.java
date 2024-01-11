@@ -41,7 +41,6 @@ public class ServiceStatusRetriever implements IServiceStatusRetriever {
 
 
     @Override
-    @Cacheable(value = "statusReport", key = "'statusReport'", cacheManager = "cacheManager")
     public List<ServiceStatus> retrieveStatusFromPrometheus() {
         List< PrometheusRuleDTO> rules = prometheusProxy.retrieveAlerts().getData().getGroups().get(0).getRules();
         List<ActiveTargetDto> targets = prometheusProxy.retrieveActiveTargets().getData().getActiveTargets().stream()
@@ -51,14 +50,12 @@ public class ServiceStatusRetriever implements IServiceStatusRetriever {
                         .filter(rule -> rule.getLabels().getJob().equals(target.getLabels().getJob()))
                         .toList()));
 
-        List<ServiceStatus> ServiceStatuses = targetRulesMap.entrySet().stream()
+        return targetRulesMap.entrySet().stream()
                 .map(entry -> {
                     int health = Objects.equals(entry.getKey().getHealth(), "down") ? 2 : entry.getValue().stream()
                             .anyMatch(rule -> Objects.equals(rule.getState(), "firing")) ? 3 : 1;
                     return new ServiceStatus(entry.getKey().getLabels().getApplication(), health);
                 }).toList();
-
-        return ServiceStatuses;
     }
 
     public boolean checkServiceAvailability(String serviceName){
