@@ -23,7 +23,7 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./prometheus/prometheus.rules.yml:/etc/prometheus/prometheus.rules.yml
     extra_hosts:
-      - host.docker.internal:35.209.89.240
+      - host.docker.internal:172.17.0.1
     networks:
       - spring-newbank-network
 

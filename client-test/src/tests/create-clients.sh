@@ -54,7 +54,12 @@ create_account(){
 
 echo "ClientID,CardNumber,CVV,ExpiryDate" > client_cards.csv
 
-for i in {1..1000}
+for i in {1..100}
 do
-  create_account &
+  for ((j=1; j<=20; j++))
+  do
+    create_account
+  done 
+  sleep 1.5
 done
+
