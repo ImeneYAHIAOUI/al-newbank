@@ -36,10 +36,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// main.ts
 var newbank_sdk_1 = require("@teamb/newbank-sdk");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var retrySettings, responseTimeout, _a, cardNumber, cvv, expiryDate, token, port, newbankSdk, paymentInfo, response, confirm_1, error_1;
+        var retrySettings, responseTimeout, _a, cardNumber, cvv, expiryDate, token, port, newbankSdk, paymentInfo, responses, i, response, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -53,32 +54,41 @@ function main() {
                     responseTimeout = 5000;
                     _a = process.argv, cardNumber = _a[2], cvv = _a[3], expiryDate = _a[4], token = _a[5], port = _a[6];
                     newbankSdk = new newbank_sdk_1.NewbankSdk(token, retrySettings);
-                    if (!(cardNumber && cvv && expiryDate)) return [3 /*break*/, 5];
+                    if (!(cardNumber && cvv && expiryDate)) return [3 /*break*/, 8];
                     paymentInfo = {
                         cardNumber: cardNumber,
                         cvv: cvv,
                         expirationDate: expiryDate,
-                        amount: '500',
+                        amount: '1',
                     };
-                    response = void 0;
+                    responses = [];
+                    i = 0;
                     _b.label = 1;
                 case 1:
-                    _b.trys.push([1, 4, , 5]);
-                    return [4 /*yield*/, newbankSdk.authorizePayment(paymentInfo)];
+                    if (!(i < 20)) return [3 /*break*/, 7];
+                    i++;
+                    _b.label = 2;
                 case 2:
+                    _b.trys.push([2, 5, , 6]);
+                    return [4 /*yield*/, newbankSdk.authorizePayment(paymentInfo)];
+                case 3:
                     response = _b.sent();
                     return [4 /*yield*/, newbankSdk.confirmPayment(response.transactionId)];
-                case 3:
-                    confirm_1 = _b.sent();
-                    console.log(confirm_1);
-                    return [3 /*break*/, 5];
                 case 4:
+                    _b.sent();
+                    return [3 /*break*/, 6];
+                case 5:
                     error_1 = _b.sent();
                     console.log(error_1.message);
-                    return [2 /*return*/];
-                case 5: return [2 /*return*/];
+                    return [3 /*break*/, 6];
+                case 6: return [3 /*break*/, 1];
+                case 7: return [2 /*return*/];
+                case 8: return [2 /*return*/];
             }
         });
     });
+}
+function sleep(ms) {
+    return new Promise(function (resolve) { return setTimeout(resolve, ms); });
 }
 main();

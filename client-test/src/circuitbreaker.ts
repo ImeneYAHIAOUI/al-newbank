@@ -23,28 +23,16 @@ async function main() {
             cardNumber: cardNumber,
             cvv: cvv,
             expirationDate: expiryDate,
-            amount: '500',
+            amount: '1',
         };
         let responses: AuthorizeDto[] = [];
         let i=0;
-        while(i<7){
+        while(i<20){
             i++;
 
             try {
-                if(i==6){
-                    await sleep(200);
-                }
-
-                if(i==5){
-                    await sleep(4900);
-
-                }     
-                        const response = await newbankSdk.authorizePayment(paymentInfo);
-                         
-                        if(i>=6) {
-                            newbankSdk.confirmPayment(response.transactionId)
-                        }
-                      
+                           const response = await newbankSdk.authorizePayment(paymentInfo);   
+                        await newbankSdk.confirmPayment(response.transactionId)                                
                     } catch (error: any) {
                        console.log(error.message);
                     }

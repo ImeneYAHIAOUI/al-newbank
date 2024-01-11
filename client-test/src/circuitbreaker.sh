@@ -23,7 +23,7 @@ response=$(curl -s -H "Content-Type: application/json" -d "$data" "$url")
     cvv=$(echo "$debitCardResponse" | grep -oi '"cvv":"[^"]*' | cut -d'"' -f4)
     expiryDate=$(echo "$debitCardResponse" | grep -oi '"expiryDate":"[^"]*' | cut -d'"' -f4)
  operation='{
-   "amount": 10000000,
+   "amount": 1000000000,
    "operation": "deposit"
  }'
  fundsUrl="http://localhost:5003/api/costumer/$clientId/funds"
