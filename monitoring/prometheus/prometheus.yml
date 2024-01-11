@@ -85,3 +85,11 @@ scrape_configs:
       target: ["redis://localhost:6378"]
     static_configs:
       - targets: [ 'host.docker.internal:9120' ]
+      
+  - job_name: 'businessIntegrator'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 500ms
+    static_configs:
+      - targets: ['host.docker.internal:5012']
+        labels:
+          application: 'BusinessIntegrator'

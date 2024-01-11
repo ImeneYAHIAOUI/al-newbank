@@ -1,0 +1,32 @@
+version: "3.3"
+
+services:
+  costumer-service:
+    image: "newbank/customer-care"
+    container_name: "costumer-service"
+    mem_limit: 1g
+    cpus: 2
+    restart: always
+    ports:
+      - "5003:8080"
+    depends_on:
+      - customer-db
+    environment:
+      - CCN_WITH_PORT=${CCN_SERVICE}:8080
+      - POSTGRES_HOST=customer-db:5432
+    networks:
+      - spring-newbank-network
+  customer-db:
+    image: postgres:15.2
+    container_name: "customer-db"
+    environment:
+       - POSTGRES_PASSWORD=postgrespass
+       - POSTGRES_USER=postgresuser
+       - POSTGRES_DB=customer-db
+    networks:
+       - spring-newbank-network
+
+
+networks:
+  spring-newbank-network:
+    external: true

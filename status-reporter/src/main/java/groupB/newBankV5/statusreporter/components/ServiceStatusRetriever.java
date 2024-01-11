@@ -3,13 +3,14 @@ package groupB.newBankV5.statusreporter.components;
 import groupB.newBankV5.statusreporter.connectors.dto.ActiveTargetDto;
 import groupB.newBankV5.statusreporter.connectors.dto.PrometheusRuleDTO;
 import groupB.newBankV5.statusreporter.entities.ServiceStatus;
+import groupB.newBankV5.statusreporter.entities.ServiceStatusWithMetrics;
 import groupB.newBankV5.statusreporter.exceptions.ApplicationNotFoundException;
 import groupB.newBankV5.statusreporter.exceptions.InvalidTokenException;
 import groupB.newBankV5.statusreporter.interfaces.IBusinessIntegrator;
 import groupB.newBankV5.statusreporter.interfaces.IPrometheusProxy;
 import groupB.newBankV5.statusreporter.interfaces.IServiceStatusRetriever;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -34,15 +35,14 @@ public class ServiceStatusRetriever implements IServiceStatusRetriever {
     }
 
     @Override
-    public List<ServiceStatus> retrieveServiceStatus(String token) throws InvalidTokenException, ApplicationNotFoundException {
+    public List<ServiceStatusWithMetrics> retrieveServiceStatus(String token) throws InvalidTokenException, ApplicationNotFoundException {
         businessIntegratorProxy.validateToken(token);
         return retrieveStatusFromPrometheus();
     }
 
 
     @Override
-    @Cacheable(value = "statusReport", key = "'statusReport'", cacheManager = "cacheManager")
-    public List<ServiceStatus> retrieveStatusFromPrometheus() {
+    public List<ServiceStatusWithMetrics> retrieveStatusFromPrometheus() {
         List< PrometheusRuleDTO> rules = prometheusProxy.retrieveAlerts().getData().getGroups().get(0).getRules();
         List<ActiveTargetDto> targets = prometheusProxy.retrieveActiveTargets().getData().getActiveTargets().stream()
                 .filter(target -> target.getLabels().getApplication() != null).toList();
@@ -58,13 +58,29 @@ public class ServiceStatusRetriever implements IServiceStatusRetriever {
                     return new ServiceStatus(entry.getKey().getLabels().getApplication(), health);
                 }).toList();
 
-        return ServiceStatuses;
+
+        return ServiceStatuses.stream()
+                .map(serviceStatus -> {
+                    double cpuUsage = getServiceNameCPUStatus(serviceStatus.getServiceName());
+                    log.info("CPU usage for service " + serviceStatus.getServiceName() + " is " + cpuUsage);
+                    int waitingTime = cpuUsage > 0.4 ? 2 * (int) ((cpuUsage * 100) - 40) : 0;
+                    log.info("Waiting time for service " + serviceStatus.getServiceName() + " is " + waitingTime);
+                    if (waitingTime > 0) {
+                        serviceStatus.setServiceStatus(3);
+                    }
+                    return new ServiceStatusWithMetrics(serviceStatus.getServiceName(), serviceStatus.getServiceStatus(), waitingTime );
+                }).toList();
+    }
+
+    private Double getServiceNameCPUStatus(String serviceName) {
+        return Double.parseDouble(
+                prometheusProxy.retrieveCPUUsage(serviceName).getData().getResult().get(0).getValue().get(1));
     }
 
     public boolean checkServiceAvailability(String serviceName){
-            return this.retrieveStatusFromPrometheus().stream()
-                    .filter(serviceStatus -> serviceStatus.getServiceName().contains(serviceName))
-                    .allMatch(serviceStatus -> serviceStatus.getServiceStatus() == 1);
-        }
+        return this.retrieveStatusFromPrometheus().stream()
+                .filter(serviceStatus -> serviceStatus.getServiceName().contains(serviceName))
+                .allMatch(serviceStatus -> serviceStatus.getServiceStatus() == 1);
+    }
 
 }
