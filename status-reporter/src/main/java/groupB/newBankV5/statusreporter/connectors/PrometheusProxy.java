@@ -42,6 +42,7 @@ public class PrometheusProxy implements IPrometheusProxy {
     }
 
     @Override
+    @Cacheable("cpuUsage")
     public PrometheusCPUUsageDTO retrieveCPUUsage(String applicationName) {
         log.info("Sending request to prometheus to retrieve CPU usage");
         String application = "{application=\"" + applicationName + "\"}";
