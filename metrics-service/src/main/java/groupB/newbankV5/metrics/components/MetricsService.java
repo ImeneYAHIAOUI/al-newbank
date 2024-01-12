@@ -254,17 +254,13 @@ public class MetricsService implements IMetricsService {
 
 
     private List<Transaction> filterTransactionsByCreditCardType(List<Transaction> transactions, List<String> value) {
-        List<Transaction> filteredTransactions = new ArrayList<>();
-        for (String creditCardType: value) {
-            filteredTransactions.addAll(transactions.stream().filter(transaction -> transaction.getCreditCardType().equals(creditCardType)).toList());
-        }
-        return filteredTransactions;
+        return transactions.stream().filter(transaction -> transaction.getCreditCardType().equalsIgnoreCase(value.get(0))).toList();
     }
 
     private List<Transaction> filterTransactionsByStatus(List<Transaction> transactions, List<String> value) {
         List<Transaction> filteredTransactions = new ArrayList<>();
         for (String status: value) {
-            filteredTransactions.addAll(transactions.stream().filter(transaction -> transaction.getStatus().equals(status)).toList());
+            filteredTransactions.addAll(transactions.stream().filter(transaction -> transaction.getStatus().equalsIgnoreCase(status)).toList());
         }
         return filteredTransactions;
     }
