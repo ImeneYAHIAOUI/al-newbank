@@ -18,8 +18,6 @@ async function main() {
     const [ , ,cardNumber, cvv, expiryDate, token,port] = process.argv;
     const newbankSdk = new NewbankSdk(token, retrySettings);
 
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
 
     if ( cardNumber && cvv && expiryDate) {
         const paymentInfo: PaymentInfoDTO = {
