@@ -38,15 +38,15 @@ async function main() {
                         await newbankSdk.confirmPayment(response.transactionId)                                
                     } catch (error: any) {
                         if (error instanceof ServiceUnavailableException) {
-                            const response = error.getResponse();
-                            if (response && typeof response === 'object' && 'message' in response && 'headers' in response) {
-                              console.log('Error Message:', response.message);
-                              console.log('Retry Time:', response.headers?.['Retry-After']); 
-                            }
-                        } else {
-                            console.log(error.getResponse());
-                        }
-                    
+                              const start = new Date().getTime();
+                              const delayMilliseconds = 5 * 1000; // Convert seconds to milliseconds
+                              while (new Date().getTime() - start < delayMilliseconds) {
+                                
+                              }
+                            } 
+                           else {
+                            console.error(error);
+                          }
                     }
         }
         return;
