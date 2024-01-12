@@ -36,6 +36,7 @@ async function main() {
                         await newbankSdk.confirmPayment(response.transactionId)                                
                     } catch (error: any) {
                         if (error instanceof ServiceUnavailableException) {
+                            console.error(error.getResponse());
                               const start = new Date().getTime();
                               const delayMilliseconds = 5 * 1000; // Convert seconds to milliseconds
                               while (new Date().getTime() - start < delayMilliseconds) {
