@@ -38,11 +38,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // main.ts
 var newbank_sdk_1 = require("@teamb/newbank-sdk");
+var newbank_sdk_2 = require("@teamb/newbank-sdk");
 function main() {
+    var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var retrySettings, responseTimeout, _a, cardNumber, cvv, expiryDate, token, port, newbankSdk, paymentInfo, responses, i, response, error_1;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var retrySettings, responseTimeout, _b, cardNumber, cvv, expiryDate, token, port, newbankSdk, delay, paymentInfo, responses, i, response, error_1, response;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
                 case 0:
                     retrySettings = new newbank_sdk_1.RetrySettings({
                         retries: 2,
@@ -52,8 +54,9 @@ function main() {
                         randomize: true,
                     });
                     responseTimeout = 5000;
-                    _a = process.argv, cardNumber = _a[2], cvv = _a[3], expiryDate = _a[4], token = _a[5], port = _a[6];
+                    _b = process.argv, cardNumber = _b[2], cvv = _b[3], expiryDate = _b[4], token = _b[5], port = _b[6];
                     newbankSdk = new newbank_sdk_1.NewbankSdk(token, retrySettings);
+                    delay = function (ms) { return new Promise(function (resolve) { return setTimeout(resolve, ms); }); };
                     if (!(cardNumber && cvv && expiryDate)) return [3 /*break*/, 8];
                     paymentInfo = {
                         cardNumber: cardNumber,
@@ -63,23 +66,32 @@ function main() {
                     };
                     responses = [];
                     i = 0;
-                    _b.label = 1;
+                    _c.label = 1;
                 case 1:
                     if (!(i < 20)) return [3 /*break*/, 7];
                     i++;
-                    _b.label = 2;
+                    _c.label = 2;
                 case 2:
-                    _b.trys.push([2, 5, , 6]);
+                    _c.trys.push([2, 5, , 6]);
                     return [4 /*yield*/, newbankSdk.authorizePayment(paymentInfo)];
                 case 3:
-                    response = _b.sent();
+                    response = _c.sent();
                     return [4 /*yield*/, newbankSdk.confirmPayment(response.transactionId)];
                 case 4:
-                    _b.sent();
+                    _c.sent();
                     return [3 /*break*/, 6];
                 case 5:
-                    error_1 = _b.sent();
-                    console.log(error_1.message);
+                    error_1 = _c.sent();
+                    if (error_1 instanceof newbank_sdk_2.ServiceUnavailableException) {
+                        response = error_1.getResponse();
+                        if (response && typeof response === 'object' && 'message' in response && 'headers' in response) {
+                            console.log('Error Message:', response.message);
+                            console.log('Retry Time:', (_a = response.headers) === null || _a === void 0 ? void 0 : _a['Retry-After']);
+                        }
+                    }
+                    else {
+                        console.log(error_1.getResponse());
+                    }
                     return [3 /*break*/, 6];
                 case 6: return [3 /*break*/, 1];
                 case 7: return [2 /*return*/];

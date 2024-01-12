@@ -3,6 +3,7 @@ import {NewbankSdk, RetrySettings} from "@teamb/newbank-sdk";
 import {PaymentInfoDTO} from "@teamb/newbank-sdk";
 import {AuthorizeDto} from "@teamb/newbank-sdk";
 import {UnauthorizedError} from "@teamb/newbank-sdk";
+import {ServiceUnavailableException} from "@teamb/newbank-sdk";
 
 async function main() {
     const retrySettings = new RetrySettings({
@@ -16,6 +17,8 @@ async function main() {
     const responseTimeout= 5000;
     const [ , ,cardNumber, cvv, expiryDate, token,port] = process.argv;
     const newbankSdk = new NewbankSdk(token, retrySettings);
+
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 
     if ( cardNumber && cvv && expiryDate) {
@@ -34,7 +37,16 @@ async function main() {
                            const response = await newbankSdk.authorizePayment(paymentInfo);   
                         await newbankSdk.confirmPayment(response.transactionId)                                
                     } catch (error: any) {
-                       console.log(error.message);
+                        if (error instanceof ServiceUnavailableException) {
+                            const response = error.getResponse();
+                            if (response && typeof response === 'object' && 'message' in response && 'headers' in response) {
+                              console.log('Error Message:', response.message);
+                              console.log('Retry Time:', response.headers?.['Retry-After']); 
+                            }
+                        } else {
+                            console.log(error.getResponse());
+                        }
+                    
                     }
         }
         return;
