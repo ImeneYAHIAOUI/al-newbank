@@ -56,5 +56,4 @@ After :
 3. Ease of maintenance and scalability: Clearly defined responsibilities of authorization and confirmation services allow for more efficient maintenance, scalability, and targeted updates.
 
 ### Disadvantages:
-1. Increased complexity in terms of coordination between services.
-2. Both services communicate with the same database, which may affect database performance and introduce a bottleneck in database transactions.
+1. Increased complexity in terms of coordination between services
