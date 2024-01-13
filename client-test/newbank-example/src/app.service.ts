@@ -27,13 +27,16 @@ export class AppService {
         console.log(error.message);
         const regex = /\d+$/; 
         const match = (error.message).match(regex);
-        console.log(match)
         if(match){
+            const timeToSleeping = parseInt(match[0], 10); 
             const start = new Date().getTime();
-            const delayMilliseconds = parseInt(match[0], 10) *1000; 
+            console.log("sleep for "+ timeToSleeping+"s")
+            const delayMilliseconds = timeToSleeping *1000; 
             while (new Date().getTime() - start < delayMilliseconds) {
             }
         }
+    }else{
+        console.log(error)
     }
     }
     }

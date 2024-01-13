@@ -109,12 +109,14 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
     }
 
     @Override
-    public void saveFailedTransaction(String token, double amount, String cryptedCreditCard) {
+    public void saveFailedTransaction(String token, double amount, String cryptedCreditCard) throws InvalidTokenException, ApplicationNotFoundException {
         Transaction t = new Transaction();
         t.setId(UUID.randomUUID());
         t.setAmount(String.valueOf(amount));
         t.setStatus(TransactionStatus.FAILED);
         t.setTime(new Date().getTime());
+        ApplicationDto application = businessIntegratorProxy.validateToken(token);
+        t.setApplicationId(application.getId());
         transactionRepository.save(t);
     transactionProxy.putTransactionsToSettle(new Transaction[]{t});
     }
