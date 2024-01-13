@@ -33,12 +33,15 @@ export class AppService {
         while(i<30){
             i++;
             try{
-            this.newbankSdk.pay(paymentInfoDTO).then(r => console.log(r));
-            const start = new Date().getTime();
-            const delayMilliseconds = 500; 
-            while (new Date().getTime() - start < delayMilliseconds) {
-              
-            }
+            this.newbankSdk.pay(paymentInfoDTO).then(r =>  {
+                console.log(r)
+                const start = new Date().getTime();
+                const delayMilliseconds = 500; 
+                while (new Date().getTime() - start < delayMilliseconds) {
+                  
+                }
+            });
+          
             }catch(error : any){
                 console.log(error)
                 const start = new Date().getTime();
