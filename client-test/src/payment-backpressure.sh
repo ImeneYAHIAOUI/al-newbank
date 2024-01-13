@@ -18,7 +18,7 @@ paymentDto='{
      "cardNumber": "'"${cardNumber}"'",
      "cvv": "'"${cvv}"'",
      "expirationDate": "'"${expiryDate}"'",
-     "amount": 10
+     "amount": 100000000
 }'
 
 
