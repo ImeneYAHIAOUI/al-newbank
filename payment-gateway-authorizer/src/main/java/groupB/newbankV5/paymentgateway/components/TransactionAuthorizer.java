@@ -3,6 +3,7 @@ package groupB.newbankV5.paymentgateway.components;
 import groupB.newbankV5.paymentgateway.config.KafkaProducerService;
 import groupB.newbankV5.paymentgateway.connectors.BusinessIntegratorProxy;
 import groupB.newbankV5.paymentgateway.connectors.CreditCardNetworkProxy;
+import groupB.newbankV5.paymentgateway.connectors.PaymentProcessor;
 import groupB.newbankV5.paymentgateway.connectors.dto.ApplicationDto;
 import groupB.newbankV5.paymentgateway.connectors.dto.CcnResponseDto;
 import groupB.newbankV5.paymentgateway.connectors.dto.PaymentDetailsDTO;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.math.BigDecimal;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -39,15 +39,18 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final long TIMEOUT_MS = 4000;
 
+    private final PaymentProcessor paymentProcessor;
+
     private final KafkaProducerService kafkaProducerService;
 
     @Autowired
     public TransactionAuthorizer(
-            CreditCardNetworkProxy creditCardNetworkProxy, IRSA rsa, BusinessIntegratorProxy businessIntegratorProxy, TransactionRepository transactionRepository, KafkaProducerService kafkaProducerService) {
+            CreditCardNetworkProxy creditCardNetworkProxy, IRSA rsa, BusinessIntegratorProxy businessIntegratorProxy, TransactionRepository transactionRepository, PaymentProcessor paymentProcessor, KafkaProducerService kafkaProducerService) {
         this.creditCardNetworkProxy = creditCardNetworkProxy;
         this.businessIntegratorProxy=businessIntegratorProxy;
         this.rsa = rsa;
         this.transactionRepository = transactionRepository;
+        this.paymentProcessor = paymentProcessor;
         this.kafkaProducerService = kafkaProducerService;
     }
 
@@ -107,7 +110,7 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
         t.setId(UUID.randomUUID());
         t.setAmount(String.valueOf(amount));
         t.setStatus(TransactionStatus.FAILED);
-        transactionRepository.save(t);
+        paymentProcessor.saveTransactions(new Transaction[]{t});
     }
 
 
