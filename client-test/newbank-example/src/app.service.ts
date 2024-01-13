@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {NewbankSdk, RetrySettings} from "@teamb/newbank-sdk";
 import {PaymentInfoDTO} from "@teamb/newbank-sdk";
+import { ServiceUnavailableException } from '@teamb/newbank-sdk';
 
 @Injectable()
 export class AppService {
@@ -22,11 +23,18 @@ export class AppService {
         await this.newbankSdk.confirmPayment(result.transactionId);
 
     }catch(error : any){
-        console.log(error );
-        const start = new Date().getTime();
-        const delayMilliseconds = 2000; 
-        while (new Date().getTime() - start < delayMilliseconds) {
+        if(error instanceof ServiceUnavailableException ){
+        console.log(error.message);
+        const regex = /\d+$/; 
+        const match = (error.message).match(regex);
+        console.log(match)
+        if(match){
+            const start = new Date().getTime();
+            const delayMilliseconds = parseInt(match[0], 10) *1000; 
+            while (new Date().getTime() - start < delayMilliseconds) {
+            }
         }
+    }
     }
     }
 

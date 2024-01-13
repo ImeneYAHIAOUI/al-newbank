@@ -115,6 +115,7 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
         t.setAmount(String.valueOf(amount));
         t.setStatus(TransactionStatus.FAILED);
         t.setTime(new Date().getTime());
+        transactionRepository.save(t);
     transactionProxy.putTransactionsToSettle(new Transaction[]{t});
     }
 
