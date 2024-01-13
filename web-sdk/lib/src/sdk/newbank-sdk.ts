@@ -6,6 +6,7 @@ import {AuthorizeDto} from "./dto/authorise.dto";
 import {MetricsServer} from "./services/Metrics-server";
 import {BackendStatusDto} from "./dto/backend-status.dto";
 import {MetricsDto} from "./dto/metrics.dto";
+import {MetricRequestDto} from "./dto/metric-request.dto";
 
 export class NewbankSdk {
 
@@ -46,7 +47,7 @@ export class NewbankSdk {
         return await this._getBackendStatus.getBackendStatus(this._token);
     }
 
-    public async getMetrics(metricRequest: any): Promise<MetricsDto[]> {
+    public async getMetrics(metricRequest: MetricRequestDto): Promise<MetricsDto[]> {
         return await this._metricsServer.getMetrics(metricRequest, this._token);
     }
 
