@@ -27,7 +27,7 @@ export class AppController {
     }
 
     @Post('/payAll')
-    paymentAll(@Body() paymentInfoDTO: PaymentInfoDTO): void {
+    async paymentAll(@Body() paymentInfoDTO: PaymentInfoDTO): void {
        await this.appService.payMany(paymentInfoDTO);
     }
 
