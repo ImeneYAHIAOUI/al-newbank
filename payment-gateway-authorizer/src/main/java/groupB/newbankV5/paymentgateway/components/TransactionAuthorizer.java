@@ -16,14 +16,18 @@ import groupB.newbankV5.paymentgateway.interfaces.*;
 
 import groupB.newbankV5.paymentgateway.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.xml.crypto.Data;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
@@ -110,6 +114,7 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
         t.setId(UUID.randomUUID());
         t.setAmount(String.valueOf(amount));
         t.setStatus(TransactionStatus.FAILED);
+        t.setTime(new Date().getTime());
         paymentProcessor.saveTransactions(new Transaction[]{t});
     }
 
