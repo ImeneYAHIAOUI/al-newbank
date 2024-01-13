@@ -1,8 +1,8 @@
-# Assuming .env is in the same directory as your script
+# Assuming ..env is in the same directory as your script
 source .env
 
 # Alternatively, you can use the shorthand notation:
-# . .env
+# . ..env
 
 # Extract values from environment variables
 cardNumber=$CARD_NUMBER

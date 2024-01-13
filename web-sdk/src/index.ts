@@ -9,3 +9,4 @@ export { InternalServerError } from './sdk/exceptions/internal-server.exception'
 export { UnauthorizedError } from './sdk/exceptions/unauthorized.exception';
 export { ApplicationNotFound } from './sdk/exceptions/application-not-found.exception';
 export { MerchantAlreadyExists } from './sdk/exceptions/merchant-already-exists.exception';
+export {ServiceUnavailableException} from './sdk/exceptions/service-unavailable-exception';

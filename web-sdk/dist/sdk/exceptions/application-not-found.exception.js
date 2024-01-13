@@ -8,4 +8,3 @@ class ApplicationNotFound extends Error {
     }
 }
 exports.ApplicationNotFound = ApplicationNotFound;
-//# sourceMappingURL=application-not-found.exception.js.map

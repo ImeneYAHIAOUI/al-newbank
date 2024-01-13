@@ -1,86 +1,24 @@
-const express = require('express');
-const prometheus = require('prom-client');
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MetricsServer = void 0;
+const metrics_proxy_1 = require("./metrics-proxy/metrics-proxy");
 class MetricsServer {
-    constructor(port = 5099) {
-        this.app = express();
-        this.metrics = this.initializeMetrics();
-        this.setupRoutes();
-        this.port = port;
+    constructor(retrySettings) {
+        this.metricsProxy = new metrics_proxy_1.MetricsProxy(retrySettings);
     }
-    initializeMetrics() {
-        return {
-            authorizeCounter: new prometheus.Counter({
-                name: 'authorize_success_total',
-                help: 'Total number of successful authorizations',
-            }),
-            authorizeFailCounter: new prometheus.Counter({
-                name: 'authorize_failure_total',
-                help: 'Total number of failed authorizations',
-            }),
-            confirmPaymentCounter: new prometheus.Counter({
-                name: 'confirm_payment_success_total',
-                help: 'Total number of successful payment confirmations',
-            }),
-            confirmPaymentFailCounter: new prometheus.Counter({
-                name: 'confirm_payment_failure_total',
-                help: 'Total number of failed payment confirmations',
-            }),
-        };
-    }
-    authorizeSuccess() {
-        this.metrics.authorizeCounter.inc();
-    }
-    authorizeFailure() {
-        this.metrics.authorizeFailCounter.inc();
-    }
-    confirmPaymentSuccess() {
-        this.metrics.confirmPaymentCounter.inc();
-    }
-    confirmPaymentFailure() {
-        this.metrics.confirmPaymentFailCounter.inc();
-    }
-    getFormattedMetrics() {
-        return prometheus.register.metrics();
-    }
-    setupRoutes() {
-        this.app.get('/metrics', async (req, res) => {
-            try {
-                res.set('Content-Type', prometheus.register.contentType);
-                const metricsData = await this.getFormattedMetrics();
-                res.end(metricsData);
-            }
-            catch (error) {
-                console.error('Error while getting metrics:', error);
-                res.status(500).end('Internal Server Error');
-            }
-        });
-        this.app.post('/authorize/success', (req, res) => {
-            this.authorizeSuccess();
-            res.send('Authorization successful');
-        });
-        this.app.post('/authorize/failure', (req, res) => {
-            this.authorizeFailure();
-            res.send('Authorization failed');
-        });
-        this.app.post('/confirm/payment/success', (req, res) => {
-            this.confirmPaymentSuccess();
-            res.send('Payment confirmation successful');
-        });
-        this.app.post('/confirm/payment/failure', (req, res) => {
-            this.confirmPaymentFailure();
-            res.send('Payment confirmation failed');
-        });
-    }
-    startServer() {
-        return new Promise((resolve, reject) => {
-            this.server = this.app.listen(this.port, () => {
-                console.log(`Server listening on port ${this.port}`);
-                resolve();
-            });
-            this.server.on('error', (error) => {
-                reject(error);
-            });
+    getMetrics(metricRequest, token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.metricsProxy.retrieveMetrics(metricRequest, token);
         });
     }
 }
-//# sourceMappingURL=Metrics-server.js.map
+exports.MetricsServer = MetricsServer;

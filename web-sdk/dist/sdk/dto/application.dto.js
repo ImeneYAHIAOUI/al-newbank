@@ -13,4 +13,3 @@ class ApplicationDto {
     }
 }
 exports.ApplicationDto = ApplicationDto;
-//# sourceMappingURL=application.dto.js.map

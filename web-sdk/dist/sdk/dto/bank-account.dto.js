@@ -8,4 +8,3 @@ class BankAccountDTO {
     }
 }
 exports.BankAccountDTO = BankAccountDTO;
-//# sourceMappingURL=bank-account.dto.js.map

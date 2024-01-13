@@ -8,4 +8,3 @@ class InvalidApplicationInformationException extends Error {
     }
 }
 exports.InvalidApplicationInformationException = InvalidApplicationInformationException;
-//# sourceMappingURL=invalid-application-information.exception.js.map

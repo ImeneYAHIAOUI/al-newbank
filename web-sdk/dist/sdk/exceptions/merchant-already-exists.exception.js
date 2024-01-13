@@ -8,4 +8,3 @@ class MerchantAlreadyExists extends Error {
     }
 }
 exports.MerchantAlreadyExists = MerchantAlreadyExists;
-//# sourceMappingURL=merchant-already-exists.exception.js.map

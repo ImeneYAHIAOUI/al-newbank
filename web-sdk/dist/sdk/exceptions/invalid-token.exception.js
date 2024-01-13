@@ -8,4 +8,3 @@ class InvalidTokenException extends Error {
     }
 }
 exports.InvalidTokenException = InvalidTokenException;
-//# sourceMappingURL=invalid-token.exception.js.map

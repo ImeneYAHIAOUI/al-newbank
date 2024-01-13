@@ -58,10 +58,16 @@ HELP.md
 node_modules/class-validator/cjs/decorator/common/NotEquals.js.map
 *.map
 
-#env files
+#.env files
 .env
 */.env
+
+#ignore all .env files except the one in web-sdk
+!/example/nestjs-web-service/.env
+!/example/testScripts/.env
 
 transactions-service/.env
 metrics-service/.env
 
+/web-sdk/dist/
+/web-sdk-example/node_modules/

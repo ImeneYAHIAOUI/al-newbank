@@ -10,4 +10,3 @@ class PaymentInfoDTO {
     }
 }
 exports.PaymentInfoDTO = PaymentInfoDTO;
-//# sourceMappingURL=payment-info.dto.js.map

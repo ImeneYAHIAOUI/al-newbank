@@ -8,4 +8,3 @@ class InvalidMerchantInformationException extends Error {
     }
 }
 exports.InvalidMerchantInformationException = InvalidMerchantInformationException;
-//# sourceMappingURL=invalid-merchant-information.exception.js.map

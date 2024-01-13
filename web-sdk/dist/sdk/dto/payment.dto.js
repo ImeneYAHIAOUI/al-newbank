@@ -8,4 +8,3 @@ class PaymentDto {
     }
 }
 exports.PaymentDto = PaymentDto;
-//# sourceMappingURL=payment.dto.js.map

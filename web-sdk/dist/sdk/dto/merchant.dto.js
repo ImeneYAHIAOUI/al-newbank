@@ -11,4 +11,3 @@ class MerchantDTO {
     }
 }
 exports.MerchantDTO = MerchantDTO;
-//# sourceMappingURL=merchant.dto.js.map

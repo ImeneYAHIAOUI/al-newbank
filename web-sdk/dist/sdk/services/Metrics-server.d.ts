@@ -1,18 +1,8 @@
-declare const express: any;
-declare const prometheus: any;
-declare class MetricsServer {
-    constructor(port?: number);
-    initializeMetrics(): {
-        authorizeCounter: any;
-        authorizeFailCounter: any;
-        confirmPaymentCounter: any;
-        confirmPaymentFailCounter: any;
-    };
-    authorizeSuccess(): void;
-    authorizeFailure(): void;
-    confirmPaymentSuccess(): void;
-    confirmPaymentFailure(): void;
-    getFormattedMetrics(): any;
-    setupRoutes(): void;
-    startServer(): Promise<unknown>;
+import { RetrySettings } from "./Retry-settings";
+import { MetricsDto } from "../dto/metrics.dto";
+import { MetricRequestDto } from "../dto/metric-request.dto";
+export declare class MetricsServer {
+    private readonly metricsProxy;
+    constructor(retrySettings: RetrySettings);
+    getMetrics(metricRequest: MetricRequestDto, token: string): Promise<MetricsDto[]>;
 }
