@@ -26,6 +26,11 @@ export class AppController {
         this.appService.payment(paymentInfoDTO);
     }
 
+    @Post('/payAll')
+    paymentAll(@Body() paymentInfoDTO: PaymentInfoDTO): void {
+        this.appService.payMany(paymentInfoDTO);
+    }
+
     @Get('/backend-status')
     getBackendStatus() {
       return this.appService.getBackendStatus();

@@ -28,6 +28,15 @@ export class AppService {
         this.newbankSdk.confirmPayment(transactionId).then(r => console.log(r));
     }
 
+    payMany(paymentInfoDTO: PaymentInfoDTO) : void {
+        let i=0;
+        while(i<30){
+            i++;
+            this.newbankSdk.pay(paymentInfoDTO).then(r => console.log(r));
+
+        }
+    }
+
 
     getBackendStatus() {
         return this.newbankSdk.getBackendStatus();
