@@ -34,7 +34,7 @@ response=$(curl -s -X POST "${url2}" -H "Content-Type: application/json" -d '{}'
 
 curl -s -X POST -H "Content-Type: application/json" -d "$paymentDto" "http://localhost:6906/pay"
 
-sleep 2
+sleep 10
 
 
 url1="http://localhost:3501/api/gateway_authorization/simulate?errorCode="
@@ -54,5 +54,5 @@ url="http://localhost:3503/api/gateway_authorization/simulate?errorCode="
 
 ERROR_CODE=200
 
-response=$(curl -s -X POST "${url}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}')
+esponse=$(curl -s -X POST "${url}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}')
 response=$(curl -s -X POST "${url1}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}')

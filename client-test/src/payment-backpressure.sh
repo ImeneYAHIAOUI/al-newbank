@@ -18,7 +18,7 @@ paymentDto='{
      "cardNumber": "'"${cardNumber}"'",
      "cvv": "'"${cvv}"'",
      "expirationDate": "'"${expiryDate}"'",
-     "amount": 100000000
+     "amount": 1
 }'
 
 
@@ -30,4 +30,8 @@ ERROR_CODE=200
 response=$(curl -s -X POST "${url}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}')
 response=$(curl -s -X POST "${url1}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}')
 
-curl -s -X POST -H "Content-Type: application/json" -d "$paymentDto" "http://localhost:6906/payAll"
+
+for i in {1..150}
+do
+    curl -s -X POST -H "Content-Type: application/json" -d "$paymentDto" "http://localhost:6906/pay"
+done
