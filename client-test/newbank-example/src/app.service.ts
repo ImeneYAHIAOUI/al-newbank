@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {NewbankSdk, RetrySettings} from "@teamb/newbank-sdk";
 import {PaymentInfoDTO} from "@teamb/newbank-sdk";
+import { ServiceUnavailableException } from '@teamb/newbank-sdk';
 
 @Injectable()
 export class AppService {
@@ -16,18 +17,46 @@ export class AppService {
         const token = process.env.NEWBANK_TOKEN;
         this.newbankSdk = new NewbankSdk(token, retrySettings);
     }
-    payment(paymentInfoDTO: PaymentInfoDTO): void {
-        this.newbankSdk.pay(paymentInfoDTO).then(r => console.log(r));
+
+
+    async payment(paymentInfoDTO: PaymentInfoDTO): Promise<void> {
+       try{ 
+        const result  = await this.newbankSdk.authorizePayment(paymentInfoDTO);
+        await this.newbankSdk.confirmPayment(result.transactionId);
+
+    }catch(error : any){
+        if(error instanceof ServiceUnavailableException ){
+        console.log(error.message);
+        const regex = /\d+$/; 
+        const match = (error.message).match(regex);
+        if(match){
+            const timeToSleeping = parseInt(match[0], 10); 
+            const start = new Date().getTime();
+            const delayMilliseconds = timeToSleeping *1000; 
+            while (new Date().getTime() - start < delayMilliseconds) {
+            }
+        }
+    }else{
+        console.log(error)
+    }
+    }
     }
 
     authorizePayment(paymentInfoDTO: PaymentInfoDTO) {
-         this.newbankSdk.authorizePayment(paymentInfoDTO).then(r => console.log(r));
-    }
-
-    confirmPayment(transactionId: string): void {
-        this.newbankSdk.confirmPayment(transactionId).then(r => console.log(r));
-    }
-
+        this.newbankSdk.authorizePayment(paymentInfoDTO)
+          .then(r => console.log(r))
+          .catch(error => {
+            console.error("An error occurred during authorization:", error);
+          });
+      }
+      
+      confirmPayment(transactionId: string): void {
+        this.newbankSdk.confirmPayment(transactionId)
+          .then(r => console.log(r))
+          .catch(error => {
+            console.error("An error occurred during confirmation:", error);
+          });
+      }
 
     getBackendStatus() {
         return this.newbankSdk.getBackendStatus();

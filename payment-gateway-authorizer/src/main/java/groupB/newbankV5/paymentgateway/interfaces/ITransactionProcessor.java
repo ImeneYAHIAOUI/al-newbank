@@ -21,4 +21,6 @@ public interface ITransactionProcessor {
     Transaction processPayment(String token, double amount, String cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
             BadPaddingException, InvalidKeyException, InvalidKeySpecException, ExecutionException, InterruptedException, TimeoutException;
+
+    void saveFailedTransaction(String token, double amount, String cryptedCreditCard) throws ApplicationNotFoundException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeySpecException, InvalidKeyException, InvalidTokenException;
 }

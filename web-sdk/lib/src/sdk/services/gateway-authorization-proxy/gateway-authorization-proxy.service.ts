@@ -10,6 +10,7 @@ import {RetrySettings} from "../Retry-settings";
 import { StatusReporterProxyService } from '../status-reporter-proxy/status-reporter-proxy.service';
 import {MetricsProxy} from "../metrics-proxy/metrics-proxy";
 import {RequestDto} from "../../dto/request.dto";
+import { ServiceUnavailableException } from '../../exceptions/service-unavailable-exception';
 export class GatewayAuthorizationProxyService {
   private readonly _gatewayBaseUrl: string;
   private readonly _gatewayPath = '/api/gateway_authorization/';
@@ -18,7 +19,6 @@ export class GatewayAuthorizationProxyService {
 
   private readonly config = require('./../config');
   private readonly statusReporterProxyService: StatusReporterProxyService;
-  private static circuitBreakerOpenUntil: number = 0;
 
   constructor(load_balancer_host: string,  retrySettings: RetrySettings, statusReporterProxyService: StatusReporterProxyService) {
     this._gatewayBaseUrl = `${load_balancer_host}`;
@@ -63,11 +63,6 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
     const start = new Date().getTime();
 
     return new Promise<AuthorizeDto>((resolve, reject) => {
-      if (Date.now() < GatewayAuthorizationProxyService.circuitBreakerOpenUntil) {
-        reject(new Error('Circuit Breaker is open. Rejecting request.'));
-        return;
-      }
-
       operation.attempt(async (currentAttempt) => {
         try {
           const httpOptions: AxiosRequestConfig = {
@@ -77,8 +72,12 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
             },
           };
 
-          await this.statusReporterProxyService.isServiceAvailable(this.config.service_authorizer_name); 
-
+          const serviceMetrics = await this.statusReporterProxyService.checkAvailability(this.config.service_authorizer_name);
+          if (serviceMetrics.waitingTime > 0) {
+            reject(new ServiceUnavailableException('The server is currently under backpressure.', serviceMetrics.waitingTime));
+            return;
+          }
+  
           const response = await axios.post(
             `${this._gatewayBaseUrl}${this._gatewayPath}authorize`,
             encryptedCardInfo,{
@@ -90,15 +89,7 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
           const request : RequestDto = new RequestDto(new Date().toISOString(), time, 'SUCCESS', 'Payment authorized');
           await this.metricsProxy.sendRequestResult(request, token);
         } catch (error: any) {
-          if (error.response && error.response.status === HttpStatus.TOO_MANY_REQUESTS) {
-            console.log(`Opening circuit Breaker due to many requests issue`);
-            GatewayAuthorizationProxyService.circuitBreakerOpenUntil = Date.now() + 5000; 
-            console.log(`Closing circuit Breaker after 5 seconds...`);
-            setTimeout(() => {
-              console.log("Circuit Breaker is closed now, all requests will be executed again !");
-            }, 5000);
-            reject(new Error(`the service is currently experiencing high demand.`));
-        }
+
           lastError = error;
 
           let message = lastError?.message;
@@ -116,7 +107,12 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
           const end = new Date().getTime();
           const time = end - start;
           if (operation.retry(lastError)) {
-              console.error(`Retry attempt ${currentAttempt}, ${message}. Retrying...`);
+            const seconds = Math.exp(currentAttempt);
+
+              console.error(`Retry attempt ${currentAttempt}, ${message}. Retrying in ${seconds}s...`);
+              const start = new Date().getTime();
+              while (new Date().getTime() - start < seconds*1000) {
+              }
             return;
           }
            console.error(`All retry attempts failed. Last error: ${message}`);

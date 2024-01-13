@@ -9,6 +9,7 @@ import {RetrySettings} from "../Retry-settings";
 import {MetricsProxy} from "../metrics-proxy/metrics-proxy";
 import {RequestDto} from "../../dto/request.dto";
 import {StatusReporterProxyService} from "../status-reporter-proxy/status-reporter-proxy.service";
+import { ServiceUnavailableException } from '../../exceptions/service-unavailable-exception';
 
 
 export class GatewayConfirmationProxyService {
@@ -46,8 +47,13 @@ export class GatewayConfirmationProxyService {
                   Authorization: `Bearer ${token}`,
                 },
               };
-              await this.statusReporterProxyService.isServiceAvailable(this.config.service_confirmation_name); 
 
+              const serviceMetrics = await this.statusReporterProxyService.checkAvailability(this.config.service_confirmation_name);
+              if (serviceMetrics.waitingTime > 0) {
+                reject(new ServiceUnavailableException('The server is currently under backpressure.', serviceMetrics.waitingTime));
+                return;
+              }
+      
                const response = await axios.post(`${this._gatewayBaseUrl}${this._gatewayPath}/${transactionId}`,
                {
                 ...httpOptions, timeout: this.config.maxTimeOut,}

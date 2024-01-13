@@ -11,6 +11,6 @@ public interface IServiceStatusRetriever {
 
     List<ServiceStatusWithMetrics> retrieveStatusFromPrometheus();
 
-    boolean checkServiceAvailability(String serviceName);
+    ServiceStatusWithMetrics checkServiceAvailability(String serviceName);
 
     }

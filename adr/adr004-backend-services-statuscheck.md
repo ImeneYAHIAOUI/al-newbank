@@ -1,6 +1,6 @@
 ---
 id: adrs-adr004
-title: "ADR004: Adding Backend Services Status"
+title: "ADR004: Retrieving Backend Services Status"
 description: >
   Architecture Decision Record (ADR) to implement a status retrieval for backend services
 ---

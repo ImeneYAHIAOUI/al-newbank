@@ -12,6 +12,9 @@ public class ServiceStatusWithMetrics {
         this.waitingTime = waitingTime;
     }
 
+    public ServiceStatusWithMetrics() {
+    }
+
     public String getServiceName() {
         return serviceName;
     }
