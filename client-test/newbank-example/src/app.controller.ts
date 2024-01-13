@@ -26,11 +26,6 @@ export class AppController {
        await this.appService.payment(paymentInfoDTO);
     }
 
-    @Post('/payAll')
-    async paymentAll(@Body() paymentInfoDTO: PaymentInfoDTO): Promise<void> {
-       await this.appService.payMany(paymentInfoDTO);
-    }
-
     @Get('/backend-status')
     getBackendStatus() {
       return this.appService.getBackendStatus();

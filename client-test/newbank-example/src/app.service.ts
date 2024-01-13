@@ -17,6 +17,8 @@ export class AppService {
         const token = process.env.NEWBANK_TOKEN;
         this.newbankSdk = new NewbankSdk(token, retrySettings);
     }
+
+
     async payment(paymentInfoDTO: PaymentInfoDTO): Promise<void> {
        try{ 
         const result  = await this.newbankSdk.authorizePayment(paymentInfoDTO);
@@ -30,7 +32,6 @@ export class AppService {
         if(match){
             const timeToSleeping = parseInt(match[0], 10); 
             const start = new Date().getTime();
-            console.log("sleep for "+ timeToSleeping+"s")
             const delayMilliseconds = timeToSleeping *1000; 
             while (new Date().getTime() - start < delayMilliseconds) {
             }
@@ -56,23 +57,6 @@ export class AppService {
             console.error("An error occurred during confirmation:", error);
           });
       }
-
-    async payMany(paymentInfoDTO: PaymentInfoDTO) : Promise<void> {
-        let i=0;
-        while(i<30){
-            i++;
-            try{
-                await this.newbankSdk.pay(paymentInfoDTO);
-            }catch(error : any){
-                console.log(error)
-                const start = new Date().getTime();
-                const delayMilliseconds = 2000; 
-                while (new Date().getTime() - start < delayMilliseconds) {
-                }
-            }
-        }
-    }
-
 
     getBackendStatus() {
         return this.newbankSdk.getBackendStatus();
