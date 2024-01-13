@@ -47,7 +47,7 @@ This phased approach ensures minimal congnitive overload, allows for end to end 
 Before :
 ![Architecture Before](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/spof-before.svg)
 After :
-![Architecture After](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/spof-after.svg)
+![Architecture After](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/spof-after.png)
 
 ## Consequences
 
