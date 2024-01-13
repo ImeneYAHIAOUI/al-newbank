@@ -19,18 +19,10 @@ To use the SDK you should join Newbank by integrating your business application 
 To start working with the SDK instantiate the NewBank client and provide the token you've just been provided.
 
 ```JS
-import {NewbankSdk, RetrySettings } from "@teamb/newbank-sdk";
-
-const retrySettings = new RetrySettings({
-  retries: 2,
-  factor:2,
-  minTimeout: 1000,
-  maxTimeout: 3000,
-  randomize: true,
-});
+import {NewbankSdk} from "@teamb/newbank-sdk";
 
 const token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" // your business api token
-const newbankSdk = new NewbankSdk(token, retrySettings);
+const newbankSdk = new NewbankSdk(token);
 ```
 
 ## API Interface
