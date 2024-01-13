@@ -148,9 +148,7 @@ console.log(JSON.stringify(metrics));
    - `5M` (5 minutes).
    - `15M` (15 minutes).
    - `30M` (30 minutes).
-   - `1H` (1 hour).
-   - `6H` (6 hours).
-   - `H` (12 hours).
+   - `H` (1 hour).
    - `D` (1 day).
    - `W` (1 week).
    - `M` (1 month).
