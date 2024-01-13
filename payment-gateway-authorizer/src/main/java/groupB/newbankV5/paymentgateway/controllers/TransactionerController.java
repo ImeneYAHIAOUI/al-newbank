@@ -76,6 +76,9 @@ public class TransactionerController {
         if(toggle){
             try {
                 HttpStatus httpStatus = HttpStatus.valueOf(ErrorCode);
+                //save a failed transaction
+                transactionProcessor.saveFailedTransaction(authorizationHeader.substring(7),
+                        paymentDetails.getAmount(), paymentDetails.getEncryptedCard());
                 return ResponseEntity.status(httpStatus).body(null);
             } catch (IllegalArgumentException e) {
                 return ResponseEntity.status(500).body(null);

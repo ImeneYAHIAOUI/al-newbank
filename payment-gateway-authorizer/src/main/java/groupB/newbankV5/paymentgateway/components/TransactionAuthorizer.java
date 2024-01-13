@@ -59,6 +59,8 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
                 .count();
         return confirmedTransactionsCount;
     }
+
+
     @Override
     public Transaction processPayment(String token, double amount, String cryptedCreditCard) throws InvalidTokenException,
             ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
@@ -97,6 +99,15 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
                 }
         );
         return future.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void saveFailedTransaction(String token, double amount, String cryptedCreditCard) {
+        Transaction t = new Transaction();
+        t.setId(UUID.randomUUID());
+        t.setAmount(String.valueOf(amount));
+        t.setStatus(TransactionStatus.FAILED);
+        transactionRepository.save(t);
     }
 
 
