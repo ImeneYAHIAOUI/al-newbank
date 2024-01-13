@@ -63,7 +63,7 @@ public class ServiceStatusRetriever implements IServiceStatusRetriever {
                     double cpuUsage = getServiceNameCPUStatus(serviceStatus.getServiceName());
                     log.info("CPU usage for service " + serviceStatus.getServiceName() + " is " + cpuUsage);
 
-                    int waitingTime = cpuUsage > 0.45 ? 2 * (int) ((cpuUsage * 100) - 30) : 0;
+                    int waitingTime = cpuUsage > 0.45 ? 2 * (int) ((cpuUsage * 100) - 45) : 0;
                     log.info("Waiting time for service " + serviceStatus.getServiceName() + " is " + waitingTime);
                     if (waitingTime > 0) {
                         serviceStatus.setServiceStatus(3);
