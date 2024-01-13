@@ -35,6 +35,7 @@ public class CreditCardAuthorizer {
         String ccnumber = creditCardInformationDto.getCardNumber();
         if(TIME_OUT_SIMULATION){
             Thread.sleep(4000);
+            log.warning("The CCN is taking too long to verify credit card information");
             TIME_OUT_SIMULATION = false;
         }
         if(isValidNewBank(ccnumber)) {

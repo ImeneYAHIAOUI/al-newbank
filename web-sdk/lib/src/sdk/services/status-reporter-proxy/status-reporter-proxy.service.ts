@@ -7,6 +7,7 @@ import {UnauthorizedError} from "../../exceptions/unauthorized.exception";
 import {ApplicationNotFound} from "../../exceptions/application-not-found.exception";
 import {InternalServerError} from "../../exceptions/internal-server.exception";
 import {BackendStatusDto} from "../../dto/backend-status.dto";
+import { ServiceStatusWithMetricsDto } from "../../dto/status-time-service.dto";
 
 export class StatusReporterProxyService {
 
@@ -15,7 +16,7 @@ export class StatusReporterProxyService {
     private readonly retrySettings: RetrySettings
 
     private readonly _statusReportePath = '/api/status/healthcheck';
-    private readonly _statusAvailibilityPath = '=';
+    private readonly _statusAvailibilityPath = '/api/status/availability?serviceName=';
 
     private readonly config;
     constructor( retrySettings: RetrySettings) {
@@ -24,13 +25,13 @@ export class StatusReporterProxyService {
         this.retrySettings = retrySettings;
     }
 
-    private async checkAvailability(serviceName : string): Promise<boolean> {
-        return new Promise<boolean>(async (resolve, reject) => {
+    public async checkAvailability(serviceName : string): Promise<ServiceStatusWithMetricsDto> {
+        return new Promise<ServiceStatusWithMetricsDto>(async (resolve, reject) => {
             try {
                 const response = await axios.get(`${this.statusReporteUrl}${this._statusAvailibilityPath}${serviceName}`,);
                 resolve(response.data);
             }catch (error: any) {
-                resolve(true);
+                resolve(new ServiceStatusWithMetricsDto(serviceName,1,0));
             }
         });
     }

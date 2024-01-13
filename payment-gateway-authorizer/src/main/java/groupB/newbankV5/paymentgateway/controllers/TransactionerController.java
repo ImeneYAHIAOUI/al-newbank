@@ -42,7 +42,6 @@ public class TransactionerController {
     private final IRSA crypto;
     private final ITransactionProcessor transactionProcessor;
     private final ITransactionFinder transactionFinder;
-
     private final TransactionRepository transactionRepository;
 
     @Autowired
@@ -64,19 +63,22 @@ public class TransactionerController {
     @PostMapping("simulate")
     public ResponseEntity<String> activeToggle(@RequestParam int errorCode) {
         ErrorCode = errorCode;
-        toggle = errorCode != 200;
-        return ResponseEntity.status(200).body("ok");
-    }
+                        toggle = errorCode != 200;
+                return ResponseEntity.status(200).body("ok");
+            }
 
-    @PostMapping("authorize")
-    public ResponseEntity<AuthorizeDto> processPayment(@RequestBody PaymentDto paymentDetails, @RequestHeader("Authorization") String authorizationHeader )
+            @PostMapping("authorize")
+            public ResponseEntity<AuthorizeDto> processPayment(@RequestBody PaymentDto paymentDetails, @RequestHeader("Authorization") String authorizationHeader )
             throws InvalidTokenException, ApplicationNotFoundException, CCNException, NoSuchPaddingException,
-            IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException,
-            InvalidKeySpecException, ExecutionException, InterruptedException, TimeoutException {
-        if(toggle){
-            try {
-                HttpStatus httpStatus = HttpStatus.valueOf(ErrorCode);
-                return ResponseEntity.status(httpStatus).body(null);
+                    IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException,
+                    InvalidKeySpecException, ExecutionException, InterruptedException, TimeoutException {
+                if(toggle){
+                    try {
+                        HttpStatus httpStatus = HttpStatus.valueOf(ErrorCode);
+                        //save a failed transaction
+                        transactionProcessor.saveFailedTransaction(authorizationHeader.substring(7),
+                                paymentDetails.getAmount(), paymentDetails.getEncryptedCard());
+                        return ResponseEntity.status(httpStatus).body(null);
             } catch (IllegalArgumentException e) {
                 return ResponseEntity.status(500).body(null);
             }

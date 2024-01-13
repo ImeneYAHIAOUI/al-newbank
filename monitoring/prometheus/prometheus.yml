@@ -39,6 +39,14 @@ scrape_configs:
       - targets: [ 'host.docker.internal:3500' ]
         labels:
           application: 'Payment confirmation'
+  - job_name: "paymentConfirmationMetrics2"
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 500ms
+    static_configs:
+      - targets: [ 'host.docker.internal:3504' ]
+        labels:
+          application: 'Payment confirmation2'
+
 
   - job_name: "paymentServiceMetrics"
     metrics_path: '/actuator/prometheus'

@@ -1,5 +1,6 @@
 package groupB.newBankV5.statusreporter.controllers;
 
+import groupB.newBankV5.statusreporter.entities.ServiceStatusWithMetrics;
 import groupB.newBankV5.statusreporter.exceptions.ApplicationNotFoundException;
 import groupB.newBankV5.statusreporter.exceptions.InvalidTokenException;
 import groupB.newBankV5.statusreporter.interfaces.IServiceStatusRetriever;
@@ -38,7 +39,7 @@ public class StatusController {
 
     @Timed(value = "up_check", description = "Up Check Indicator")
     @GetMapping("/healthcheck")
-    public ResponseEntity<List<ServiceStatusDto>> healthcheck(@RequestHeader("Authorization") String authorizationHeader ) throws InvalidTokenException, ApplicationNotFoundException {
+    public ResponseEntity<List<ServiceStatusDto>> healthcheck(@RequestHeader("Authorization") String authorizationHeader) throws InvalidTokenException, ApplicationNotFoundException {
         // Remove the "Bearer " prefix
         String token = authorizationHeader.substring(7);
         List<ServiceStatusDto> serviceStatus = serviceStatusRetriever.retrieveServiceStatus(token).stream()
@@ -48,7 +49,7 @@ public class StatusController {
     }
 
     @GetMapping("/availability")
-    public ResponseEntity<Boolean> checkServiceAvailability(@RequestParam String serviceName) {
+    public ResponseEntity<ServiceStatusWithMetrics> checkServiceAvailability(@RequestParam String serviceName) {
         return ResponseEntity.ok(serviceStatusRetriever.checkServiceAvailability(serviceName));
     }
 }

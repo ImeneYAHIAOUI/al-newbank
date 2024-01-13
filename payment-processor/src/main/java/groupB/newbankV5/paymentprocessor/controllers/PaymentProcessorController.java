@@ -2,6 +2,7 @@ package groupB.newbankV5.paymentprocessor.controllers;
 
 import groupB.newbankV5.paymentprocessor.controllers.dto.*;
 import groupB.newbankV5.paymentprocessor.entities.Transaction;
+import groupB.newbankV5.paymentprocessor.entities.TransactionStatus;
 import groupB.newbankV5.paymentprocessor.interfaces.ITransactionProcessor;
 import groupB.newbankV5.paymentprocessor.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
@@ -47,6 +49,13 @@ public class PaymentProcessorController {
     @GetMapping("/transactions")
     public ResponseEntity<List<Transaction>> getTransactions() {
         return ResponseEntity.status(HttpStatus.OK).body(transactionRepository.findAll());
+
+    }
+
+
+    @GetMapping("/transactions/failed")
+    public ResponseEntity<List<Transaction>> getTransactionsFailed() {
+        return ResponseEntity.status(HttpStatus.OK).body(transactionRepository.findAll().stream().filter(t -> t.getStatus().equals(TransactionStatus.FAILED)).collect(Collectors.toList()));
 
     }
 
