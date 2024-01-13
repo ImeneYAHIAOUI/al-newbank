@@ -21,6 +21,8 @@ paymentDto='{
      "amount": 500
 }'
 
+urlStatus="http://localhost:3502/api/status/simulate?toggle=false"
+response=$(curl -s -X POST "${urlStatus}" -H "Content-Type: application/json" -d '{}')
 
 url1="http://localhost:3501/api/gateway_authorization/simulate?errorCode="
 url="http://localhost:3503/api/gateway_authorization/simulate?errorCode="
@@ -34,7 +36,7 @@ response=$(curl -s -X POST "${url2}" -H "Content-Type: application/json" -d '{}'
 
 curl -s -X POST -H "Content-Type: application/json" -d "$paymentDto" "http://localhost:6906/pay"
 
-sleep 10
+sleep 4
 
 
 url1="http://localhost:3501/api/gateway_authorization/simulate?errorCode="
@@ -56,3 +58,6 @@ ERROR_CODE=200
 
 esponse=$(curl -s -X POST "${url}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}')
 response=$(curl -s -X POST "${url1}${ERROR_CODE}" -H "Content-Type: application/json" -d '{}')
+
+urlStatus="http://localhost:3502/api/status/simulate?toggle=true"
+response=$(curl -s -X POST "${urlStatus}" -H "Content-Type: application/json" -d '{}')
