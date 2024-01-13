@@ -22,7 +22,7 @@ export class AppService {
         await this.newbankSdk.confirmPayment(result.transactionId);
 
     }catch(error : any){
-        console.log(error.response.message + error.response.headers);
+        console.log(${error?.message} + ${error?.headers});
         const start = new Date().getTime();
         const delayMilliseconds = 2000; 
         while (new Date().getTime() - start < delayMilliseconds) {
