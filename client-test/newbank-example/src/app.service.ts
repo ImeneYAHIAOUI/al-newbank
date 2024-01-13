@@ -16,12 +16,18 @@ export class AppService {
         const token = process.env.NEWBANK_TOKEN;
         this.newbankSdk = new NewbankSdk(token, retrySettings);
     }
-    payment(paymentInfoDTO: PaymentInfoDTO): void {
-        this.newbankSdk.pay(paymentInfoDTO)
-        .then(r => console.log(r))
-        .catch(error => {
-          console.error("An error occurred:", error);
-        });
+    async payment(paymentInfoDTO: PaymentInfoDTO): Promise<void> {
+       try{ 
+        const result  = await this.newbankSdk.authorizePayment(paymentInfoDTO);
+        await this.newbankSdk.confirmPayment(result.transactionId);
+
+    }catch(error : any){
+        console.log(error)
+        const start = new Date().getTime();
+        const delayMilliseconds = 2000; 
+        while (new Date().getTime() - start < delayMilliseconds) {
+        }
+    }
     }
 
     authorizePayment(paymentInfoDTO: PaymentInfoDTO) {
