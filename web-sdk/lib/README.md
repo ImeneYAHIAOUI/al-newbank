@@ -19,9 +19,18 @@ To use the SDK you should join Newbank by integrating your business application 
 To start working with the SDK instantiate the NewBank client and provide the token you've just been provided.
 
 ```JS
-import {NewbankSdk} from "@teamb/newbank-sdk";
+import {NewbankSdk, RetrySettings } from "@teamb/newbank-sdk";
+
+const retrySettings = new RetrySettings({
+  retries: 2,
+  factor:2,
+  minTimeout: 1000,
+  maxTimeout: 3000,
+  randomize: true,
+});
+
 const token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" // your business api token
-const newbankSdk = new NewbankSdk(token);
+const newbankSdk = new NewbankSdk(token, retrySettings);
 ```
 
 ## API Interface
@@ -29,6 +38,19 @@ const newbankSdk = new NewbankSdk(token);
 ### `authorizePayment(paymentInformation)`
 
 Sends a payment authorization request to the backend and receives a transaction ID if accepted.
+
+```JS
+import {PaymentInfoDTO} from "@teamb/newbank-sdk";
+import {AuthorizeDto} from "@teamb/newbank-sdk";
+
+const paymentInfo: PaymentInfoDTO = {
+    cardNumber: cardNumber,
+    cvv: cvv,
+    expirationDate: expiryDate,
+    amount: '500',
+};
+response: AuthorizeDto = await newbankSdk.authorizePayment(paymentInfo);
+```
 
 **Parameters:**
 - `paymentInformation`: Payment information (credit card, amount, etc.).
@@ -40,6 +62,18 @@ Sends a payment authorization request to the backend and receives a transaction 
 
 Sends a payment confirmation request for the previously authorized transaction.
 
+
+```JS
+import {PaymentInfoDTO} from "@teamb/newbank-sdk";
+import {AuthorizeDto} from "@teamb/newbank-sdk";
+
+const confirmationMessage = await newbankSdk.confirmPayment(response.transactionId);
+console.log(confirmationMessage);
+```
+**Return:**
+
+- `response` : A message indicating whether the transaction is confirmed or not.
+
 **Parameters:**
 - `transactionId`: The ID of the transaction to be confirmed.
 
@@ -47,12 +81,38 @@ Sends a payment confirmation request for the previously authorized transaction.
 
 Includes the steps of sending a payment authorization request to the backend via the `authorizePayment(paymentInformation)` method and, if accepted, confirms the transaction using the `confirmPayment(transactionId)` function.
 
+```JS
+import {PaymentInfoDTO} from "@teamb/newbank-sdk";
+import {AuthorizeDto} from "@teamb/newbank-sdk";
+
+const paymentInfo: PaymentInfoDTO = {
+          cardNumber: cardNumber,
+          cvv: cvv,
+          expirationDate: expiryDate,
+          amount: '500',
+};
+const response = await newbankSdk.pay(paymentInfo);
+console.log(response);
+```
+
+
 **Parameters:**
 - `paymentInformation`: Payment information.
+
+**Return:**
+- `response`: A message indicating whether the transaction is confirmed or not.
 
 ### `getBackendStatus()`
 
 Sends a request to retrieve the status of backend services.
+
+```JS
+import {BackendStatusDto} from "@teamb/newbank-sdk";
+
+const backendStatus: BackendStatusDto = await newbankSdk.getBackendStatus();
+
+console.log(JSON.stringify(backendStatus));
+```
 
 **Return:**
 - a json list with each element containing the following fields:
@@ -61,6 +121,30 @@ Sends a request to retrieve the status of backend services.
 
 ### `getMetrics(metricsQuery)`
 Sends a request to retrieve the metrics of the payment website.
+
+```JS
+import {MetricRequestDto} from "@teamb/newbank-sdk";
+
+const metricsQuery: MetricRequestDto = {
+    period: "L6H",
+    resolution: "5M",
+    metrics: [
+        "transactionCount",
+        "TransactionSuccessRate",
+        "TransactionFailureRate",
+        "totalAmountSpent"
+    ],
+    filters: {
+        status: ["AUTHORISED", "CONFIRMED"],
+        creditCardType: ["credit"]
+    }
+};
+
+const metrics = await newbankSdk.getMetrics(metricsQuery);
+console.log(JSON.stringify(metrics));
+```
+
+
 
 **Parameters:**
 - `metricsQuery`: Object containing the metrics query.
@@ -102,6 +186,8 @@ Sends a request to retrieve the metrics of the payment website.
      - `credit`
      - `debit`
   
+The client may choose how to visualize the data returned by the `getBackenStatus()` and `getMetrics(metricsQuery)` methods.
+Grafana dashboards examples and a setup guide can be found [here](./Grafana).
      
 **Return:**
 - `metrics`: A list of metrics with their values and timestamps.

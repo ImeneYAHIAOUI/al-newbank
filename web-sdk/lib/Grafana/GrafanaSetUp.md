@@ -1,4 +1,4 @@
-# Setting Up Grafana Dashboard for Your web service Metrics
+# Setting Up Grafana Dashboard for your web service Metrics
 
 In this tutorial, we will guide you through the process of setting up a Grafana dashboard to visualize metrics from your app's REST endpoint. Follow these steps to get started.
 
