@@ -1,5 +1,5 @@
 export class MetricsDto {
-    values: Record<string, number>; // Assuming BigDecimal is represented as a number
+    values: Record<string, number>;
     timestamp: string;
 
     constructor(values: Record<string, number>, timestamp: string) {

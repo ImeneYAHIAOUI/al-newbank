@@ -23,6 +23,7 @@ export class MetricsProxy {
     }
 
     async retrieveMetrics(metricRequest: MetricRequestDto, token: string): Promise<MetricsDto[]> {
+
         const operation = retry.operation({
             retries: this.retrySettings.retries,
             factor: this.retrySettings.factor,

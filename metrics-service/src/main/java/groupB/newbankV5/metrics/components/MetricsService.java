@@ -226,6 +226,7 @@ public class MetricsService implements IMetricsService {
                         case "failedRequestsCount" -> metrics.addValue("failedRequestsCount", BigDecimal.valueOf(requests.stream().filter(request1 -> request1.getStatus().equals("FAILED")).count()));
                         case "averageRequestTime" -> metrics.addValue("averageRequestTime", BigDecimal.valueOf(requests.stream().map(Request::getTime).mapToDouble(BigDecimal::doubleValue).average().orElse(0)));
                         default -> {
+                            throw new IllegalArgumentException("metric not supported");
                         }
                     }
 
