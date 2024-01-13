@@ -9,11 +9,7 @@ import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import org.slf4j.LoggerFactory;
@@ -26,6 +22,7 @@ public class StatusController {
 
     private static final Logger log = LoggerFactory.getLogger(StatusController.class.getName());
     public static final String BASE_URI = "/api/status";
+    public static boolean ACTIVATE_CPU = true;
 
     private final MeterRegistry meterRegistry;
 
@@ -35,6 +32,13 @@ public class StatusController {
     public StatusController(MeterRegistry meterRegistry, IServiceStatusRetriever serviceStatusRetriever) {
         this.meterRegistry = meterRegistry;
         this.serviceStatusRetriever = serviceStatusRetriever;
+    }
+
+
+    @PostMapping("simulate")
+    public ResponseEntity<String> toggleCPU(@RequestParam boolean toggle) {
+        ACTIVATE_CPU = toggle;
+        return ResponseEntity.status(200).body("ok");
     }
 
     @Timed(value = "up_check", description = "Up Check Indicator")

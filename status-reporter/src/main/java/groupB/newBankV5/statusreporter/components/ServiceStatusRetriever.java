@@ -2,6 +2,7 @@ package groupB.newBankV5.statusreporter.components;
 
 import groupB.newBankV5.statusreporter.connectors.dto.ActiveTargetDto;
 import groupB.newBankV5.statusreporter.connectors.dto.PrometheusRuleDTO;
+import groupB.newBankV5.statusreporter.controllers.StatusController;
 import groupB.newBankV5.statusreporter.entities.ServiceStatus;
 import groupB.newBankV5.statusreporter.entities.ServiceStatusWithMetrics;
 import groupB.newBankV5.statusreporter.exceptions.ApplicationNotFoundException;
@@ -11,6 +12,7 @@ import groupB.newBankV5.statusreporter.interfaces.IPrometheusProxy;
 import groupB.newBankV5.statusreporter.interfaces.IServiceStatusRetriever;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -18,6 +20,8 @@ import java.util.stream.Collectors;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Component
 public class ServiceStatusRetriever implements IServiceStatusRetriever {
@@ -79,6 +83,9 @@ public class ServiceStatusRetriever implements IServiceStatusRetriever {
 
 
     public ServiceStatusWithMetrics checkServiceAvailability(String serviceName){
+        if(!StatusController.ACTIVATE_CPU){
+            return new ServiceStatusWithMetrics(serviceName, 1, 0);
+        }
         Optional<ServiceStatusWithMetrics> serviceStatusWithMetrics =
         this.retrieveStatusFromPrometheus().stream()
                 .filter(serviceStatus -> serviceStatus.getServiceName().contains(serviceName))
