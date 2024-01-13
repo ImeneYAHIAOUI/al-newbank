@@ -130,7 +130,7 @@ By default, the metrics query returns the following metrics:
     ],
     "filters": {
         "status": [
-            "AUTHORISED",FF
+            "AUTHORISED",
             "CONFIRMED"
         ],
         "creditCardType": [
