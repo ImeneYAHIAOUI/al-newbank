@@ -17,43 +17,44 @@ export class AppService {
         this.newbankSdk = new NewbankSdk(token, retrySettings);
     }
     payment(paymentInfoDTO: PaymentInfoDTO): void {
-        this.newbankSdk.pay(paymentInfoDTO).then(r => console.log(r));
+        this.newbankSdk.pay(paymentInfoDTO)
+        .then(r => console.log(r))
+        .catch(error => {
+          console.error("An error occurred:", error);
+        });
     }
 
     authorizePayment(paymentInfoDTO: PaymentInfoDTO) {
-         this.newbankSdk.authorizePayment(paymentInfoDTO).then(r => console.log(r));
-    }
+        this.newbankSdk.authorizePayment(paymentInfoDTO)
+          .then(r => console.log(r))
+          .catch(error => {
+            console.error("An error occurred during authorization:", error);
+          });
+      }
+      
+      confirmPayment(transactionId: string): void {
+        this.newbankSdk.confirmPayment(transactionId)
+          .then(r => console.log(r))
+          .catch(error => {
+            console.error("An error occurred during confirmation:", error);
+          });
+      }
 
-    confirmPayment(transactionId: string): void {
-        this.newbankSdk.confirmPayment(transactionId).then(r => console.log(r));
-    }
-
-    payMany(paymentInfoDTO: PaymentInfoDTO) : void {
+    async payMany(paymentInfoDTO: PaymentInfoDTO) : Promise<void> {
         let i=0;
         while(i<30){
             i++;
             try{
-            this.newbankSdk.pay(paymentInfoDTO).then(r =>  {
-                console.log(r)
-                const start = new Date().getTime();
-                const delayMilliseconds = 500; 
-                while (new Date().getTime() - start < delayMilliseconds) {
-                  
-                }
-            });
-          
+                await this.newbankSdk.pay(paymentInfoDTO);
             }catch(error : any){
                 console.log(error)
                 const start = new Date().getTime();
                 const delayMilliseconds = 2000; 
                 while (new Date().getTime() - start < delayMilliseconds) {
-                  
                 }
-
             }
-
+        }
     }
-}
 
 
     getBackendStatus() {

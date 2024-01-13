@@ -28,7 +28,7 @@ export class AppController {
 
     @Post('/payAll')
     paymentAll(@Body() paymentInfoDTO: PaymentInfoDTO): void {
-        this.appService.payMany(paymentInfoDTO);
+       await this.appService.payMany(paymentInfoDTO);
     }
 
     @Get('/backend-status')
