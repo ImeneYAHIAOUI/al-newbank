@@ -71,3 +71,4 @@ metrics-service/.env
 
 /web-sdk/dist/
 /web-sdk-example/node_modules/
+/web-sdk-example/nestjs-web-service/node_modules/
