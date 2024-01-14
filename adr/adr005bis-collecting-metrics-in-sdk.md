@@ -8,7 +8,7 @@ description: >
 
 ## Background
 
-Previously, in order to handle technical metrics collection related to the payments requests, we resorted to hosting a client side prometheus server in our SDK, which is in charge of pushing the technical metrics to prometheus thus exposing this latter to the outside world and making it face a big threat of overload, denial of serice or other attacks.
+Previously, in order to handle technical metrics collection related to the payments requests, we resorted to hosting a client side prometheus server in our SDK, which is in charge of pushing the technical metrics to the central prometheus thus exposing this latter to the outside world and making it face a big threat of overload, denial of serice or other attacks.
 
 Additionally, upon SDK failure, all aggregated metrics are reset, which leads to our server-side metrics being inconsitent and incomplete.
 
@@ -33,4 +33,5 @@ Additionally, the metrics service will expose an endpoint to access these metric
 **Cons:**
 
 * Increased Application Complexity: While the solution effectively secures Prometheus, it introduces additional layers of complexity to our application code in order to provide consumable metrics endpoint for visualization tools such as Grafana : period, resolution and filter support for metrics data points retrieval.
+* New Critical Entry point : The metrics service being used to hydrate dashboard denotes a high frequency of calls, making it a new brittle component
 

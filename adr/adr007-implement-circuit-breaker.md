@@ -23,7 +23,7 @@ In case of unavailability, the SDK will directly inform the client that the serv
 
 ## Consequences
 ### Advantages:
-1. **Enhanced Resilience:** The system becomes more resilient by havng the SDK avoid unnecessary requests during service disruptions.
+1. **Enhanced Resilience:** The system becomes more resilient by having the SDK avoid unnecessary service requests during disruptions.
 2.  **Effective Use of Health Checks:** The circuit breaker efficiently leverages the existing health check done to determine the availability of backend services.
 
 ### Disadvantages:
