@@ -8,7 +8,7 @@ description: >
 
 ## Background
 
-Previously, in order to handle technical metrics collection related to the payments requests, we resorted to hosting a client side prometheus server in our SDK, which is in charge of pushing the technical metrics to prometheus thus exposing this latter to the outside world and making it face a big threat of overload, denial of serice or other attacks.
+Previously, in order to handle technical metrics collection related to the payments requests, we resorted to hosting a client side prometheus server in our SDK, which is in charge of pushing the technical metrics to the central prometheus thus exposing this latter to the outside world and making it face a big threat of overload, denial of serice or other attacks.
 
 Additionally, upon SDK failure, all aggregated metrics are reset, which leads to our server-side metrics being inconsitent and incomplete.
 
