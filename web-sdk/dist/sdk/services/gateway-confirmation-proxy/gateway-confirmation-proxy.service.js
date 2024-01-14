@@ -44,6 +44,7 @@ const internal_server_exception_1 = require("../../exceptions/internal-server.ex
 const unauthorized_exception_1 = require("../../exceptions/unauthorized.exception");
 const metrics_proxy_1 = require("../metrics-proxy/metrics-proxy");
 const request_dto_1 = require("../../dto/request.dto");
+const service_unavailable_exception_1 = require("../../exceptions/service-unavailable-exception");
 class GatewayConfirmationProxyService {
     constructor(load_balancer_host, retrySettings, statusReporterProxyService) {
         this.config = require('./../config');
@@ -72,7 +73,11 @@ class GatewayConfirmationProxyService {
                             Authorization: `Bearer ${token}`,
                         },
                     };
-                    yield this.statusReporterProxyService.isServiceAvailable(this.config.service_confirmation_name);
+                    const serviceMetrics = yield this.statusReporterProxyService.checkAvailability(this.config.service_confirmation_name);
+                    if (serviceMetrics.waitingTime > 0) {
+                        reject(new service_unavailable_exception_1.ServiceUnavailableException('The server is currently under backpressure.', serviceMetrics.waitingTime));
+                        return;
+                    }
                     const response = yield axios_1.default.post(`${this._gatewayBaseUrl}${this._gatewayPath}/${transactionId}`, Object.assign(Object.assign({}, httpOptions), { timeout: this.config.maxTimeOut }));
                     resolve(response.data);
                     const end = new Date().getTime();

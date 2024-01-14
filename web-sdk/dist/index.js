@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MerchantAlreadyExists = exports.ApplicationNotFound = exports.UnauthorizedError = exports.InternalServerError = exports.RetrySettings = exports.PaymentInfoDTO = exports.AuthorizeDto = exports.BankAccountDTO = exports.ApplicationDto = exports.MerchantDTO = exports.NewbankSdk = void 0;
+exports.ServiceUnavailableException = exports.MerchantAlreadyExists = exports.ApplicationNotFound = exports.UnauthorizedError = exports.InternalServerError = exports.RetrySettings = exports.PaymentInfoDTO = exports.AuthorizeDto = exports.BankAccountDTO = exports.ApplicationDto = exports.MerchantDTO = exports.NewbankSdk = void 0;
 var newbank_sdk_1 = require("./sdk/newbank-sdk");
 Object.defineProperty(exports, "NewbankSdk", { enumerable: true, get: function () { return newbank_sdk_1.NewbankSdk; } });
 var merchant_dto_1 = require("./sdk/dto/merchant.dto");
@@ -23,3 +23,5 @@ var application_not_found_exception_1 = require("./sdk/exceptions/application-no
 Object.defineProperty(exports, "ApplicationNotFound", { enumerable: true, get: function () { return application_not_found_exception_1.ApplicationNotFound; } });
 var merchant_already_exists_exception_1 = require("./sdk/exceptions/merchant-already-exists.exception");
 Object.defineProperty(exports, "MerchantAlreadyExists", { enumerable: true, get: function () { return merchant_already_exists_exception_1.MerchantAlreadyExists; } });
+var service_unavailable_exception_1 = require("./sdk/exceptions/service-unavailable-exception");
+Object.defineProperty(exports, "ServiceUnavailableException", { enumerable: true, get: function () { return service_unavailable_exception_1.ServiceUnavailableException; } });

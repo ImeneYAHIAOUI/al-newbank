@@ -3,12 +3,14 @@ export class MetricRequestDto {
     metrics: string[];
     filters: Record<string, string[]>;
     timeRange: TimeRange;
+    period: string;
     resolution: string;
 
-    constructor(metrics: string[], filters: Record<string, string[]>, timeRange: TimeRange, resolution: string) {
+    constructor(metrics: string[], filters: Record<string, string[]>, timeRange: TimeRange, period: string, resolution: string) {
         this.metrics = metrics;
         this.filters = filters;
         this.timeRange = timeRange;
+        this.period = period;
         this.resolution = resolution;
     }
 }

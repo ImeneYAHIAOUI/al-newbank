@@ -21,15 +21,15 @@ export class NewbankSdk {
     private readonly _getBackendStatus: GetBackendStatus;
     private readonly _metricsServer: MetricsServer;
 
-    constructor(token: string,retrySettings: RetrySettings, responseTimeout ?: number) {
+    constructor(token: string,retrySettings ?: RetrySettings, responseTimeout ?: number) {
         this.config.maxTimeOut = responseTimeout || 4000;
-        this._retrySettings = retrySettings;
+        this._retrySettings = retrySettings || new RetrySettings();
         this._token = token;
-        this._getBackendStatus = new GetBackendStatus(retrySettings);
-        this._metricsServer = new MetricsServer(retrySettings);
-        this._paymentService = new PaymentService(retrySettings);
+        this._getBackendStatus = new GetBackendStatus(this._retrySettings);
+        this._metricsServer = new MetricsServer(this._retrySettings);
+        this._paymentService = new PaymentService(this._retrySettings);
     }
-        
+
     public async authorizePayment(paymentInfo: PaymentInfoDTO): Promise<AuthorizeDto> {
         return await this._paymentService.authorize(paymentInfo, this._token);
         
