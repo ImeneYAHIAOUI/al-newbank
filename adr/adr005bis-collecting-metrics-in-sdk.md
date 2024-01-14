@@ -22,15 +22,15 @@ We decided to change the way we push the technical metrics to the backend from o
 
 Instead of aggregating them in a local prometheus client in SDK using prometheus primitive types, the metrics will be simple jsons stored in the metrics database.
 
-Additionally, the metrics service will expose an endpoint to access these metrics allowing to create alerts and visualizing dashboards based on these metrics.
+Additionally, the metrics service will expose an endpoint to access these metrics allowing to create alerts and visualization dashboards based on these metrics.
 
 ## Consequences
 **Pros:**
 
-* Scalable solution : The stateless metrics service could be scaled horizontally and have its Mongo database replicated and working in a master-slave mode. 
+* Scalable solution : The addressed metrics service is stateless and can be scaled horizontally.
 * Disallowed external access to Prometheus : The chosen solution ensures that our interal server is safeguarded against unauthorized access and potential breaches.
 
 **Cons:**
 
-* Increased Application Complexity: While the solution effectively secures Prometheus, it introduces additional layers of complexity to our application code in order to provide consumable metrics endpoint for visualization tools such as Grafana.
+* Increased Application Complexity: While the solution effectively secures Prometheus, it introduces additional layers of complexity to our application code in order to provide consumable metrics endpoint for visualization tools such as Grafana : period, resolution and filter support for metrics data points retrieval.
 
