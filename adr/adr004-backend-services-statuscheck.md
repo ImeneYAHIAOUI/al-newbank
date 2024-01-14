@@ -23,7 +23,7 @@ To address this need, we have decided to :
 
 As our prometheus is configured to scrape all services for their metrics, the uptime is already provided with additional useful information to the **Status Reporter**.
 
-Given the potentially high frequency of calls from various SDK clients on this status reporting service, we have chosen to implement a cache-aside strategy with a duration of 1 seconds to reduce the number of calls on the Prometheus server down to 1 call per second. 
+Given the potentially high frequency of calls from various SDK clients on this status reporting service, we have chosen to implement a cache-aside strategy with a TTL of 1 second to reduce the possible number of calls on the Prometheus server down to 1 call every second.
 
 #### Code snippet of the API : 
 
@@ -44,8 +44,9 @@ The status retrieval call should return a list of the service with their status 
 ## Consequences
 
 ### Advantages:
-- Visible and comprehsenbile services state instead of performing direct calls to the business backends.
+- Visible and comprehsenbile services statuses instead of performing direct calls to the business backends.
 - Prometheus server is protected from overload thanks to the read-through caching strategy
 
 ### Disadvantages:
-- Given the use of the cache read-through strategy there is a potential lag of 5s.
+- Given the use of the cache read-through strategy there is a potential risk of conccurent changes in the cache and the same status result being returned to everyone.
+- A lag behind the services' real status by one second.
