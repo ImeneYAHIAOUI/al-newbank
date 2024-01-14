@@ -32,7 +32,7 @@ Given the potentially high frequency of calls from various SDK clients on this s
   const servicesStats = newBankClient.getBackendStatus();
 ```
 
-The status retrieval call should return a list of the service with their status : 
+The status retrieval call should return a list of the services with their status : 
 - UP : denoting an up and running healthy service
 - DOWN : denoting a service that stopped, crashed or just unable to be reached anymore
 - DEGRADED : denoting a service that is potentially low on resource and/or processing too many requests in the meantime
@@ -48,5 +48,5 @@ The status retrieval call should return a list of the service with their status 
 - Prometheus server is protected from overload thanks to the read-through caching strategy
 
 ### Disadvantages:
-- Given the use of the cache read-through strategy there is a potential risk of conccurent changes in the cache and the same status result being returned to everyone.
+- Given the use of the cache read-through strategy there is a potential risk of conccurent changes in the cache as well as the same status result being returned to everyone.
 - A lag behind the services' real status by one second.
