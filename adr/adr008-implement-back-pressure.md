@@ -8,14 +8,14 @@ description: >
 *Status: [Final]*
 
 ## Context:
-The current system lacks a proactive mechanism to handle situations where the number of client requests exceeds the defined limit, leading to potential service disruptions and performance issues. 
-
-To address this, it is proposed to implement a back pressure mechanism, coupled with a rate limiter and an improved circuit breaker, to efficiently manage client requests and prevent service overload.
+Our current system is vulnerable to service disruptions and performance degradation when the volume of client requests surpasses the system’s capacity. To mitigate this, we are introducing an integrated back pressure mechanism within the SDK, in conjunction with a rate limiter and an enhanced circuit breaker.
 
 ## Decision: 
-To implement a back pressure mechanism, a rate limiter will be introduced to monitor and control the number of incoming client requests. When the defined limit is reached, the system will respond with a status 429 (Too Many Requests) and a specific retry-after time. This will prompt clients to resend their requests after a certain waiting period.
+The back pressure mechanism will be embedded within the SDK. The circuit breaker, as part of the SDK, already performs status checks. If a service status returns as 'degraded', it will also be coupled with an expected waiting time before its back to normal state, and all outgoing calls will be temporarily halted by the circuit breaker. Clients are expected to respect this waiting time before attempting to resend their requests.
 
-Additionally, the circuit breaker will be enhanced to automatically open for the duration specified in the response when the rate limiter triggers the 429 status. This improvement prevents any incoming calls during the open state, ensuring a more stable and resilient system during periods of high demand. After the designated period, the circuit breaker will automatically close, allowing normal operations to resume.
+In parallel, a rate limiter will be implemented to control the influx of client requests. This limiter acts as a safeguard against clients who may attempt to bypass the back pressure mechanism by directly accessing the services. When the threshold is exceeded, the system will issue a status 429 (Too Many Requests) and provide a specific retry-after time.
+
+The enhanced circuit breaker will adapt to these conditions by automatically opening for the duration specified in the retry-after response when an overload is detected. This strategy ensures the system's stability during high demand periods. The circuit breaker will reset to its normal state after the designated period, allowing operations to resume.
 
 #### Flow Diagram illustrating the diiferent states of the circuit breaker in our case : 
 
@@ -25,9 +25,9 @@ Additionally, the circuit breaker will be enhanced to automatically open for the
 ## Consequences:
 
 ### Advantages:
-1. **Improved Service Stability:** The back pressure mechanism ensures that the system remains stable even during periods of high client request volume.
-2. **Efficient Resource Utilization:** The rate limiter optimizes resource utilization by controlling the rate of incoming requests, preventing overload.
-3. **Enhanced Circuit Breaker Resilience:** The improved circuit breaker automatically adjusts its open duration based on the response, preventing excessive calls during periods of high demand.
-
+1. **SDK-Integrated Back Pressure:** This mechanism ensures system stability by proactively managing client requests based on real-time service status.
+2. **Targeted Rate Limiting:** Acts as a secondary line of defense against clients attempting to bypass the back pressure mechanism, ensuring efficient resource utilization.
+3. **Responsive Circuit Breaker:** The improved circuit breaker automatically adjusts its open duration based on the response, preventing excessive calls during periods of high demand.
+   
 ## Disadvantages:
-1. **Potential Delay:** Clients may experience a delay in processing their requests due to the rate limiter and circuit breaker mechanisms.
+1. **Potential Delay:** Clients will face delays due to the enforced waiting period by the back pressure mechanism and the rate limiter.
