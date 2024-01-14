@@ -8,26 +8,27 @@ description: >
 
 ## Context:
 
-Within our backend architecture, the payment authorization and confirmation process introduces a critical dependency chain. For example, the Payment Gateway authorizer service orchestrates the authorization by interfacing with the Credit Card Network (CCN) service, which, in turn, communicates with external bank system. 
+Incoming calls from the SDK to our system going through many critical dependency chain. For example, when the SDK is requesting an authorisation from the Payment Gateway authorizer service, the latter orchestrates the authorization by interfacing with the Credit Card Network (CCN) service, which, in turn, communicates with external bank system. 
 
 This intricate dependency structure poses a potential risk of network performance issues, leading to prolonged waits and indefinite blocking during service calls. Such challenges can significantly impact the overall responsiveness and reliability of the payment authorization process.
 
-This diagram illustrates the dependency chain of Payment Gateway Authorizer : 
+This diagram illustrates an example of this dependency chain : 
 
 ![Timeout](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/timeout.png)
 
 ## Decision:
 
-To proactively address the risk associated with potential network performance issues and indefinite blocking during service calls, we propose the implementation of the Timeout Pattern. This strategic pattern involves setting time limits for both Payment Gateway Authorizer and confirmation, and CCN service microservices. Also, to ensure comprehensive coverage, the Timeout Pattern will be integrated into the SDK, enabling clients to benefit from timely responses and preventing indefinite blocking at the client level.
+To proactively address the risk associated with potential network performance issues and indefinite blocking during service calls, we propose the implementation of the Timeout Pattern. This strategic pattern involves setting time limits for service calls. Also, to ensure comprehensive coverage, the Timeout Pattern will be integrated into the SDK, enabling clients to benefit from timely responses and preventing indefinite blocking at the client level.
 
 ## Implementation Plan
 
-1. Timeout Configurations: Set timeout limits for both Payment Gateway services and CCN service based on response times, network latency, and acceptable system responsiveness.
-2. SDK Integration: Add Timeout Pattern to the SDK. Developers using our SDK can pick their own timeout limit for the functions they use, preventing indefinite blocking.
+1. Timeout Configurations: Set timeout limits for all service calls based on response times, network latency, and acceptable system responsiveness.
+2. SDK Integration: Add Timeout settings to the SDK. Developers using our SDK can pick their own timeout limit for the functions they use, preventing indefinite blocking on their side.
 
 ## Risks and Considerations
 
-**Configurability:** Ensuring that the timeout values are configurable and adjustable based on different service requirements and environmental conditions.
+- **Configurability:** Ensuring that the timeout values are configurable and adjustable based on different service requirements and environmental conditions.
+- **Degradation of serivce quality:** In peak times, having too many timeouts can lead to a degraded service quality felt by the end user when receiving many failed attempts.
 
 ## Consequences:
 
