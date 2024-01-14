@@ -10,7 +10,7 @@ execute_script() {
     echo "Executing $script..."
     bash "$script"
 
-    read -p "Press 'A' to continue to the next script, or 'Q' to quit: " choice
+    read -p "Press 'Enter' to continue to the next script, or 'Q' to quit: " choice
     if [ "$choice" == "Q" ] && [ "$choice" == "q" ]; then
         echo "Quitting..."
         exit 0
