@@ -10,6 +10,7 @@
 * Task Distribution:
   
 Imene and Badr: Integration of metrics functionalities and evolution of the backend system.
+
 Sourour and Nadim: Evolution of the SDK in terms of resilience.
 
   Nadim BEN AISSA : 100 points
