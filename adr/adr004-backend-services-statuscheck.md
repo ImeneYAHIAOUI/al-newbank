@@ -23,7 +23,7 @@ To address this need, we have decided to :
 
 As our prometheus is configured to scrape all services for their metrics, the uptime is already provided with additional useful information to the **Status Reporter**.
 
-Given the potentially high frequency of calls from various SDK clients on this status reporting service, we have chosen to implement a cache-aside strategy with a duration of 5 seconds to reduce the number of calls on the Prometheus server. 
+Given the potentially high frequency of calls from various SDK clients on this status reporting service, we have chosen to implement a cache-aside strategy with a duration of 1 seconds to reduce the number of calls on the Prometheus server down to 1 call per second. 
 
 #### Code snippet of the API : 
 
