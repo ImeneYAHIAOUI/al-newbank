@@ -8,7 +8,7 @@ description: >
 
 ## Context:
 
-Incoming calls from the SDK to our system going through many critical dependency chain. For example, when the SDK is requesting an authorisation from the Payment Gateway authorizer service, the latter orchestrates the authorization by interfacing with the Credit Card Network (CCN) service, which, in turn, communicates with external bank system. 
+Incoming calls from the SDK to our system goi through many critical dependency chains. For example, when the SDK is requesting an authorisation from the Payment Gateway authorizer service, the latter orchestrates the authorization by interfacing with the Credit Card Network (CCN) service, which, in turn, communicates with external bank system. 
 
 This intricate dependency structure poses a potential risk of network performance issues, leading to prolonged waits and indefinite blocking during service calls. Such challenges can significantly impact the overall responsiveness and reliability of the payment authorization process.
 
