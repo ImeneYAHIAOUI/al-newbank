@@ -21,7 +21,7 @@ To address this need, we have decided to :
 - Create a new service : **Status Reporter**. This service will be responsible for querying our internal Prometheus server to determine the status of backend services.
 - Provide the client with an API to interact with the newly created backend service.
 
-As our prometheus is configured to scrape all services for their metrics, the uptime is already provided with additional useful information to the **Status Reporter**.
+As our prometheus is configured to scrape all services for their metrics, the up status is already provided with additional useful information to the **Status Reporter**.
 
 Given the potentially high frequency of calls from various SDK clients on this status reporting service, we have chosen to implement a cache-aside strategy with a TTL of 1 second to reduce the possible number of calls on the Prometheus server down to 1 call every second.
 
@@ -32,7 +32,7 @@ Given the potentially high frequency of calls from various SDK clients on this s
   const servicesStats = newBankClient.getBackendStatus();
 ```
 
-The status retrieval call should return a list of the service with their status : 
+The status retrieval call should return a list of the services with their status : 
 - UP : denoting an up and running healthy service
 - DOWN : denoting a service that stopped, crashed or just unable to be reached anymore
 - DEGRADED : denoting a service that is potentially low on resource and/or processing too many requests in the meantime
@@ -48,5 +48,5 @@ The status retrieval call should return a list of the service with their status 
 - Prometheus server is protected from overload thanks to the read-through caching strategy
 
 ### Disadvantages:
-- Given the use of the cache read-through strategy there is a potential risk of conccurent changes in the cache and the same status result being returned to everyone.
+- Given the use of the cache read-through strategy there is a potential risk of conccurent changes in the cache as well as the same status result being returned to everyone.
 - A lag behind the services' real status by one second.
