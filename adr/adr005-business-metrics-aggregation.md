@@ -15,7 +15,11 @@ Previously, the metrics implementation was done in a way to provide comparison a
 
 The context for this ADR is to propose two ways to fulfil the client need for a business metrics API that can be conveniently used to hydrate a dashboard. These metrics can also encompass the technical ones which were previously provided.
 
-The general rational is that a new API needs to be exposed by the SDK for use in this case. This API will have to consume a new metrics endpoint in our **Metrics Service**. However, this service itself needs a way to aggregate the desired information in order to serve it back.
+To address this need, we have decided to :
+    Create a new service : Metrics service. This service will be responsible for providing the metrics to the client.
+    Provide the client with an API to interact with the newly created backend service.
+
+The general rational is that this new SDK API will have to consume a metrics endpoint in our **Metrics Service**. However, this latter service itself needs a way to aggregate the desired information in order to serve it back.
 
 ## Proposed Solutions
 
@@ -44,7 +48,7 @@ Description: Implementing CronJob services to periodically poll and process data
 ![CronArchitecture](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/cron-architecture.png)
 
 #### Pros:
-- Simplicity: CronJob services are straightforward and easier to implement 
+- Simplicity: CronJob services are straightforward and easy to implement 
 - Light resource usage: Scheduled jobs consume less resources usage by only running periodically at specified intervals.
 
 #### Cons:
