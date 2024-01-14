@@ -66,6 +66,8 @@ node_modules/class-validator/cjs/decorator/common/NotEquals.js.map
 !/example/nestjs-web-service/.env
 !/example/testScripts/.env
 
+!/web-sdk-example/nestjs-web-service/.env
+
 transactions-service/.env
 metrics-service/.env
 
