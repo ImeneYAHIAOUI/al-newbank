@@ -25,7 +25,7 @@ response=$(curl -s -H "Content-Type: application/json" -d "$data" "$url")
 
 
  operation='{
-   "amount": 10000000,
+   "amount": 100,
    "operation": "deposit"
  }'
  fundsUrl="http://localhost:5003/api/costumer/$clientId/funds"

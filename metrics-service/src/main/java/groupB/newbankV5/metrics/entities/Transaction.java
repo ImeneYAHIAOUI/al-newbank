@@ -1,5 +1,6 @@
 package groupB.newbankV5.metrics.entities;
 
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -25,6 +26,7 @@ public class Transaction {
     @Field("sender_iban")
     private String senderIban;
     @Field("application_id")
+    @Indexed
     private long applicationId;
     @Field("credit_card_type")
     private String creditCardType;

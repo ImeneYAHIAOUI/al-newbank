@@ -1,5 +1,6 @@
 package groupB.newbankV5.metrics.entities;
 
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
 
@@ -13,6 +14,7 @@ public class Request {
     @Id
     private String id;
 
+    @Indexed
     private Long application;
 
     private LocalDateTime dateTime;

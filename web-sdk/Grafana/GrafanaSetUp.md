@@ -101,6 +101,8 @@ By default, the metrics query returns the following metrics:
 - `totalRequestsCount`: The total number of requests sent from the web service to the payment gateway.
 - `successfulRequestsCount`: The number of successful requests sent from the web service to the payment gateway.
 - `failedRequestsCount`: The number of failed requests sent from the web service to the payment gateway.
+-  `successfulRequestsRate` : The percentage of successful requests sent from the web service to the payment gateway.
+- `failedRequestsRate` : The percentage of failed requests sent from the web service to the payment gateway.
 - `averageRequestTime`: The average time taken by the payment gateway to process a request.
 
 ## Optional fields:

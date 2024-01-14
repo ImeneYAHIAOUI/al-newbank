@@ -164,8 +164,8 @@ public class MetricsService implements IMetricsService {
                 metrics.addValue("averageAmountSpent", BigDecimal.valueOf(transactionsById.values().stream().filter(transactionList -> transactionList.size() > 1).map(transactionList2 -> transactionList2.get(0)).map(Transaction::getAmount).mapToDouble(Double::parseDouble).average().orElse(0)));
                 if (transactions.size() > 0) {
 
-                    double successRate = getRate(transactionsByStatus, true);
-                    double failureRate = getRate(transactionsByStatus, false);
+                    double successRate = getTransactionsRate(transactionsByStatus, true);
+                    double failureRate = getTransactionsRate(transactionsByStatus, false);
 
                     metrics.addValue("TransactionSuccessRate", BigDecimal.valueOf(successRate));
                     metrics.addValue("TransactionFailureRate", BigDecimal.valueOf(failureRate));
@@ -186,6 +186,8 @@ public class MetricsService implements IMetricsService {
                 metrics.addValue("averageFees", BigDecimal.valueOf(averageFees));
                 metrics.addValue("successfulRequestsCount", BigDecimal.valueOf(requests.stream().filter(request1 -> request1.getStatus().equals("SUCCESS")).count()));
                 metrics.addValue("failedRequestsCount", BigDecimal.valueOf(requests.stream().filter(request1 -> request1.getStatus().equals("FAILED")).count()));
+                metrics.addValue("successfulRequestsRate", BigDecimal.valueOf(getRequestsRate(requests,true)));
+                metrics.addValue("failedRequestsRate", BigDecimal.valueOf(getRequestsRate(requests,false)));
                 metrics.addValue("averageRequestTime", BigDecimal.valueOf(requests.stream().map(Request::getTime).mapToDouble(BigDecimal::doubleValue).average().orElse(0)));
 
 
@@ -197,7 +199,7 @@ public class MetricsService implements IMetricsService {
                         case "averageAmountSpent" -> metrics.addValue("averageAmountSpent", BigDecimal.valueOf(transactionsById.values().stream().map(transactionList -> transactionList.get(0)).map(Transaction::getAmount).mapToDouble(Double::parseDouble).average().orElse(0)));
                         case "TransactionSuccessRate" -> {
                             if (transactions.size() > 0) {
-                                double successRate = getRate(transactionsByStatus, true);
+                                double successRate = getTransactionsRate(transactionsByStatus, true);
 
                                 metrics.addValue("TransactionSuccessRate", BigDecimal.valueOf(successRate));
 
@@ -207,7 +209,7 @@ public class MetricsService implements IMetricsService {
                         }
                         case "TransactionFailureRate" -> {
                             if (transactions.size() > 0) {
-                                double failureRate = getRate(transactionsByStatus, false);
+                                double failureRate = getTransactionsRate(transactionsByStatus, false);
 
                                 metrics.addValue("TransactionFailureRate", BigDecimal.valueOf(failureRate));
 
@@ -224,6 +226,8 @@ public class MetricsService implements IMetricsService {
                         case "totalRequestsCount" -> metrics.addValue("totalRequestsCount", BigDecimal.valueOf(requests.size()));
                         case "successfulRequestsCount" -> metrics.addValue("successfulRequestsCount", BigDecimal.valueOf(requests.stream().filter(request1 -> request1.getStatus().equals("SUCCESS")).count()));
                         case "failedRequestsCount" -> metrics.addValue("failedRequestsCount", BigDecimal.valueOf(requests.stream().filter(request1 -> request1.getStatus().equals("FAILED")).count()));
+                        case "successfulRequestsRate" -> metrics.addValue("successfulRequestsRate", BigDecimal.valueOf(getRequestsRate(requests,true)));
+                        case "failedRequestsRate" -> metrics.addValue("failedRequestsRate", BigDecimal.valueOf(getRequestsRate(requests,false)));
                         case "averageRequestTime" -> metrics.addValue("averageRequestTime", BigDecimal.valueOf(requests.stream().map(Request::getTime).mapToDouble(BigDecimal::doubleValue).average().orElse(0)));
                         default -> {
                             throw new IllegalArgumentException("metric not supported");
@@ -245,12 +249,19 @@ public class MetricsService implements IMetricsService {
         }).mapToDouble(Double::doubleValue).average().orElse(0);
     }
 
-    private double getRate(Map<String, List<Transaction>> transactionsByStatus, boolean success) {
+    private double getTransactionsRate(Map<String, List<Transaction>> transactionsByStatus, boolean success) {
         int successCount = transactionsByStatus.get(TransactionStatus.SETTLED.getValue()) != null ? transactionsByStatus.get(TransactionStatus.SETTLED.getValue()).size() : 0;
         int failureCount = transactionsByStatus.get(TransactionStatus.FAILED.getValue()) != null ? transactionsByStatus.get(TransactionStatus.FAILED.getValue()).size() : 0;
         int total = successCount + failureCount;
          return success ?  total > 0 ? 100 * (double) successCount / total : 0 : total > 0 ? 100 * (double) failureCount / total : 0;
 
+    }
+
+    private double getRequestsRate(List<Request> requests, boolean success) {
+        int successCount = requests.stream().filter(request1 -> request1.getStatus().equals("SUCCESS")).toList().size();
+        int failureCount = requests.stream().filter(request1 -> request1.getStatus().equals("FAILED")).toList().size();
+        int total = successCount + failureCount;
+        return success ?  total > 0 ? 100 * (double) successCount / total : 0 : total > 0 ? 100 * (double) failureCount / total : 0;
     }
 
 

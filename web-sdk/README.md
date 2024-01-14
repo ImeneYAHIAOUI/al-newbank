@@ -164,6 +164,8 @@ console.log(JSON.stringify(metrics));
    - `totalRequestsCount`: The total number of requests sent from the web service to the payment gateway.
    - `successfulRequestsCount`: The number of successful requests sent from the web service to the payment gateway.
    - `failedRequestsCount`: The number of failed requests sent from the web service to the payment gateway.
+   - `successfulRequestsRate` : The percentage of successful requests sent from the web service to the payment gateway.
+   - `failedRequestsRate` : The percentage of failed requests sent from the web service to the payment gateway.
    - `averageRequestTime`: The average time taken by the payment gateway to process a request.
 - `filters` must be a list of one or more of the following values:
   - `status`: By passing the filter, only the metrics concerning the transactions with the specified status are returned. The possible values are:
