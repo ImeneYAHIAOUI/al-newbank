@@ -69,9 +69,7 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
 
 
     @Override
-    public Transaction processPayment(String token, double amount, String cryptedCreditCard) throws InvalidTokenException,
-            ApplicationNotFoundException, CCNException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
-            BadPaddingException, InvalidKeyException, InvalidKeySpecException, ExecutionException, InterruptedException, TimeoutException {
+    public Transaction processPayment(String token, double amount, String cryptedCreditCard) throws ExecutionException, InterruptedException, TimeoutException {
 
         Future<Transaction> future = executorService.submit(() -> {
         ApplicationDto application = businessIntegratorProxy.validateToken(token);
@@ -79,14 +77,12 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
         CreditCard creditCard = rsa.decryptPaymentRequestCreditCard(cryptedCreditCard, application);
 
 
+
         log.info("\u001B[32mSending payment authorization request to CCN\u001B[0m");
 
         CcnResponseDto ccnResponseDto = creditCardNetworkProxy.authorizePayment(
                 new PaymentDetailsDTO(creditCard.getCardNumber(), creditCard.getExpiryDate(), creditCard.getCvv(), amount)
         );
-        if (!ccnResponseDto.isApproved()) {
-            throw new CCNException("\u001B[31mPayment not authorized\u001B[0m");
-        }
         Transaction transaction = new Transaction(merchant.getBankAccount(), ccnResponseDto.getAuthToken(), String.valueOf(amount));
         transaction.setId(UUID.randomUUID());
         transaction.setExternal(true);
@@ -97,6 +93,12 @@ public class TransactionAuthorizer implements ITransactionProcessor, ITransactio
         transaction.setCreditCard(card);
         transaction.setSender(new BankAccount(ccnResponseDto.getAccountIBAN(),ccnResponseDto.getAccountBIC()));
         transaction.setRecipient(merchant.getBankAccount());
+        transaction.setStatus(TransactionStatus.FAILED);
+        if (!ccnResponseDto.isApproved()) {
+            transactionRepository.save(transaction);
+            throw new CCNException("\u001B[31mPayment not authorized\u001B[0m");
+        }
+
         transaction.setStatus(TransactionStatus.AUTHORIZED);
         transaction.setBank(ccnResponseDto.getBankName());
         log.info("\u001B[32mPayment authorized\u001B[0m");

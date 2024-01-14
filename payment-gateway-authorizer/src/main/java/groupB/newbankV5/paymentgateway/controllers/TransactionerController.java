@@ -53,12 +53,6 @@ public class TransactionerController {
         this.transactionRepository = transactionRepository;
     }
 
-//    @PostMapping("/process")
-//    public ResponseEntity<PaymentResponseDto> processPayment(@RequestBody PaymentDetailsDTO paymentDetails) {
-//        log.info("Processing payment");
-//        return ResponseEntity.status(HttpStatus.OK).body(transactionProcessor.authorizePayment(paymentDetails));
-//
-//    }
 
     @PostMapping("simulate")
     public ResponseEntity<String> activeToggle(@RequestParam int errorCode) {
