@@ -33,4 +33,5 @@ Additionally, the metrics service will expose an endpoint to access these metric
 **Cons:**
 
 * Increased Application Complexity: While the solution effectively secures Prometheus, it introduces additional layers of complexity to our application code in order to provide consumable metrics endpoint for visualization tools such as Grafana : period, resolution and filter support for metrics data points retrieval.
+* New Critical Entry point : The metrics service being used to hydrate dashboard denotes a high frequency of calls, making it a new brittle component
 
