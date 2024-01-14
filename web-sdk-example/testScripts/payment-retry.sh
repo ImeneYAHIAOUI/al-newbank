@@ -21,6 +21,9 @@ paymentDto='{
      "amount": 500
 }'
 
+docker exec -it gateway-db1 redis-cli FLUSHALL > /dev/null
+docker exec -it gateway-db2 redis-cli FLUSHALL > /dev/null
+
 urlStatus="http://localhost:3502/api/status/simulate?toggle=false"
 response=$(curl -s -X POST "${urlStatus}" -H "Content-Type: application/json" -d '{}')
 

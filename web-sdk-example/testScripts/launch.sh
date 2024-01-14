@@ -1,4 +1,6 @@
 #!/bin/bash
+
+
 # création compte client
 url="http://localhost:5003/api/costumer"
 data='{
@@ -25,7 +27,7 @@ response=$(curl -s -H "Content-Type: application/json" -d "$data" "$url")
 
 
  operation='{
-   "amount": 100,
+   "amount": 10000,
    "operation": "deposit"
  }'
  fundsUrl="http://localhost:5003/api/costumer/$clientId/funds"

@@ -14,6 +14,8 @@ echo "Card Number: $cardNumber"
 echo "CVV: $cvv"
 echo "Expiry Date: $expiryDate"
 
+
+
 paymentDto='{
      "cardNumber": "'"${cardNumber}"'",
      "cvv": "'"${cvv}"'",
@@ -21,6 +23,9 @@ paymentDto='{
      "amount": 1
 }'
 
+
+docker exec -it gateway-db1 redis-cli FLUSHALL > /dev/null
+docker exec -it gateway-db2 redis-cli FLUSHALL > /dev/null
 
 url1="http://localhost:3501/api/gateway_authorization/simulate?errorCode="
 url="http://localhost:3503/api/gateway_authorization/simulate?errorCode="

@@ -24,6 +24,9 @@ paymentDto='{
      "amount": 100
 }'
 
+docker exec -it gateway-db1 redis-cli FLUSHALL > /dev/null
+docker exec -it gateway-db2 redis-cli FLUSHALL > /dev/null
+
 curl -s -X POST -H "Content-Type: application/json" -d "$paymentDto" "http://localhost:6906/pay"
 
 
