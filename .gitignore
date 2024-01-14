@@ -63,8 +63,7 @@ node_modules/class-validator/cjs/decorator/common/NotEquals.js.map
 */.env
 
 #ignore all .env files except the one in web-sdk
-!/example/nestjs-web-service/.env
-!/example/testScripts/.env
+!/web-sdk-example/testScripts/.env
 
 !/web-sdk-example/nestjs-web-service/.env
 
