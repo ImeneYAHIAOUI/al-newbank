@@ -9,7 +9,7 @@ description: >
 
 ## Background
 
-Previously, the metrics implementation was done in a way to provide comparison and tracking of what is sent against what is received. These technical metrics, more or less, are used essentially for monitoring purposes and detecting divergences. The business metrics however are not provided to the client yet.
+Previously, the metrics implementation was done in a way to provide comparison and tracking of requests sent against requests received. These technical metrics, more or less, are used essentially for monitoring purposes and detecting divergences. The business metrics however are not provided to the client yet.
 
 ## Context
 
