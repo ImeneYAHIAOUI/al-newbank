@@ -17,7 +17,7 @@ In parallel, a rate limiter will be implemented to control the influx of client 
 
 The enhanced circuit breaker will adapt to these conditions by automatically opening for the duration specified in the retry-after response when an overload is detected. This strategy ensures the system's stability during high demand periods. The circuit breaker will reset to its normal state after the designated period, allowing operations to resume.
 
-#### High level view of the mechanism : 
+### High level view of the mechanism : 
 
 <h3 style="text-align: center;">Healthy state : No backpressure</h3>
 
