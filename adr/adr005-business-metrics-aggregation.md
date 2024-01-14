@@ -57,4 +57,4 @@ Description: Implementing CronJob services to periodically poll and process data
 
 ## Decision 
 
-The event-based CDC was adopted by making use of cloud capabilities (GCP Compute Engine) as it would have been impossible otherwise on our machines.
+The event-based CDC was adopted to aggregate metrics from both the sharded redis data store that the services interact with when issuing a transaction and the postgres database which keeps tracks of all successful transactions which eventually get settled.
