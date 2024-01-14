@@ -1,6 +1,9 @@
 # Assuming ..env is in the same directory as your script
 source .env
 
+urlStatus="http://localhost:3502/api/status/simulate?toggle=true"
+curl -s -X POST "${urlStatus}" -H "Content-Type: application/json" -d '{}'
+
 # Alternatively, you can use the shorthand notation:
 # . ..env
 
@@ -22,3 +25,7 @@ paymentDto='{
 }'
 
 curl -s -X POST -H "Content-Type: application/json" -d "$paymentDto" "http://localhost:6906/pay"
+
+
+urlStatus="http://localhost:3502/api/status/simulate?toggle=true"
+curl -s -X POST "${urlStatus}" -H "Content-Type: application/json" -d '{}'
