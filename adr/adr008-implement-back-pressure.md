@@ -17,10 +17,10 @@ In parallel, a rate limiter will be implemented to control the influx of client 
 
 The enhanced circuit breaker will adapt to these conditions by automatically opening for the duration specified in the retry-after response when an overload is detected. This strategy ensures the system's stability during high demand periods. The circuit breaker will reset to its normal state after the designated period, allowing operations to resume.
 
-#### Flow Diagram illustrating the diiferent states of the circuit breaker in our case : 
+#### High level view of the mechanism : 
 
-![closed](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/circuit-breaker-close.png)
-![open](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/circuit-breaker-open.png)
+![no_backpressure](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/bp-off.png)
+![backpressure](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/bp-on.png)
 
 ## Consequences:
 
