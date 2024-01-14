@@ -21,4 +21,8 @@ for script in "${script_list[@]}"; do
     execute_script "$script"
 done
 
+pid=$(netstat -tulpn | grep 6906 | awk '{print $7}' | awk -F'/' '{print $1}')
+kill -9 "$pid" > /dev/null
+
+
 echo "All tests executed successfully."
