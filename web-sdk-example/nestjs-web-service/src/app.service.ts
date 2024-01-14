@@ -37,7 +37,7 @@ export class AppService {
             }
         }
     }else{
-        console.log(error)
+        console.log(error.message)
     }
     }
     }

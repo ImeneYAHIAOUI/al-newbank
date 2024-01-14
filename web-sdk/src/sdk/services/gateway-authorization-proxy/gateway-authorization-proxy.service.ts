@@ -74,7 +74,7 @@ async authorizePaymentWithRetry(encryptedCardInfo: object, token: string): Promi
 
           const serviceMetrics = await this.statusReporterProxyService.checkAvailability(this.config.service_authorizer_name);
           if (serviceMetrics.waitingTime > 0) {
-            reject(new ServiceUnavailableException('The server is currently under backpressure.', serviceMetrics.waitingTime));
+            reject(new ServiceUnavailableException('The server is currently busy.', serviceMetrics.waitingTime));
             return;
           }
   
