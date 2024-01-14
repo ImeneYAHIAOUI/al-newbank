@@ -5,9 +5,9 @@ source .env
 # . ..env
 
 # Print the extracted values for verification
-echo "Card Number: $cardNumber"
-echo "CVV: $cvv"
-echo "Expiry Date: $expiryDate"
+cardNumber=$CARD_NUMBER
+cvv=$CVV
+expiryDate=$EXPIRY_DATE
 
 paymentDto='{
      "cardNumber": "'"${cardNumber}"'",
