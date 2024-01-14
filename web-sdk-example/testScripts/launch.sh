@@ -18,7 +18,6 @@ response=$(curl -s -H "Content-Type: application/json" -d "$data" "$url")
     clientId=$(echo "$response" | grep -o '"id":[0-9]*' | cut -d: -f2 | head -1)
 
     if [ "$?" -eq 0 ]; then
-    echo -e "\033[0;34mID client:\033[0m \033[0;32m$clientId\033[0m"
     debitCardUrl="http://localhost:5003/api/costumer/$clientId/virtualCard/credit"
     debitCardResponse=$(curl -s -X POST "$debitCardUrl")
     cardNumber=$(echo "$debitCardResponse" | grep -oi '"cardNumber":"[^"]*' | cut -d'"' -f4)
