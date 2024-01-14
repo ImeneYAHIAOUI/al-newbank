@@ -20,10 +20,12 @@ The enhanced circuit breaker will adapt to these conditions by automatically ope
 #### High level view of the mechanism : 
 
 <h3 style="text-align: center;">Healthy state : No backpressure</h3>
+
 ![no_backpressure](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/bp-off.png)
 
 <h3 style="text-align: center;">Unhealthy State : backpressure</h3>
-![backpressure](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/bp-off.png)
+
+![backpressure](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/adr/images/bp-on.png)
 
 ## Consequences:
 
