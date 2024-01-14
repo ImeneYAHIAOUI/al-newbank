@@ -21,7 +21,7 @@ To address this need, we have decided to :
 - Create a new service : **Status Reporter**. This service will be responsible for querying our internal Prometheus server to determine the status of backend services.
 - Provide the client with an API to interact with the newly created backend service.
 
-As our prometheus is configured to scrape all services for their metrics, the uptime is already provided with additional useful information to the **Status Reporter**.
+As our prometheus is configured to scrape all services for their metrics, the up status is already provided with additional useful information to the **Status Reporter**.
 
 Given the potentially high frequency of calls from various SDK clients on this status reporting service, we have chosen to implement a cache-aside strategy with a TTL of 1 second to reduce the possible number of calls on the Prometheus server down to 1 call every second.
 
