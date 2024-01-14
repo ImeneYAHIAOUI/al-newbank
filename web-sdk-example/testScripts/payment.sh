@@ -12,10 +12,7 @@ cardNumber=$CARD_NUMBER
 cvv=$CVV
 expiryDate=$EXPIRY_DATE
 
-# Print the extracted values for verification
-echo "Card Number: $cardNumber"
-echo "CVV: $cvv"
-echo "Expiry Date: $expiryDate"
+
 
 paymentDto='{
      "cardNumber": "'"${cardNumber}"'",

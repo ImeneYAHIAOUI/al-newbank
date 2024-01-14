@@ -39,9 +39,6 @@ response=$(curl -s -H "Content-Type: application/json" -d "$data" "$url")
     BLUE='\033[0;34m'
     NC='\033[0m' # No Color
 
-    echo -e "${BLUE}Card Number:${NC} ${GREEN}$cardNumber${NC}"
-    echo -e "${BLUE}CVV:${NC} ${GREEN}$cvv${NC}"
-    echo -e "${BLUE}Expiry Date:${NC} ${GREEN}$expiryDate${NC}"
 else
     echo -e "\033[0;31mErreur lors de la création du compte client. Code de réponse HTTP : $response\033[0m"
 fi
@@ -87,12 +84,10 @@ merchant='{
       "bic": "'"$bic"'"
   }
 }'
-echo -e "\033[0;34mMerchant:\033[0m \033[0;32m$merchant\033[0m"
 
 url="http://localhost:5012/api/integration/merchants"
 response=$(curl -s -X POST -H "Content-Type: application/json" -d "$merchant" "$url")
 merchantId=$(echo "$response" | grep -o '"id":[0-9]*' | cut -d: -f2 | head -2 | tail -1)
-echo -e "\033[0;34mID marchand:\033[0m \033[0;32m$merchantId\033[0m"
 
 # Création d'une application avec des éléments prédéfinis
 randomAppName=$(openssl rand -hex 4)
@@ -114,15 +109,12 @@ applicationIntegrationDto='{
   "description": "'"$appDescription"'",
   "merchantId":  "'"$merchantId"'"
 }'
-echo -e "\033[0;34mApplication:\033[0m \033[0;32m$applicationIntegrationDto\033[0m"
 
 url="http://localhost:5012/api/integration/applications"
 response=$(curl -s -X POST -H "Content-Type: application/json" -d "$applicationIntegrationDto" "$url")
 ApplicationId=$(echo "$response" | grep -o '"id":[0-9]*' | cut -d: -f2 | head -1)
-echo -e "\033[0;34mID Application:\033[0m \033[0;32m$ApplicationId\033[0m"
 
 apiKey=$(echo "$response" | grep -o '"apiKey":"[^"]*' | cut -d'"' -f4)
-echo -e "\033[0;34mAPI Key:\033[0m \033[0;32m$apiKey\033[0m"
 
 sed -i "s/NEWBANK_TOKEN=.*/NEWBANK_TOKEN=${apiKey}/" ../nestjs-web-service/.env
 

@@ -4,11 +4,6 @@ source .env
 # Alternatively, you can use the shorthand notation:
 # . ..env
 
-# Extract values from environment variables
-cardNumber=$CARD_NUMBER
-cvv=$CVV
-expiryDate=$EXPIRY_DATE
-
 # Print the extracted values for verification
 echo "Card Number: $cardNumber"
 echo "CVV: $cvv"
