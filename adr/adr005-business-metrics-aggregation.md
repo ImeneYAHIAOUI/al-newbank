@@ -17,7 +17,7 @@ The context for this ADR is to propose two ways to fulfil the client need for a 
 
 To address this need, we have decided to :
 - Create a new service : Metrics service. This service will be responsible for providing the metrics to the client.
-- Provide the client with an API to interact with the newly created backend service.
+- Provide the client with an API in our SDK to retrieve the metrics from the newly created service.
 
 The general rational is that this new SDK API will have to consume a metrics endpoint in our **Metrics Service**. However, this latter service itself needs a way to aggregate the desired information in order to serve it back.
 
