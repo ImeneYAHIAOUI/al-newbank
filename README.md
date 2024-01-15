@@ -11,98 +11,14 @@ Steps to run :
 
 The Newbank-Merchant SDK streamlines integration with our payment system, providing developers with a clear interface to interact with payment functionalities, specifically designed for use with npm.
 
-## Installation
+## Documentation
 
-**Pre-requists** 
-In order to use the SDK Download and install Node.js and npm from [here](https://nodejs.org/en/download/).
+Documentation on how to install the SDK and use its API interface can be found [here](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/web-sdk/README.md).
 
-Then run the following command : 
-```bash
-npm install @teamb/newbank-sdk
-```
+Also, you can fund in this [link](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/web-sdk/Grafana/GrafanaSetUp.md) how to set up Grafana Dashboard for your web service Metrics.
 
-## Initialisation
+## Usage
 
-To use the SDK you should join Newbank by integrating your business application to get your api token from our service. 
+An example of a NestJS project using our SDK can be found in the **web-sdk-example/nestjs-web-service** directory. This example demonstrates secure payment processing using data from a given card.
 
-To start working with the SDK instantiate the NewBank client and provide the token you've just been provided.
-
-```JS
-import {NewbankSdk} from "@teamb/newbank-sdk";
-const token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" // your business api token
-const newbankSdk = new NewbankSdk(token);
-```
-
-## API Interface
-
-### `authorizePayment(paymentInformation)`
-
-Sends a payment authorization request to the backend and receives a transaction ID if accepted.
-
-**Parameters:**
-- `paymentInformation`: Payment information (credit card, amount, etc.).
-
-**Return:**
-- `transactionId`: The transaction ID if the request is accepted.
-
-### `confirmPayment(transactionId)`
-
-Sends a payment confirmation request for the previously authorized transaction.
-
-**Parameters:**
-- `transactionId`: The ID of the transaction to be confirmed.
-
-### `pay(paymentInformation)`
-
-Includes the steps of sending a payment authorization request to the backend via the `authorizePayment(paymentInformation)` method and, if accepted, confirms the transaction using the `confirmPayment(transactionId)` function.
-
-**Parameters:**
-- `paymentInformation`: Payment information.
-
-### `getBackendStatus()`
-
-Sends a request to retrieve the status of backend services.
-
-**Return:**
-- Backend service status.
-
-### `Retry policies`
-
-Payment calls can be retried using an exponential backoff strategy. 
-
-```JS
-import {NewbankSdk, RetrySettings} from "@teamb/newbank-sdk";
-
-const retrySettings = new RetrySettings({ retries: 2,
-                                          factor:2,
-                                          minTimeout: 1000,
-                                          maxTimeout: 3000,
-                                          randomize: true });
-const token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 
-const newbankSdk = new NewbankSdk(token, retrySettings);
-```
-The retrial concerns all subsequent calls made by the SDK.
-
-The RetrySettings class provides a convenient way to configure retry behavior :
-   
-   `retries`: The maximum number of retry attempts. Default is `3`.
-   
-   `factor`: The exponential factor to determine the delay between retries. Default is `2`.
-   
-   `minTimeout`: The minimum time (in milliseconds) to wait before the first retry. Default is `1000`.
-   
-   `maxTimeout`: The maximum time (in milliseconds) between two retry attempts. Default is `3000`.
-   
-   `randomize`: A boolean indicating whether to randomize the timeouts. Default is `true`.
-
-
-## Usage:
-
-Example code can be found in the client-test/src/ directory, allowing for secure payment processing using data from a given card.
-
-Additionally, the script ./demo.sh implements a complete usage scenario of our SDK.
-
-
-
-
-
+Additionally, the script `run-all-tests.sh` in the **web-sdk-example/testScripts** directory implements a complete usage scenario for our SDK. It showcases different transaction cases with no anomalies, demonstrates the retry mechanism in case of a timeout, and illustrates the backpressure mechanism in case of a high number of requests.

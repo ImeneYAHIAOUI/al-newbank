@@ -5,7 +5,7 @@
 
 * Issues : No challenges were reported this week. 
 
-* Risks :  We need to be cautious not to exhaust all our credits on cloud befor the presentation demo.
+* Risks :  We need to be cautious not to exhaust all our credits on cloud before the presentation demo.
 
 * Task Distribution:
   
