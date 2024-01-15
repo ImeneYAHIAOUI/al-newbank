@@ -22,7 +22,7 @@ export class AppController {
     }
 
     @Post('/pay')
-     payment(@Body() paymentInfoDTO: PaymentInfoDTO): void {
+    async payment(@Body() paymentInfoDTO: PaymentInfoDTO): Promise<void> {
       this.appService.pay(paymentInfoDTO);
     }
 
