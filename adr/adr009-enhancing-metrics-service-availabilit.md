@@ -1,11 +1,11 @@
-de000---
+---
 id: adrs-adr009
 title: "ADR009: Enhancing Metrics service Availability with an Active-Active Redundancy Pattern"
 description: >
     Architecture Decision Record (ADR) to enhance the availability of the Metrics service by implementing an Active-Active redundancy pattern.
 ---
 
-*Status: [Closed]*
+*Status: [Final]*
 
 ## Background
 
