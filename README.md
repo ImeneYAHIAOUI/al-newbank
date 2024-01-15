@@ -19,4 +19,4 @@ Documentation on how to install the SDK and use its API interface can be found [
 
 An example of a NestJS project using our SDK can be found in the **web-sdk-example/nestjs-web-service** directory. This example demonstrates secure payment processing using data from a given card.
 
-Additionally, the script **./run-all-tests.sh** in the **web-sdk-example/testScripts** directory implements a complete usage scenario for our SDK. It showcases different transaction cases with no anomalies, demonstrates the retry mechanism in case of a timeout, and illustrates the backpressure mechanism in case of a high number of requests.
+Additionally, the script `run-all-tests.sh` in the **web-sdk-example/testScripts** directory implements a complete usage scenario for our SDK. It showcases different transaction cases with no anomalies, demonstrates the retry mechanism in case of a timeout, and illustrates the backpressure mechanism in case of a high number of requests.
