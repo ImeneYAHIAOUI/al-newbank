@@ -17,7 +17,7 @@ Documentation on how to install the SDK and use its API interface can be found [
 
 Also, you can fund in this [link](https://github.com/pns-si5-al-course/al-newbank-23-24-al-23-24-b-v5/blob/main/web-sdk/Grafana/GrafanaSetUp.md) how to set up Grafana Dashboard for your web service Metrics.
 
-## Usage:
+## Usage
 
 An example of a NestJS project using our SDK can be found in the **web-sdk-example/nestjs-web-service** directory. This example demonstrates secure payment processing using data from a given card.
 
