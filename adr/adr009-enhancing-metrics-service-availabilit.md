@@ -28,9 +28,7 @@ We decided to implement an Active-Active redundancy pattern to enhance the avail
 
 ### Cons:
 
-* **Increased Complexity:** The Active-Active redundancy pattern introduces additional complexity to the Metrics service. We need to implement a mechanism to synchronize the data between the instances. We also need to implement a mechanism to detect and handle split-brain scenarios.
 * **Increased Resource Consumption:** The Active-Active redundancy pattern increases the resource consumption of the Metrics service. We need to deploy multiple instances of the Metrics service, which will increase the resource consumption.
-* **Increased Cost:** The Active-Active redundancy pattern increases the cost of the Metrics service. We need to deploy multiple instances of the Metrics service, which will increase the cost.
 * **MongoDB bottleneck:** Both instances of the Metrics service will be using the same MongoDB database. This can lead to a bottleneck if the load on the service increases.
 
 
