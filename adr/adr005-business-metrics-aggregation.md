@@ -1,4 +1,4 @@
----
+de000---
 id: adrs-adr005
 title: "ADR005: Business metrics aggregation"
 description: >

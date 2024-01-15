@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 public class MetricsApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(MetricsApplication.class, args);
+        SpringApplication.run(MetricsApplication.class);
     }
 
 }
