@@ -23,7 +23,7 @@ export class AppController {
 
     @Post('/pay')
     async payment(@Body() paymentInfoDTO: PaymentInfoDTO): Promise<void> {
-      this.appService.pay(paymentInfoDTO);
+      this.appService.payment(paymentInfoDTO);
     }
 
     @Get('/backend-status')
