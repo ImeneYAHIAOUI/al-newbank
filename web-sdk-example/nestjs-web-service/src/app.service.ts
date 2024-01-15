@@ -42,11 +42,19 @@ export class AppService {
     }
     }
 
+    pay(paymentInfoDTO: PaymentInfoDTO){
+        this.newbankSdk.pay(paymentInfoDTO)
+        .then(r => console.log(r))
+        .catch(error => {
+          console.error(error.message);
+        });
+    }
+
     authorizePayment(paymentInfoDTO: PaymentInfoDTO) {
         this.newbankSdk.authorizePayment(paymentInfoDTO)
           .then(r => console.log(r))
           .catch(error => {
-            console.error("An error occurred during authorization:", error);
+            console.error(error.message);
           });
       }
       
@@ -54,7 +62,7 @@ export class AppService {
         this.newbankSdk.confirmPayment(transactionId)
           .then(r => console.log(r))
           .catch(error => {
-            console.error("An error occurred during confirmation:", error);
+            console.error(error.message);
           });
       }
 
